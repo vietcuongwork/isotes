@@ -141,3 +141,32 @@ To add a new font: drop the `.ttf` in `assets/fonts/`, add it to `assets/fonts/i
 ## Note: `theme.fontFamily` string vs. array
 
 In Tailwind's `theme.fontFamily`, each entry can be either a single string or an array of strings (used as a CSS fallback stack, e.g. `["Outfit-Regular", "system-ui", "sans-serif"]`, which compiles to `font-family: Outfit-Regular, system-ui, sans-serif;`). Since RN's `fontFamily` style prop only ever takes one string (no fallback-stack concept), this project keeps `src/themes/typography.js` values as plain strings — that way the same value is directly usable in both `className` (Tailwind) and native `StyleSheet` code, no unwrapping needed.
+
+---
+
+## 9. Prettier config (`prettier.config.ts`) and Tailwind class sorting
+
+Prettier config file extension decides the module system, independent of file content:
+
+- `.mts` — always ESM (`export default config;`), regardless of `package.json`.
+- `.cts` — always CommonJS (`module.exports = config;`), regardless of `package.json`.
+- `.ts` — ambiguous; follows the nearest `package.json`'s `"type"` field. This repo's `package.json` has no `"type"` field, which defaults to CommonJS — so `prettier.config.ts` must use `module.exports`, not `export default`.
+
+TypeScript config files require Node.js ≥ 22.6.0; Node < 24.3.0 additionally needs `--experimental-strip-types` to run Prettier. This repo's Node (v26.4.0) is past that cutoff, so no flag is needed.
+
+To get Tailwind class sorting (auto-sorts `className` strings into Tailwind's canonical order on format), register `prettier-plugin-tailwindcss` in `prettier.config.ts`:
+
+```ts
+import { type Config } from "prettier";
+
+const config: Config = {
+  plugins: ["prettier-plugin-tailwindcss"],
+};
+
+module.exports = config;
+```
+
+---
+
+https://prettier.io/docs/configuration#typescript-configuration-files
+https://tailwindcss.com/blog/automatic-class-sorting-with-prettier

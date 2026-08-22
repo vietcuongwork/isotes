@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { Text, View } from "react-native";
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withDelay,
-    withTiming,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
 } from "react-native-reanimated";
 
 type AvatarData = {
@@ -50,7 +50,7 @@ function AnimatedAvatar(props: AvatarData) {
   return (
     <Animated.View
       style={animatedStyle}
-      className={`w-10 h-10 rounded-full items-center justify-center border-2 border-[#0a0a0a] ${bg} ${
+      className={`h-10 w-10 items-center justify-center rounded-full border-2 border-[#0a0a0a] ${bg} ${
         index === 0 ? "" : "-ml-2"
       }`}
     >
@@ -86,7 +86,7 @@ export default function AvatarStack() {
       ))}
       <Animated.Text
         style={captionStyle}
-        className="font-outfit-regular text-base text-[#555555] ml-4"
+        className="ml-4 font-outfit-regular text-base text-[#555555]"
       >
         Thousands of groups use SplitLite
       </Animated.Text>

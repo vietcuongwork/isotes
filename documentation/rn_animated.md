@@ -129,7 +129,3 @@ With `[]` as deps, the effect only runs once on mount, so cleanup — if present
 | `<Animated.View style={animatedStyle}>` | Applies the live style to the native view          | Continuously                                                  |
 
 **Analogy:** `useSharedValue` + `withSpring` is a dimmer switch slowly rotating on its own. `useAnimatedStyle` is a sensor that constantly reads the dimmer's current position and reports it as "brightness: X%" — it doesn't turn the dimmer, it just reports what it currently reads.
-
-
-
-

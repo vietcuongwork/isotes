@@ -29,7 +29,7 @@ transition, and only one was actually black:
 
 1. Native `UIWindow` / root view — the base of the app before React mounts.
 2. `react-native-screens`' `ScreenStack` native container
-   (`UIViewController.view`) — sits *behind* each screen and is exactly
+   (`UIViewController.view`) — sits _behind_ each screen and is exactly
    what's revealed at the corners during the interactive swipe gesture.
 3. Each screen's own content view — controlled by `contentStyle`.
 
@@ -75,6 +75,7 @@ export default function RootLayout() {
 ```
 
 **References**
+
 - https://github.com/react-navigation/react-navigation/issues/9883
 - https://stackoverflow.com/questions/72707322/how-to-get-rid-of-white-flashes-on-navigation-using-react-navigation-native-and
 - https://reactnavigation.org/docs/themes/
@@ -132,7 +133,7 @@ const renderBackdrop = useCallback(
   (props: BottomSheetBackdropProps) => (
     <BottomSheetBackdrop {...props} appearsOnIndex={0} disappearsOnIndex={-1} />
   ),
-  []
+  [],
 );
 ```
 
@@ -144,7 +145,7 @@ const renderBackdrop = useCallback(
 `import fontFamily from "@/themes/typography"` compiled, but `fontFamily["outfit-regular"]` failed with: `Element implicitly has an 'any' type because expression of type '"outfit-regular"' can't be used to index type '{ fontFamily: { fraunces: string; "outfit-regular": string; ... } }'`.
 
 **Explanation**
-`themes/typography.js` is CommonJS (`module.exports = { fontFamily: {...} }`), not an ES module — it has no real `default` export. Under the interop TS/Babel use for CommonJS files, `import x from "..."` (no braces) binds `x` to the *entire* `module.exports` object, since there's no `default` key to unwrap. So `fontFamily` ended up holding `{ fontFamily: { fraunces, "outfit-regular", ... } }` — one level too shallow — instead of the inner map.
+`themes/typography.js` is CommonJS (`module.exports = { fontFamily: {...} }`), not an ES module — it has no real `default` export. Under the interop TS/Babel use for CommonJS files, `import x from "..."` (no braces) binds `x` to the _entire_ `module.exports` object, since there's no `default` key to unwrap. So `fontFamily` ended up holding `{ fontFamily: { fraunces, "outfit-regular", ... } }` — one level too shallow — instead of the inner map.
 
 General rule: `import { name }` (braces) destructures a specific named export/key by name; `import name` (no braces) grabs "the one default thing" a module hands out. For CommonJS files there's no default, so `import { fontFamily } from "..."` (matching the `fontFamily` key on `module.exports`) is what actually reaches the inner object.
 
@@ -163,14 +164,14 @@ import { fontFamily } from "@/themes/typography";
 `@react-native-picker/picker`'s wheel, used as the currency picker inside a `@gorhom/bottom-sheet` `BottomSheetModal`, would settle at one row after a scroll/fling, then — well after the touch had ended — reverse and animate through several more rows before landing on the actually-selected one. Confirmed via frame-by-frame screen recording: the wheel kept moving for seconds after the finger was already off-screen, changing direction mid-flight. A bare `Picker` outside the bottom sheet (or the original plain RN `Modal` implementation) never showed this.
 
 **Explanation**
-`Picker` is a fully controlled component — the native wheel's position is forced to match its `selectedValue` prop on *every* render, not just when the user interacts with it. The normal update round-trip is: native fires `onValueChange` → `setState` in whatever component owns that state → React re-renders → the new `selectedValue` flows back down → the wheel re-syncs. Between step 2 and step 4 there's a real window where `selectedValue` is still the *old* value.
+`Picker` is a fully controlled component — the native wheel's position is forced to match its `selectedValue` prop on _every_ render, not just when the user interacts with it. The normal update round-trip is: native fires `onValueChange` → `setState` in whatever component owns that state → React re-renders → the new `selectedValue` flows back down → the wheel re-syncs. Between step 2 and step 4 there's a real window where `selectedValue` is still the _old_ value.
 
-On its own, that window is too short to notice (a single React commit). The problem is that when `selectedValue` is threaded down from an ancestor (e.g. `CurrencyPicker`), *every* re-render of that ancestor — for any reason at all — re-passes whatever its state currently holds back into `Picker` as `selectedValue`, forcing a re-sync. `BottomSheetModal`/`BottomSheetView` re-render their content repeatedly for reasons that have nothing to do with the picker: backdrop opacity animating, snap-point/position tracking, dynamic-sizing remeasurement, all driven by Reanimated crossing from the UI thread back into JS. Each of those is an independent chance to shove the not-yet-updated old value back onto the wheel while it's still mid-fling — repeated over several seconds, competing against the wheel's own native momentum. That tug-of-war is the multi-row oscillation seen on video. Gesture arbitration (`enableContentPanningGesture`, wrapping the picker in `Gesture.Native()`) and dynamic sizing (`enableDynamicSizing={false}`) were both ruled out first via recording evidence — the wheel kept moving long after all touch input had ended, which neither theory explains.
+On its own, that window is too short to notice (a single React commit). The problem is that when `selectedValue` is threaded down from an ancestor (e.g. `CurrencyPicker`), _every_ re-render of that ancestor — for any reason at all — re-passes whatever its state currently holds back into `Picker` as `selectedValue`, forcing a re-sync. `BottomSheetModal`/`BottomSheetView` re-render their content repeatedly for reasons that have nothing to do with the picker: backdrop opacity animating, snap-point/position tracking, dynamic-sizing remeasurement, all driven by Reanimated crossing from the UI thread back into JS. Each of those is an independent chance to shove the not-yet-updated old value back onto the wheel while it's still mid-fling — repeated over several seconds, competing against the wheel's own native momentum. That tug-of-war is the multi-row oscillation seen on video. Gesture arbitration (`enableContentPanningGesture`, wrapping the picker in `Gesture.Native()`) and dynamic sizing (`enableDynamicSizing={false}`) were both ruled out first via recording evidence — the wheel kept moving long after all touch input had ended, which neither theory explains.
 
 Documented independently by other users hitting the same thing inside modals/portals/bottom sheets: https://github.com/react-native-picker/picker/issues/615
 
 **Solution**
-Move the picker's value state out of the ancestor and into the same component that renders `Picker`, so nothing external can write to it. Accept an `intialValue` used only to *seed* `useState` (read once, at mount) instead of a continuously-synced `selectedValue` prop — a `useState` initializer argument is ignored on every render after the first, so no amount of ancestor re-rendering can force a stale value back onto the wheel. The parent only receives the final selection via an `onValueChange(option)` callback, for its own use:
+Move the picker's value state out of the ancestor and into the same component that renders `Picker`, so nothing external can write to it. Accept an `intialValue` used only to _seed_ `useState` (read once, at mount) instead of a continuously-synced `selectedValue` prop — a `useState` initializer argument is ignored on every render after the first, so no amount of ancestor re-rendering can force a stale value back onto the wheel. The parent only receives the final selection via an `onValueChange(option)` callback, for its own use:
 
 ```tsx
 // Picker.tsx
@@ -186,9 +187,16 @@ function Picker<T extends ItemValue>(props: PickerProps<T>) {
   };
 
   return (
-    <RNPicker selectedValue={localValue as unknown as string} onValueChange={handleValueChange}>
+    <RNPicker
+      selectedValue={localValue as unknown as string}
+      onValueChange={handleValueChange}
+    >
       {options.map((option, index) => (
-        <RNPicker.Item key={index} label={option.label} value={option.value as unknown as string} />
+        <RNPicker.Item
+          key={index}
+          label={option.label}
+          value={option.value as unknown as string}
+        />
       ))}
     </RNPicker>
   );
@@ -198,4 +206,5 @@ function Picker<T extends ItemValue>(props: PickerProps<T>) {
 Caution for future changes: don't add a `useEffect(() => setLocalValue(intialValue), [intialValue])` to "keep it in sync" — that silently turns `intialValue` back into a continuously-controlled input and reintroduces the same bug. To legitimately reset the picker's value from outside, remount it with a changed `key` prop instead.
 
 **References**
+
 - https://github.com/react-native-picker/picker/issues/615

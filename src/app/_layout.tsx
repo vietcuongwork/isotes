@@ -1,6 +1,4 @@
-import {
-  BottomSheetModalProvider
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFonts } from "expo-font";
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 import * as SystemUI from "expo-system-ui";

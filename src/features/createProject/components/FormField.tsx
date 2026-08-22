@@ -35,8 +35,8 @@ const CustomTextInput = (props: CustomTextInputProps) => {
       value={value}
       placeholder={placeholder}
       placeholderTextColor="#666666"
-      className="p-4 rounded-xl bg-[#0e0e0e] border border-[#222222]
-                        font-outfit-regular leading-5 text-base text-[#f0f0f0]"
+      className="rounded-xl border border-[#222222] bg-[#0e0e0e] p-4
+                        font-outfit-regular text-base leading-5 text-[#f0f0f0]"
       cursorColor="#f5a623"
       selectionColor="#f5a623"
       {...textInputProps}

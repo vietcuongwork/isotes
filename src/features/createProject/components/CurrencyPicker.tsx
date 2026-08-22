@@ -1,9 +1,9 @@
 import { fontFamily } from "@/themes/typography";
 import {
-    BottomSheetBackdrop,
-    BottomSheetBackdropProps,
-    BottomSheetModal,
-    BottomSheetView,
+  BottomSheetBackdrop,
+  BottomSheetBackdropProps,
+  BottomSheetModal,
+  BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { forwardRef, useCallback } from "react";
 import { StyleSheet } from "react-native";

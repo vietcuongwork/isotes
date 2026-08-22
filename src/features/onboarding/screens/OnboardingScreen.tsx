@@ -1,6 +1,7 @@
+import Button from "@/components/Button";
 import { EXPO_ROUTER } from "@/navigation/route";
 import { useRouter } from "expo-router";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AvatarStack from "../components/AvatarStack";
 
@@ -14,13 +15,13 @@ export default function OnboardingScreen() {
     <SafeAreaView className="flex-1 bg-[#0a0a0a]">
       <View>
         {/* Header */}
-        <View className="p-2 border border-b-[#f5a623]/25">
+        <View className="border border-b-[#f5a623]/25 p-2">
           <Text className="font-fraunces text-xl text-[#f0f0f0]">Isotes</Text>
         </View>
         {/* Content */}
-        <View className="px-4 py-6 gap-6">
-          <View className="self-start py-1 px-2 border border-[#f5a623] bg-[#f5a623]/10 rounded-3xl">
-            <Text className="font-outfit-semibold text-sm text-[#f5a623] tracking-widest">
+        <View className="gap-6 px-4 py-6">
+          <View className="self-start rounded-3xl border border-[#f5a623] bg-[#f5a623]/10 px-2 py-1">
+            <Text className="font-outfit-semibold text-sm tracking-widest text-[#f5a623]">
               NO ACCOUNT NEEDED
             </Text>
           </View>
@@ -46,14 +47,10 @@ export default function OnboardingScreen() {
           </View>
 
           <View className="gap-6">
-            <TouchableOpacity
+            <Button
               onPress={handleNavigation}
-              className="p-4 items-center bg-[#f5a623] rounded-xl"
-            >
-              <Text className="font-outfit-bold text-lg text-[#0a0a0a] tracking-wider">
-                {"Create a project   →"}
-              </Text>
-            </TouchableOpacity>
+              buttonText={"Create a project   →"}
+            />
 
             <View>
               <Text className="font-outfit-regular text-lg text-[#555555]">
@@ -65,12 +62,12 @@ export default function OnboardingScreen() {
           </View>
 
           <View className="gap-4">
-            <Text className="font-outfit-semibold text-sm text-[#444444] tracking-widest">
+            <Text className="font-outfit-semibold text-sm tracking-widest text-[#444444]">
               HOW IT WORKS
             </Text>
 
             <View className="flex-row items-center gap-4">
-              <View className="w-8 h-8 items-center justify-center rounded-full border border-[#f5a623] bg-[#f5a623]/10 ">
+              <View className="h-8 w-8 items-center justify-center rounded-full border border-[#f5a623] bg-[#f5a623]/10 ">
                 <Text className="font-outfit-bold text-sm text-[#f5a623]">
                   1
                 </Text>
@@ -81,7 +78,7 @@ export default function OnboardingScreen() {
             </View>
 
             <View className="flex-row items-center gap-4">
-              <View className="w-8 h-8 items-center justify-center rounded-full border border-[#f5a623] bg-[#f5a623]/10 ">
+              <View className="h-8 w-8 items-center justify-center rounded-full border border-[#f5a623] bg-[#f5a623]/10 ">
                 <Text className="font-outfit-bold text-sm text-[#f5a623]">
                   2
                 </Text>
@@ -92,7 +89,7 @@ export default function OnboardingScreen() {
             </View>
 
             <View className="flex-row items-center gap-4">
-              <View className="w-8 h-8 items-center justify-center rounded-full border border-[#f5a623] bg-[#f5a623]/10 ">
+              <View className="h-8 w-8 items-center justify-center rounded-full border border-[#f5a623] bg-[#f5a623]/10 ">
                 <Text className="font-outfit-bold text-sm text-[#f5a623]">
                   3
                 </Text>
