@@ -3,7 +3,7 @@ import { ItemValue } from "@react-native-picker/picker/typings/Picker";
 import { useState } from "react";
 import { TextStyle } from "react-native";
 
-interface PickerOption<T extends ItemValue> {
+export interface PickerOption<T extends ItemValue> {
   label: string;
   value: T;
 }
@@ -19,10 +19,12 @@ export default function Picker<T extends ItemValue>(props: PickerProps<T>) {
   const { intialValue, onSelectionChange, options, itemStyle } = props;
   const [localValue, setLocalValue] = useState<T>(intialValue);
 
-  const handleValueChange = (value: string) => {
-    const selectedOption = options.find((option) => option.value === value);
+  const handleValueChange = (itemValue: string, _itemIndex: number) => {
+    const selectedOption = options.find((option) => option.value === itemValue);
     if (!selectedOption) return;
+    //NOTE - sync internal wheel state
     setLocalValue(selectedOption.value);
+    //NOTE - propagate selection to caller
     onSelectionChange(selectedOption);
   };
 

@@ -4,6 +4,7 @@ import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 import * as SystemUI from "expo-system-ui";
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { fonts } from "../../assets/fonts";
 import "../../global.css";
 
@@ -30,16 +31,18 @@ export default function RootLayout() {
   }
   return (
     <GestureHandlerRootView style={styles.gestureHandleRootView}>
-      <BottomSheetModalProvider>
-        <ThemeProvider value={AppTheme}>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: "#0a0a0a" },
-            }}
-          />
-        </ThemeProvider>
-      </BottomSheetModalProvider>
+      <KeyboardProvider>
+        <BottomSheetModalProvider>
+          <ThemeProvider value={AppTheme}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "#0a0a0a" },
+              }}
+            />
+          </ThemeProvider>
+        </BottomSheetModalProvider>
+      </KeyboardProvider>
     </GestureHandlerRootView>
   );
 }

@@ -1,18 +1,16 @@
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useRef, useState } from "react";
-import { View } from "react-native";
-import { CURRENCY_OPTIONS, CurrencyOption } from "../constants";
+import { Keyboard, View } from "react-native";
+import { useCreateProjectForm } from "../hooks/useCreateProjectForm";
 import CurrencyPicker from "./CurrencyPicker";
 import FormField from "./FormField";
 
 export default function CreateProjectForm() {
-  const currencyPickerRef = useRef<BottomSheetModal>(null);
-  const [selectedCurrency, setSelectedCurrency] = useState<CurrencyOption>(
-    CURRENCY_OPTIONS[0],
-  );
+  const { currencyPickerRef, selectedCurrency, handleCurrencyChange } =
+    useCreateProjectForm();
+
+  console.log(selectedCurrency);
 
   return (
-    <View className="gap-8">
+    <View className="gap-10">
       <FormField
         label="Project name"
         placeholder="Trip to Vegas"
@@ -26,7 +24,7 @@ export default function CreateProjectForm() {
       <FormField
         label="Default currency"
         placeholder="Optional"
-        value={selectedCurrency.value}
+        value={selectedCurrency.code}
         textInputProps={{
           editable: false,
           style: { pointerEvents: "none" },
@@ -34,6 +32,7 @@ export default function CreateProjectForm() {
         isTextInput={false}
         touchableOpacityProps={{
           onPress: () => {
+            Keyboard.dismiss();
             currencyPickerRef.current?.present();
           },
         }}
@@ -42,7 +41,7 @@ export default function CreateProjectForm() {
       <CurrencyPicker
         ref={currencyPickerRef}
         selectedCurrency={selectedCurrency}
-        onCurrencyChange={setSelectedCurrency}
+        onCurrencyChange={handleCurrencyChange}
       />
     </View>
   );

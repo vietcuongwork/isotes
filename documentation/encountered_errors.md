@@ -208,3 +208,77 @@ Caution for future changes: don't add a `useEffect(() => setLocalValue(intialVal
 **References**
 
 - https://github.com/react-native-picker/picker/issues/615
+
+---
+
+## `TouchableOpacity` inside `KeyboardAwareScrollView` needs two taps to fire while keyboard is open (2026-08-22)
+
+**Problem**
+After wrapping `CreateProjectScreen`'s content in `react-native-keyboard-controller`'s `KeyboardAwareScrollView`, tapping the "Default currency" field (a `TouchableOpacity` that calls `Keyboard.dismiss()` then presents a `BottomSheetModal`) while a text input still had focus only closed the keyboard — the bottom sheet didn't open. A second tap was required.
+
+**Explanation**
+`KeyboardAwareScrollView` (like plain `ScrollView`) defaults to `keyboardShouldPersistTaps="never"`: the first tap outside the currently focused `TextInput` is intercepted purely to dismiss the keyboard, and is not forwarded to whatever touchable is underneath. Only the second tap, with the keyboard already closed, reaches `TouchableOpacity`'s `onPress`.
+
+**Solution**
+Set `keyboardShouldPersistTaps="handled"` on the `KeyboardAwareScrollView` so taps on components with their own handler (e.g. `TouchableOpacity`) are forwarded immediately instead of being swallowed for dismissal first. Taps on truly empty space still dismiss the keyboard as before, so the usual "tap outside to close keyboard" UX is preserved:
+
+```tsx
+<KeyboardAwareScrollView keyboardShouldPersistTaps="handled" ...>
+```
+
+Keep the explicit `Keyboard.dismiss()` inside `onPress` — `"handled"` only forwards the tap, it doesn't dismiss the keyboard on its own, so without it the keyboard would stay open behind the bottom sheet.
+
+`keyboardShouldPersistTaps="always"` was considered but rejected: it disables tap-to-dismiss entirely, even on blank space, which would remove that convenience everywhere else on the screen.
+
+---
+
+## Generic `Picker`'s value type should stay primitive, not the full domain object (2026-08-22)
+
+**Problem**
+While reshaping currency data from a flat `{ label, value }` pair into a richer `Currency` type (`{ name, code, symbol }`), it wasn't obvious whether `src/features/createProject/components/Picker.tsx`'s generic `T extends ItemValue` should be instantiated with the whole `Currency` object as the wheel's `value`, instead of a primitive.
+
+**Explanation**
+`@react-native-picker/picker`'s bundled TS typings (`ItemValue = number | string | object`) suggest an object is fine. But the library's actual implementation is written in Flow, and every real platform file (`Picker.js`, `PickerIOS.ios.js`, `PickerAndroid.android.js`, `PickerMacOS.macos.js`) types `selectedValue` as `?(number | string)` — the shipped `.d.ts` is looser than what the library itself type-checks and tests. Worse, the row-matching logic on every platform is strict reference equality: `child.props.value === props.selectedValue`. For an object, that's identity comparison, not structural — it would only "happen to work" because `CURRENCY_OPTIONS` is a static module-level array, so the same object reference flows through every render. That's incidental to the data being static today, not a contract the library guarantees; any future change that produces a fresh object per render (fetching from an API, mapping/filtering the list) would silently break selection with no type error to catch it.
+
+**Solution**
+Keep `Picker<T extends ItemValue>` instantiated with a primitive (the currency's `code: string`), and do the `PickerOption<string>` ↔ `Currency` translation at the call site instead of inside the generic component:
+
+```ts
+const currencyOptions = CURRENCY_OPTIONS.map((c) => ({
+  label: `${c.name} (${c.code}) - ${c.symbol}`,
+  value: c.code,
+}));
+```
+
+This also keeps `Picker.tsx` fully decoupled from currency-specific shape — it stays reusable for any future picker, not just this one.
+
+**References**
+
+- https://github.com/react-native-picker/picker/blob/master/typings/Picker.d.ts
+- `node_modules/@react-native-picker/picker/js/PickerAndroid.android.js`, `PickerIOS.ios.js`, `PickerMacOS.macos.js`
+
+---
+
+## A hook should own both its state and the logic that transitions it (2026-08-22)
+
+**Problem**
+After extracting `selectedCurrency`/`setSelectedCurrency` into `useCreateProjectForm`, a translation handler (`PickerOption<string>` → `Currency`, via a `CURRENCY_OPTIONS.find`) was still sitting in `CurrencyPicker.tsx`, taking `onCurrencyChange` in as a prop and calling it once translated. It wasn't obvious this handler could just move.
+
+**Explanation**
+The handler existed purely to reshape data before handing it to a setter the hook already owned — it had nothing to do with `CurrencyPicker` being a component, it was currency-selection business logic. General principle: if a component's handler exists only to translate data before calling a function it received as a prop, and that prop function ultimately comes from a hook further up, lift the handler up into that hook instead of keeping it in the component. A hook should own both the state and the logic that transitions it, not just the state.
+
+**Solution**
+Move the translation into the hook, calling `setSelectedCurrency` directly instead of an injected `onCurrencyChange`:
+
+```ts
+// useCreateProjectForm.ts
+const handleCurrencySelectionChange = (option: PickerOption<string>) => {
+  const currency = CURRENCY_OPTIONS.find((c) => c.code === option.value);
+  if (!currency) return;
+  setSelectedCurrency(currency);
+};
+
+return { currencyPickerRef, selectedCurrency, handleCurrencySelectionChange };
+```
+
+This has a bonus effect: since the hook's returned handler now has exactly the shape `Picker`'s `onSelectionChange` expects, `CurrencyPicker` no longer needs its own adapter function at all — it becomes a straight reference pass-through the whole way down (`onCurrencyChange={handleCurrencySelectionChange}` → `<Picker onSelectionChange={onCurrencyChange} />`), one less indirection layer to reason about.

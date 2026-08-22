@@ -144,20 +144,19 @@ In Tailwind's `theme.fontFamily`, each entry can be either a single string or an
 
 ---
 
-## 9. Prettier config (`prettier.config.ts`) and Tailwind class sorting
+## 9. Prettier config (`prettier.config.cts`) and Tailwind class sorting
 
 Prettier config file extension decides the module system, independent of file content:
 
 - `.mts` — always ESM (`export default config;`), regardless of `package.json`.
 - `.cts` — always CommonJS (`module.exports = config;`), regardless of `package.json`.
-- `.ts` — ambiguous; follows the nearest `package.json`'s `"type"` field. This repo's `package.json` has no `"type"` field, which defaults to CommonJS — so `prettier.config.ts` must use `module.exports`, not `export default`.
+- `.ts` — in theory follows the nearest `package.json`'s `"type"` field (defaulting to CommonJS when absent, as in this repo). In practice, Prettier's config loader treated a bare `prettier.config.ts` as ESM anyway, so `module.exports` failed with `module is not defined in ES module scope`. Use the explicit `.cts` extension to force CommonJS unambiguously instead of relying on `.ts`.
 
-TypeScript config files require Node.js ≥ 22.6.0; Node < 24.3.0 additionally needs `--experimental-strip-types` to run Prettier. This repo's Node (v26.4.0) is past that cutoff, so no flag is needed.
-
-To get Tailwind class sorting (auto-sorts `className` strings into Tailwind's canonical order on format), register `prettier-plugin-tailwindcss` in `prettier.config.ts`:
+The import line matters too: `import { type Config } from "prettier"` is **not** fully erased by Node's native TS type-stripping inside a `.cts` file — it survives as a literal `import` statement, which CommonJS can't parse (`Cannot use import statement outside a module`). Use `import type { Config } from "prettier"` instead — a whole-statement type-only import, which Node's stripping removes entirely:
 
 ```ts
-import { type Config } from "prettier";
+// prettier.config.cts
+import type { Config } from "prettier";
 
 const config: Config = {
   plugins: ["prettier-plugin-tailwindcss"],
@@ -166,7 +165,20 @@ const config: Config = {
 module.exports = config;
 ```
 
----
+TypeScript config files require Node.js ≥ 22.6.0; Node < 24.3.0 additionally needs `--experimental-strip-types` to run Prettier. This repo's Node (v26.4.0) and VS Code's bundled extension-host Node (v24.18.1) are both past that cutoff, so no flag is needed either in the terminal or in the editor.
 
-https://prettier.io/docs/configuration#typescript-configuration-files
-https://tailwindcss.com/blog/automatic-class-sorting-with-prettier
+Editor setup, beyond the config file itself:
+
+- `.vscode/settings.json` needs `"editor.formatOnSave": true` and `"editor.defaultFormatter": "esbenp.prettier-vscode"` — neither is on by default.
+- The Prettier extension caches the resolved config file path per file; renaming `prettier.config.ts` → `.cts` requires **Developer: Reload Window** (Cmd+Shift+P) before the editor picks up the new file instead of silently falling back to an empty config.
+- `prettier.config.cts` itself needs `module`/`require` types: `pnpm add -D @types/node` (no `"types"` field is set in `tsconfig.json`, so it's picked up automatically). Additionally, `tsconfig.json`'s `include` only lists `**/*.ts`/`**/*.tsx` by default — add `**/*.cts` (and `**/*.mts`) so `prettier.config.cts` is part of the TS program at all; otherwise VS Code treats it as a loose inferred file and ignores installed `@types` regardless.
+
+Tailwind class sort order is Tailwind's internal CSS-generation order (layout → flexbox/grid → borders → backgrounds → spacing → typography → …), not an intuitive/alphabetical order — e.g. `p-4` legitimately sorts after `bg-[...]`. Verify against the actual installed plugin (`node -e` calling `prettier.resolveConfig` + `prettier.format`) rather than guessing, if a "wrong" order looks suspicious.
+
+**References**
+
+- https://prettier.io/docs/configuration#typescript-configuration-files
+- https://tailwindcss.com/blog/automatic-class-sorting-with-prettier
+
+
+---

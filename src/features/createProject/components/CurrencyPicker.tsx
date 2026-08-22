@@ -1,3 +1,4 @@
+import { Currency } from "@/features/createProject/types/TCreateProject";
 import { fontFamily } from "@/themes/typography";
 import {
   BottomSheetBackdrop,
@@ -7,17 +8,19 @@ import {
 } from "@gorhom/bottom-sheet";
 import { forwardRef, useCallback } from "react";
 import { StyleSheet } from "react-native";
-import { CURRENCY_OPTIONS, CurrencyOption } from "../constants";
-import Picker from "./Picker";
+import { useCreateProject } from "../hooks/useCurrencyPicker";
+import Picker, { PickerOption } from "./Picker";
 
 interface CurrencyPickerProps {
-  selectedCurrency: CurrencyOption;
-  onCurrencyChange: (option: CurrencyOption) => void;
+  selectedCurrency: Currency;
+  onCurrencyChange: (option: PickerOption<string>) => void;
 }
 
 const CurrencyPicker = forwardRef<BottomSheetModal, CurrencyPickerProps>(
   (props, ref) => {
     const { selectedCurrency, onCurrencyChange } = props;
+
+    const { currencyOptions } = useCreateProject();
 
     const renderBackDrop = useCallback(
       (props: BottomSheetBackdropProps) => (
@@ -41,8 +44,8 @@ const CurrencyPicker = forwardRef<BottomSheetModal, CurrencyPickerProps>(
       >
         <BottomSheetView>
           <Picker
-            intialValue={selectedCurrency.value}
-            options={CURRENCY_OPTIONS}
+            intialValue={selectedCurrency.code}
+            options={currencyOptions}
             onSelectionChange={onCurrencyChange}
             itemStyle={styles.pickerText}
           />
