@@ -282,3 +282,38 @@ return { currencyPickerRef, selectedCurrency, handleCurrencySelectionChange };
 ```
 
 This has a bonus effect: since the hook's returned handler now has exactly the shape `Picker`'s `onSelectionChange` expects, `CurrencyPicker` no longer needs its own adapter function at all — it becomes a straight reference pass-through the whole way down (`onCurrencyChange={handleCurrencySelectionChange}` → `<Picker onSelectionChange={onCurrencyChange} />`), one less indirection layer to reason about.
+
+---
+
+## Spreading `textInputProps` instead of passing it as a named prop swallowed `onChangeText`/`onBlur` (2026-08-24)
+
+**Problem**
+After wiring `react-hook-form`'s `Controller` around `FormField` for the `projectName` field, typing into the input showed each keystroke for an instant, then the field snapped back to `""`. `Controller`'s `field.onChange` never fired.
+
+**Explanation**
+`FormField` forwarded its `textInputProps` prop down to `CustomTextInput` by spreading it:
+
+```tsx
+<CustomTextInput
+  value={value}
+  placeholder={placeholder}
+  {...textInputProps}
+/>
+```
+
+`CustomTextInput`'s own prop type is `{ value, placeholder, textInputProps }` — it expects one prop literally named `textInputProps` holding an object. But `{...textInputProps}` doesn't pass that object through as-is; it unpacks the object's keys (`onChangeText`, `onBlur`) and re-attaches each one as its own flat, sibling prop on `<CustomTextInput>`. No prop named `textInputProps` ever reaches `CustomTextInput`, so its destructure `const { textInputProps } = props` resolved to `undefined`. Its own inner spread onto the real `<TextInput>` (`{...textInputProps}`) then spread nothing, so the actual `TextInput` never received `onChangeText`/`onBlur` — only `value`. A controlled `TextInput` with no change handler visually flashes the typed character, then React's next render re-forces it back to the unchanged `value` prop.
+
+General rule: `{...obj}` inlines an object's *keys* as individual props on whatever it's spread onto — it does not hand the object itself to a prop of the same name. To pass an object through intact as a single prop, it must be assigned explicitly: `propName={obj}`.
+
+The bug was invisible on the "Default currency" field because that field is wrapped in an outer `<View pointerEvents="none">` (see the `TouchableOpacity`/`TextInput` entry above) — that View already blocks all touch/focus to the `TextInput` beneath it, so the field's own `editable`/`style` never needed to reach the real input for the UI to behave correctly.
+
+**Solution**
+Pass `textInputProps` through as the named prop, not spread, in both branches of `FormField`:
+
+```tsx
+<CustomTextInput
+  value={value}
+  placeholder={placeholder}
+  textInputProps={textInputProps}
+/>
+```

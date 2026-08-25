@@ -1,3 +1,5 @@
+import { cn } from "@/utils/cn";
+import { CircleAlert } from "lucide-react-native";
 import {
   Text,
   TextInput,
@@ -11,6 +13,7 @@ interface CustomTextInputProps {
   value?: string;
   placeholder: string;
   textInputProps?: TextInputProps;
+  errorState?: boolean;
 }
 
 interface BaseFormFieldProps extends CustomTextInputProps {
@@ -29,18 +32,25 @@ interface TouchableOpacityVariant extends BaseFormFieldProps {
 type FormFieldProps = TextInputVariant | TouchableOpacityVariant;
 
 const CustomTextInput = (props: CustomTextInputProps) => {
-  const { value, placeholder, textInputProps } = props;
+  const { value, placeholder, textInputProps, errorState = false } = props;
   return (
-    <TextInput
-      value={value}
-      placeholder={placeholder}
-      placeholderTextColor="#666666"
-      className="rounded-xl border border-[#222222] bg-[#0e0e0e] p-4 
-      font-outfit-regular text-base leading-5 text-[#f0f0f0]"
-      cursorColor="#f5a623"
-      selectionColor="#f5a623"
-      {...textInputProps}
-    ></TextInput>
+    <View
+      className={cn(
+        "flex-row items-center justify-between rounded-xl border bg-[#0e0e0e] px-4",
+        errorState ? "border-[#e5484d]" : "border-[#222222]",
+      )}
+    >
+      <TextInput
+        value={value}
+        placeholder={placeholder}
+        placeholderTextColor="#666666"
+        className="flex-1 py-4 font-outfit-regular text-base leading-5 text-[#f0f0f0]"
+        cursorColor="#f5a623"
+        selectionColor="#f5a623"
+        {...textInputProps}
+      ></TextInput>
+      {errorState && <CircleAlert color="#e5484d" />}
+    </View>
   );
 };
 
@@ -55,7 +65,7 @@ export default function FormField(props: FormFieldProps) {
         <CustomTextInput
           value={value}
           placeholder={placeholder}
-          {...textInputProps}
+          textInputProps={textInputProps}
         />
       ) : (
         <TouchableOpacity activeOpacity={0.8} {...props.touchableOpacityProps}>
@@ -63,7 +73,7 @@ export default function FormField(props: FormFieldProps) {
             <CustomTextInput
               value={value}
               placeholder={placeholder}
-              {...textInputProps}
+              textInputProps={textInputProps}
             />
           </View>
         </TouchableOpacity>

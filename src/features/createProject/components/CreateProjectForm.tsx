@@ -1,47 +1,77 @@
+import { Controller } from "react-hook-form";
 import { Keyboard, View } from "react-native";
 import { useCreateProjectForm } from "../hooks/useCreateProjectForm";
 import CurrencyPicker from "./CurrencyPicker";
 import FormField from "./FormField";
 
 export default function CreateProjectForm() {
-  const { currencyPickerRef, selectedCurrency, handleCurrencyChange } =
+  const { currencyPickerRef, handleCurrencyChange, form } =
     useCreateProjectForm();
-
-  console.log(selectedCurrency);
+  const { control } = form;
 
   return (
     <View className="gap-10">
-      <FormField
-        label="Project name"
-        placeholder="Trip to Vegas"
-        isTextInput={true}
-      />
-      <FormField
-        label="Description"
-        placeholder="Optional"
-        isTextInput={true}
-      />
-      <FormField
-        label="Default currency"
-        placeholder="Optional"
-        value={selectedCurrency.code}
-        textInputProps={{
-          editable: false,
-          style: { pointerEvents: "none" },
-        }}
-        isTextInput={false}
-        touchableOpacityProps={{
-          onPress: () => {
-            Keyboard.dismiss();
-            currencyPickerRef.current?.present();
-          },
-        }}
+      <Controller
+        control={control}
+        name="projectName"
+        render={({
+          field: { value, onChange, onBlur },
+          fieldState: { error },
+        }) => (
+          <FormField
+            label="Project name"
+            placeholder="Trip to Vegas"
+            isTextInput={true}
+            value={value}
+            textInputProps={{
+              onChangeText: onChange,
+              onBlur: onBlur,
+            }}
+          />
+        )}
       />
 
-      <CurrencyPicker
-        ref={currencyPickerRef}
-        selectedCurrency={selectedCurrency}
-        onCurrencyChange={handleCurrencyChange}
+      <Controller
+        control={control}
+        name="description"
+        render={({ field: { value, onChange, onBlur } }) => (
+          <FormField
+            label="Description"
+            placeholder="Optional"
+            isTextInput={true}
+            value={value}
+            textInputProps={{
+              onChangeText: onChange,
+              onBlur: onBlur,
+            }}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="currency"
+        render={({ field: { value, onChange, onBlur } }) => (
+          <>
+            <FormField
+              label="Default currency"
+              placeholder="Optional"
+              value={value.code}
+              isTextInput={false}
+              touchableOpacityProps={{
+                onPress: () => {
+                  Keyboard.dismiss();
+                  currencyPickerRef.current?.present();
+                },
+              }}
+            />
+            <CurrencyPicker
+              ref={currencyPickerRef}
+              selectedCurrency={value}
+              onCurrencyChange={handleCurrencyChange}
+            />
+          </>
+        )}
       />
     </View>
   );
