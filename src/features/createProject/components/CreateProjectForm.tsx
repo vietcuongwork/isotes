@@ -1,13 +1,70 @@
-import { Controller } from "react-hook-form";
-import { Keyboard, View } from "react-native";
-import { useCreateProjectForm } from "../hooks/useCreateProjectForm";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { forwardRef, RefObject, useImperativeHandle, useRef } from "react";
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  useFormState,
+} from "react-hook-form";
+import { Keyboard, TextInput, View } from "react-native";
+import { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
+import { CreateProjectFormData } from "../validation/createProjectFormSchema";
 import CurrencyPicker from "./CurrencyPicker";
 import FormField from "./FormField";
+import { PickerOption } from "./Picker";
 
-export default function CreateProjectForm() {
-  const { currencyPickerRef, handleCurrencyChange, form } =
-    useCreateProjectForm();
-  const { control } = form;
+interface CreateProjectFormProps {
+  control: Control<CreateProjectFormData>;
+  currencyPickerRef: RefObject<BottomSheetModal | null>;
+  handleCurrencyChange: (option: PickerOption<string>) => void;
+  scrollViewRef: RefObject<KeyboardAwareScrollViewRef | null>;
+}
+export interface CreateProjectFormHandle {
+  focusFirstErrorField: (errors: FieldErrors<CreateProjectFormData>) => void;
+}
+
+type FocusableField = Exclude<keyof CreateProjectFormData, "currency">;
+
+const SCROLL_TOP_PADDING = 40;
+
+//NOTE - Currency excluded: it's a TouchableOpacity trigger, not a focusable TextInput,
+// so there's no ref to call .focus()/measureLayout() on.
+const FIELD_ORDER: FocusableField[] = ["projectName", "description"];
+
+const CreateProjectForm = forwardRef<
+  CreateProjectFormHandle,
+  CreateProjectFormProps
+>((props, ref) => {
+  const { control, currencyPickerRef, handleCurrencyChange, scrollViewRef } =
+    props;
+  const { submitCount } = useFormState({ control });
+
+  const projectNameRef = useRef<TextInput>(null);
+  const descriptionRef = useRef<TextInput>(null);
+  const fieldRefs = {
+    projectName: projectNameRef,
+    description: descriptionRef,
+  };
+
+  useImperativeHandle(ref, () => ({
+    focusFirstErrorField: (errors: FieldErrors<CreateProjectFormData>) => {
+      const firstErrorField = FIELD_ORDER.find((name) => errors[name]);
+      if (!firstErrorField) return;
+
+      const fieldRef = fieldRefs[firstErrorField];
+      fieldRef.current?.focus();
+
+      const nativeScrollRef = scrollViewRef.current?.getNativeScrollRef();
+      if (!nativeScrollRef) return;
+
+      fieldRef.current?.measureLayout(nativeScrollRef, (_x, y) => {
+        scrollViewRef.current?.scrollTo({
+          y: Math.max(y - SCROLL_TOP_PADDING, 0),
+          animated: true,
+        });
+      });
+    },
+  }));
 
   return (
     <View className="gap-10">
@@ -19,6 +76,7 @@ export default function CreateProjectForm() {
           fieldState: { error },
         }) => (
           <FormField
+            ref={projectNameRef}
             label="Project name"
             placeholder="Trip to Vegas"
             isTextInput={true}
@@ -27,6 +85,8 @@ export default function CreateProjectForm() {
               onChangeText: onChange,
               onBlur: onBlur,
             }}
+            error={error?.message}
+            shakeTrigger={submitCount}
           />
         )}
       />
@@ -36,6 +96,7 @@ export default function CreateProjectForm() {
         name="description"
         render={({ field: { value, onChange, onBlur } }) => (
           <FormField
+            ref={descriptionRef}
             label="Description"
             placeholder="Optional"
             isTextInput={true}
@@ -51,7 +112,7 @@ export default function CreateProjectForm() {
       <Controller
         control={control}
         name="currency"
-        render={({ field: { value, onChange, onBlur } }) => (
+        render={({ field: { value } }) => (
           <>
             <FormField
               label="Default currency"
@@ -75,4 +136,6 @@ export default function CreateProjectForm() {
       />
     </View>
   );
-}
+});
+
+export default CreateProjectForm;

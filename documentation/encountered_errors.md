@@ -317,3 +317,55 @@ Pass `textInputProps` through as the named prop, not spread, in both branches of
   textInputProps={textInputProps}
 />
 ```
+
+---
+
+## Split padding between the row wrapper and the `TextInput` by which one owns the concern (2026-08-24)
+
+**Problem**
+While moving `FormField`'s error icon inside the same bordered box as the `TextInput` (`flex-row justify-between`), it wasn't obvious why horizontal padding (`px`) should move to the new wrapping `View` while vertical padding (`py`) should stay on the `TextInput` itself, instead of moving both together.
+
+**Explanation**
+The two paddings serve different concerns, so they have different correct owners:
+
+`px` needs to apply symmetrically to *both* children (the input on the left, the icon on the right) relative to the shared border. If `px` stayed on the `TextInput` alone, only the text side would be inset from the border — the icon, as a separate sibling with no padding of its own, would sit flush against the border with no gap. Putting `px` on the row container gives both children the same inset in one place, instead of duplicating matching padding onto the icon too.
+
+`py` needs to stay on the `TextInput` because it defines the input's *interactive surface*, not just its visual spacing. Padding lives inside the element's own layout box, so with the original single-element `p-4`, tapping anywhere in that padded area focused the input and opened the keyboard. If `py` moved to the wrapping `View` instead, that vertical space would belong to the row container — which has no focus behavior — shrinking the actual tappable/focusable area down to roughly the text's line-height, a usability regression from what existed before.
+
+General rule: padding belongs wherever the property it's protecting actually lives — shared visual spacing between siblings belongs on their common parent; padding that also defines an element's own interactive/tap area belongs on that element, even after introducing a wrapper around it.
+
+**Solution**
+```tsx
+<View className="flex-row items-center justify-between rounded-xl border bg-[#0e0e0e] px-4">
+  <TextInput className="flex-1 py-4 ..." ... />
+  {errorState && <CircleAlert size={20} color="#e5484d" />}
+</View>
+```
+
+---
+
+## Prefer lifting form state up over exposing it through `useImperativeHandle` (2026-08-25)
+
+**Problem**
+`CreateProjectForm` owned its `useForm()` instance internally, but the submit `Button` lives in the parent `CreateProjectScreen` — there's no native `<form>` in React Native for submission to bubble through, so it wasn't obvious whether the parent should trigger submission via a `forwardRef`/`useImperativeHandle` exposing a `submit()` method on the child, or whether the form hook should move up to the screen and hand `control`/`handleSubmit` down as props instead.
+
+**Explanation**
+`useImperativeHandle` is designed for genuinely one-way, stateless imperative actions a parent can't otherwise reach (`.focus()`, `.scrollTo()`) — not for form submission, which is inherently two-way. The screen doesn't just need to *trigger* submit; it will also need to *read back* form state soon after (disable the button while `formState.isSubmitting`, show a spinner, react to validation errors). Each of those needs would mean bolting another method/property onto the imperative handle (`submit()`, then `isSubmitting()`, then `getErrors()`...), growing a parallel imperative channel to carry data that ordinary top-down props already carry for free.
+
+Lifting the `useCreateProjectForm()` call up to `CreateProjectScreen` and passing `control` down to `CreateProjectForm` (with `form.handleSubmit(onSubmit)` wired directly to the `Button`'s `onPress` in the screen) keeps everything flowing as ordinary props in both directions, with one form instance instead of risking two out-of-sync instances from calling the hook in two places. It also matches how `react-hook-form` is meant to be composed across component boundaries (the same shape `FormProvider`/`useFormContext` uses), and follows the same principle already applied elsewhere in this codebase — a hook owns its state and the logic that transitions it; components consume what it returns rather than reaching into each other imperatively.
+
+**Solution**
+Call `useCreateProjectForm()` in `CreateProjectScreen`, pass `control` (and `currencyPickerRef`/`handleCurrencyChange`) down to `CreateProjectForm` as props, and wire the button directly:
+
+```tsx
+// CreateProjectScreen.tsx
+const { currencyPickerRef, handleCurrencyChange, form } = useCreateProjectForm();
+
+<CreateProjectForm
+  control={form.control}
+  currencyPickerRef={currencyPickerRef}
+  handleCurrencyChange={handleCurrencyChange}
+/>
+
+<Button buttonText="Create" onPress={form.handleSubmit(onSubmit)} />
+```
