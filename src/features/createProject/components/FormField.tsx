@@ -1,6 +1,6 @@
 import { cn } from "@/utils/cn";
 import { CircleAlert } from "lucide-react-native";
-import { forwardRef, useEffect } from "react";
+import { forwardRef, useEffect, useRef } from "react";
 import {
   Text,
   TextInput,
@@ -44,8 +44,13 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
     const { value, placeholder, textInputProps, error, shakeTrigger } = props;
     const translateX = useSharedValue(0);
 
+    //NOTE - Read via ref (not the `error` dep) so a submit re-fires the shake,
+    // but revalidation-on-change while typing (RHF's reValidateMode) doesn't.
+    const errorRef = useRef<string>(error);
+    errorRef.current = error;
+
     useEffect(() => {
-      if (!error) return;
+      if (!errorRef.current) return;
       translateX.value = withSequence(
         withTiming(-10, { duration: 50 }),
         withTiming(10, { duration: 50 }),
@@ -55,7 +60,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
         withTiming(4, { duration: 50 }),
         withTiming(0, { duration: 50 }),
       );
-    }, [error, shakeTrigger]);
+    }, [shakeTrigger]);
 
     const shakeStyle = useAnimatedStyle(() => ({
       transform: [{ translateX: translateX.value }],

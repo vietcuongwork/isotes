@@ -1,9 +1,11 @@
+import { mergeRefs } from "@/utils/utils";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { forwardRef, RefObject, useImperativeHandle, useRef } from "react";
 import {
   Control,
   Controller,
   FieldErrors,
+  UseFormReturn,
   useFormState,
 } from "react-hook-form";
 import { Keyboard, TextInput, View } from "react-native";
@@ -14,6 +16,7 @@ import FormField from "./FormField";
 import { PickerOption } from "./Picker";
 
 interface CreateProjectFormProps {
+  form: UseFormReturn<CreateProjectFormData>;
   control: Control<CreateProjectFormData>;
   currencyPickerRef: RefObject<BottomSheetModal | null>;
   handleCurrencyChange: (option: PickerOption<string>) => void;
@@ -35,8 +38,13 @@ const CreateProjectForm = forwardRef<
   CreateProjectFormHandle,
   CreateProjectFormProps
 >((props, ref) => {
-  const { control, currencyPickerRef, handleCurrencyChange, scrollViewRef } =
-    props;
+  const {
+    form,
+    control,
+    currencyPickerRef,
+    handleCurrencyChange,
+    scrollViewRef,
+  } = props;
   const { submitCount } = useFormState({ control });
 
   const projectNameRef = useRef<TextInput>(null);
@@ -72,11 +80,11 @@ const CreateProjectForm = forwardRef<
         control={control}
         name="projectName"
         render={({
-          field: { value, onChange, onBlur },
+          field: { value, onChange, onBlur, ref: rhfRef },
           fieldState: { error },
         }) => (
           <FormField
-            ref={projectNameRef}
+            ref={mergeRefs(projectNameRef, rhfRef)}
             label="Project name"
             placeholder="Trip to Vegas"
             isTextInput={true}
@@ -84,6 +92,12 @@ const CreateProjectForm = forwardRef<
             textInputProps={{
               onChangeText: onChange,
               onBlur: onBlur,
+              returnKeyType: "next",
+              submitBehavior: "submit",
+              onSubmitEditing: () => {
+                console.log("obSubmitEditing");
+                form.setFocus("description");
+              },
             }}
             error={error?.message}
             shakeTrigger={submitCount}
@@ -94,9 +108,9 @@ const CreateProjectForm = forwardRef<
       <Controller
         control={control}
         name="description"
-        render={({ field: { value, onChange, onBlur } }) => (
+        render={({ field: { value, onChange, onBlur, ref: rhfRef } }) => (
           <FormField
-            ref={descriptionRef}
+            ref={mergeRefs(descriptionRef, rhfRef)}
             label="Description"
             placeholder="Optional"
             isTextInput={true}
@@ -104,6 +118,12 @@ const CreateProjectForm = forwardRef<
             textInputProps={{
               onChangeText: onChange,
               onBlur: onBlur,
+              returnKeyType: "next",
+              submitBehavior: "submit",
+              onSubmitEditing: () => {
+                Keyboard.dismiss();
+                currencyPickerRef.current?.present();
+              },
             }}
           />
         )}

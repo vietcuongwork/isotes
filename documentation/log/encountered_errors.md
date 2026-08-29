@@ -369,3 +369,155 @@ const { currencyPickerRef, handleCurrencyChange, form } = useCreateProjectForm()
 
 <Button buttonText="Create" onPress={form.handleSubmit(onSubmit)} />
 ```
+
+---
+
+## Bracket notation is required for a dynamic property key (2026-08-26)
+
+**Problem**
+Used `obj[name]` where `name` is a variable holding a key. Unclear why this isn't `obj?.name`, or whether the result is an array.
+
+**Explanation**
+Dot notation only accesses a hardcoded, literal property name. Bracket notation evaluates the expression inside first and uses its runtime value as the key — the only way to look up a property whose name is stored in a variable. The result's type/shape is just whatever that property normally holds; using bracket notation doesn't make it an array.
+
+**Solution**
+Use bracket notation (`obj[variableKey]`) for dynamic/variable keys; reserve dot notation for known literal keys.
+
+---
+
+## `forwardRef` needs a call expression, so it can't stay a `function` declaration (2026-08-28)
+
+**Problem**
+Wanted to keep `export default function Component() {}` while also forwarding a ref, instead of switching to `const`.
+
+**Explanation**
+A plain function component only ever receives `(props)` — React never passes a second `ref` argument to it. To opt into receiving `ref`, the render function must be wrapped in the `forwardRef(...)` HOC, which is a call *expression*. A `function` declaration's syntax has no room for wrapping it in a call, so the wrapped result has to be assigned to something — typically a `const` — instead.
+
+**Solution**
+Either assign the call to a `const` and `export default` it separately, or inline it: `export default forwardRef(function Name(props, ref) {...})`.
+
+---
+
+## Anonymous function passed to `forwardRef`/`memo` shows no name in DevTools (2026-08-28)
+
+**Problem**
+A `forwardRef((props, ref) => {...})` component appears unlabeled (e.g. just "ForwardRef") in React DevTools, unlike a normal named component.
+
+**Explanation**
+DevTools labels a component using its `displayName`, falling back to the render function's `.name`. JS only infers a function's `.name` when it's the direct initializer of a variable/property — not when it's passed as an argument to a call like `forwardRef(...)`. So an arrow function passed inline has `.name === ""`. A *named* function expression carries its own name regardless of where it's passed, so using one avoids the problem without setting `displayName` manually.
+
+**Solution**
+```tsx
+forwardRef(function ComponentName(props, ref) {...}) // named → shows automatically
+forwardRef((props, ref) => {...})                    // anonymous → needs displayName, or stays unlabeled
+```
+
+---
+
+## A default import can't fail with "module has no exported member" (2026-08-28)
+
+**Problem**
+Unsure whether `import Whatever from "./file"` can ever error the way a named import does when the name doesn't exist.
+
+**Explanation**
+A named import (`import { X }`) asks the module for a property literally called `X` — if no such export exists, that's the "has no exported member" error. A default import doesn't reference any name at all; it just binds to whatever the module's single default export is, under any local name the importer picks. So renaming the local binding never causes that error. The only related failure is different: if the module has *no* default export, TS reports "module has no default export" (or, depending on interop settings, the binding is `undefined` at runtime) — that's a distinct check from named-export lookup.
+
+**Solution**
+N/A — awareness note. Default imports are exempt from named-export-mismatch errors by construction.
+
+---
+
+## A ref is a handle to something already rendered, not a query/selector (2026-08-28)
+
+**Problem**
+Unclear whether reading `ref.current` (and calling a method like `.measureLayout()` on it) is conceptually similar to a DOM-style selector.
+
+**Explanation**
+Similar in spirit — both give an imperative handle to something already on screen, so you can call methods on it directly instead of going through props/re-render. But the mechanism differs: a selector *searches* a tree from anywhere, by criteria, at any time. A ref is *wired explicitly* at one JSX call site (`ref={x}`) and only resolves once that specific element mounts — it can't be looked up from elsewhere.
+
+Separately: methods like `measure`/`measureLayout` only work when `ref.current` ends up pointing at an actual host/native-backed view, not a composite/custom component. This still works through custom wrapper components as long as every layer forwards the ref straight through (`forwardRef` with no `useImperativeHandle` override) until it reaches a real host element — the ref ends up pointing at that host element itself, not at any of the wrapping components.
+
+**Solution**
+N/A — conceptual note. When `measureLayout`/`measure` don't seem to work, check whether some layer in the ref-forwarding chain substitutes a custom object via `useImperativeHandle` instead of forwarding straight through to the host element.
+
+---
+
+## `forwardRef<T, P>`'s first type argument is "whatever `ref.current` will be," not "the component" (2026-08-28)
+
+**Problem**
+Unsure what the first generic argument to `forwardRef<T, P>` should be, and why it's sometimes a host/library component type and sometimes a custom "Handle" interface.
+
+**Explanation**
+`T` is the type of the value `ref.current` will actually hold at runtime — not the component itself. Two cases:
+- No `useImperativeHandle` (pure pass-through): the ref is forwarded straight down to a real element, so `ref.current` ends up being that element's instance — `T` is that element's type.
+- With `useImperativeHandle`: the hook replaces whatever `ref.current` would naturally be with a custom object built by hand. `T` must match that object's shape exactly (TS enforces this).
+
+The "`Handle`" naming (e.g. `ComponentNameHandle`) is just a convention for the interface describing that custom object, paired with a "`Props`" interface for the component's normal props — no special behavior, purely a naming pattern.
+
+**Solution**
+Ask "what will `ref.current` actually be at runtime?" — forward-through target's type, or the object literal returned from `useImperativeHandle`'s factory — and use that as `T`.
+
+---
+
+## `useImperativeHandle` is a curated menu for what a ref is allowed to trigger (2026-08-28)
+
+**Problem**
+Wanted to confirm the mental model: a ref lets a parent reach into a child, and `useImperativeHandle` restricts/defines what the parent can actually do through it — as opposed to the normal callback-prop pattern used for a child notifying a parent.
+
+**Explanation**
+Confirmed, with one nuance: a ref isn't "the child handing control to the parent" — it's the parent reaching down and writing into (or reading from) a box (`{ current: T }`) it owns, which `forwardRef` allows to pass through a component that wouldn't otherwise accept `ref` as a prop. Without `useImperativeHandle`, whatever the ref is forwarded to (often a raw native instance) is fully exposed. `useImperativeHandle` intercepts that and substitutes a custom object instead — an encapsulation boundary, listing only the operations the child chooses to allow from outside.
+
+This is a separate channel from normal props: child→parent communication (child notifies parent something happened) uses ordinary callback props, flowing with the normal render cycle. Parent→child imperative commands (focus a field, scroll, open a sheet — things outside the normal render/props flow) use refs + `useImperativeHandle`. A component that appears to have "built-in" imperative methods (e.g. a modal's `.present()`) still uses this same pattern internally — it's just implemented inside the library rather than authored by the consumer.
+
+**Solution**
+N/A — conceptual note.
+
+---
+
+## A wrapper library's ref can resolve to the wrapped library's instance, not a custom object (2026-08-28)
+
+**Problem**
+`scrollViewRef.current?.getNativeScrollRef()` (on a `react-native-keyboard-controller` `KeyboardAwareScrollView` ref) looked like it should return some separate "native scroll ref" distinct from `scrollViewRef` itself — unclear how the two relate, and `getNativeScrollRef` isn't listed on React Native's own `ScrollView` docs page.
+
+**Explanation**
+Traced via the installed package's actual source/types (`node_modules/<pkg>/lib/.../types.d.ts` and the compiled `.js`), not the docs site. `KeyboardAwareScrollViewRef` is typed as `{ assureFocusedInputVisible } & ComponentRef<typeof ScrollView>`, and the library's own `useImperativeHandle` confirms it: it grabs its *internal* `ScrollView` ref, bolts one extra method onto it, and returns that same instance — it does not construct a separate custom handle object. So `scrollViewRef.current` (from the wrapper) already *is* the real underlying `ScrollView` instance, with every one of `ScrollView`'s own instance methods available directly, including `getNativeScrollRef()`.
+
+`getNativeScrollRef()` itself belongs to React Native's `ScrollView`, not the wrapper library — `ScrollView` is itself a composite component internally, so it exposes this as its own method to reach the true native host view underneath. It doesn't appear on the public docs page because the docs site documents a curated/stable subset of the API, not the full type declaration shipped in the package.
+
+**Solution**
+When a method isn't on the official docs page but the types suggest it exists, check the installed package's own `.d.ts` files and (if needed) its compiled JS source directly — `node_modules/<package>/**/*.d.ts` — rather than assuming the docs page is exhaustive.
+
+---
+
+## Two independent consumers needed the same native ref, but a JSX element only takes one `ref` (2026-08-28)
+
+**Problem**
+`CreateProjectForm.tsx`'s `projectName`/`description` fields already had their own manual refs (`projectNameRef`, `descriptionRef`) for scroll-to-error (`measureLayout`, see the "ref is a handle" entry above). To make `react-hook-form`'s `form.setFocus("description")` work for auto-advancing focus on submit, RHF also needs its own `field.ref` (from `Controller`'s render prop) attached to the same native `TextInput` — but a single JSX element can only be given one `ref` prop.
+
+**Explanation**
+Passing only `field.ref` would make `setFocus` work but leave `projectNameRef.current` permanently `null` (nothing writes to it anymore), breaking scroll-to-error. Passing only the manual ref (the prior state) left RHF's internal field registry with no ref for that field, so `setFocus` silently did nothing. Confirmed via RHF's own types (`node_modules/react-hook-form/dist/types/controller.d.ts`): `ControllerRenderProps.ref` is typed `RefCallBack`, documented `// optional for focus management` — i.e. it exists specifically so RHF can register the real input for things like `setFocus`. Since `FormField` forwards whatever single ref it's given straight through to the native `TextInput` (see the "forwardRef pass-through" entries above), the fix isn't about the forwarding chain — it's that two separate owners (RHF's registry, this component's own scroll logic) each need to observe the same instance, which one `ref` slot can't satisfy on its own.
+
+**Solution**
+Fan one native instance out to both refs with a small merge-refs utility (`src/utils/utils.ts`), handling both ref shapes (`RefCallBack`s are functions; manual refs are objects with `.current`):
+
+```tsx
+// utils.ts
+export function mergeRefs<T>(...refs: (React.Ref<T> | undefined)[]) {
+  return (node: T) => {
+    refs.forEach((ref) => {
+      if (!ref) return;
+      if (typeof ref === "function") ref(node);
+      else (ref as React.RefObject<T>).current = node;
+    });
+  };
+}
+```
+
+```tsx
+// CreateProjectForm.tsx
+render={({ field: { value, onChange, onBlur, ref: rhfRef } }) => (
+  <FormField ref={mergeRefs(projectNameRef, rhfRef)} ... />
+)}
+```
+
+Note: use `React.RefObject<T>` here, not `React.MutableRefObject<T>` — in React 19's types the latter is deprecated in favor of the former, which now has a mutable (non-`readonly`) `current`.

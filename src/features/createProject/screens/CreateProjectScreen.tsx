@@ -21,7 +21,7 @@ export default function CreateProjectScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#0a0a0a]">
       <View>
-        {/* Header */}  
+        {/* Header */}
         <View className="border border-b-[#f5a623]/25 p-2">
           <Text className="font-fraunces text-xl text-[#f0f0f0]">Isotes</Text>
         </View>
@@ -44,6 +44,7 @@ export default function CreateProjectScreen() {
             {/* Form */}
             <CreateProjectForm
               ref={formRef}
+              form={form}
               control={control}
               currencyPickerRef={currencyPickerRef}
               handleCurrencyChange={handleCurrencyChange}
