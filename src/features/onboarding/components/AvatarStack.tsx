@@ -14,10 +14,10 @@ type AvatarData = {
 };
 
 const avatars: AvatarData[] = [
-  { index: 0, label: "J", bg: "bg-blue-500" },
-  { index: 1, label: "M", bg: "bg-orange-400" },
-  { index: 2, label: "T", bg: "bg-purple-400" },
-  { index: 3, label: "S", bg: "bg-pink-500" },
+  { index: 0, label: "J", bg: "bg-orange-400" },
+  { index: 1, label: "M", bg: "bg-green-400" },
+  { index: 2, label: "T", bg: "bg-red-400" },
+  { index: 3, label: "S", bg: "bg-orange-200" },
 ];
 
 const AVATAR_STAGGER = 130;
@@ -48,14 +48,19 @@ function AnimatedAvatar(props: AvatarData) {
   }, []);
 
   return (
-    <Animated.View
-      style={animatedStyle}
-      className={`h-10 w-10 items-center justify-center rounded-full border-2 border-[#0a0a0a] ${bg} ${
-        index === 0 ? "" : "-ml-2"
-      }`}
+    // ring wrapper (static)
+    <View
+      className={`bg-grey-900 rounded-full p-0.5 ${index === 0 ? "" : "-ml-2"}`}
     >
-      <Text className="font-outfit-bold text-xs text-[#0a0a0a]">{label}</Text>
-    </Animated.View>
+      <Animated.View
+        style={animatedStyle}
+        className={`rounded-pill h-7 w-7 items-center justify-center overflow-hidden ${bg}`}
+      >
+        <Text className="text-grey-900 text-initial text-center font-outfit-semibold leading-5">
+          {label}
+        </Text>
+      </Animated.View>
+    </View>
   );
 }
 
@@ -74,22 +79,22 @@ export default function AvatarStack() {
     );
   }, []);
 
-  const captionStyle = useAnimatedStyle(() => ({
-    opacity: captionOpacity.value,
-    transform: [{ translateY: captionTranslate.value }],
-  }));
+  // const captionStyle = useAnimatedStyle(() => ({
+  //   opacity: captionOpacity.value,
+  //   transform: [{ translateY: captionTranslate.value }],
+  // }));
 
   return (
-    <View className="flex-row items-center bg-[#0a0a0a]">
+    <View className="bg-grey-900 flex-row items-center">
       {avatars.map((a, i) => (
         <AnimatedAvatar key={`${i}-${a.label}`} {...a} />
       ))}
-      <Animated.Text
+      {/* <Animated.Text
         style={captionStyle}
         className="ml-4 font-outfit-regular text-base text-[#555555]"
       >
         Thousands of groups use SplitLite
-      </Animated.Text>
+      </Animated.Text> */}
     </View>
   );
 }

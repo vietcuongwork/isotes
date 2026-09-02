@@ -1,3 +1,4 @@
+import { useDatabaseMigrations, useStudio } from "@/db/client";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFonts } from "expo-font";
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
@@ -26,7 +27,11 @@ const AppTheme = {
 
 export default function RootLayout() {
   const [fontLoaded] = useFonts(fonts);
-  if (!fontLoaded) {
+  const { success: migrationReady, error: migrationError } =
+    useDatabaseMigrations();
+  useStudio();
+
+  if (!fontLoaded || !migrationReady) {
     return null;
   }
   return (

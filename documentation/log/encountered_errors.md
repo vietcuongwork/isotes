@@ -521,3 +521,39 @@ render={({ field: { value, onChange, onBlur, ref: rhfRef } }) => (
 ```
 
 Note: use `React.RefObject<T>` here, not `React.MutableRefObject<T>` — in React 19's types the latter is deprecated in favor of the former, which now has a mutable (non-`readonly`) `current`.
+
+---
+
+## `useFocusEffect` needs its callback wrapped in `useCallback` (2026-08-31)
+
+**Problem**
+Unclear why a focus-effect hook needs its callback memoized instead of just passing an inline arrow function, the way a plain effect hook's callback is usually written inline.
+
+**Explanation**
+A focus-effect hook re-runs its callback both on real focus events and whenever the callback's own function reference changes, since it manages its own internal effect keyed on that reference. An inline arrow function is a brand-new reference on every render, so passing one directly causes the hook to treat every re-render as a reason to re-subscribe. Wrapping the callback in `useCallback` with an empty dependency array keeps the same function reference across renders, so the hook only fires on actual focus/unfocus events, not on unrelated re-renders.
+
+**Solution**
+```ts
+useFocusEffect(
+  useCallback(() => {
+    doSomething();
+  }, []),
+);
+```
+
+---
+
+## Passing a setter directly to `.then()` instead of wrapping it in an arrow function (2026-08-31)
+
+**Problem**
+Unclear why `promise.then(setState)` works, when it seems like it should need to be written as `promise.then((result) => setState(result))`.
+
+**Explanation**
+`.then(callback)` invokes `callback` with the promise's resolved value as its single argument. A state setter function already accepts exactly one argument — the new value — and does nothing else. So passing the setter itself as the callback is equivalent to wrapping it in an arrow function that just forwards its argument; the arrow function would be redundant here. This shortcut only applies when the callback needs zero transformation of the resolved value — if the value needs to be reshaped first, an explicit arrow function is required to do the transformation before calling the setter.
+
+**Solution**
+```ts
+promise.then(setState);
+// equivalent to:
+promise.then((result) => setState(result));
+```

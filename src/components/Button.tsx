@@ -16,7 +16,7 @@ export default function Button(props: ButtonProps) {
     <View>
       <TouchableOpacity
         onPress={onPress}
-        className="items-center rounded-xl bg-[#f5a623] p-4"
+        className="rounded-btn bg-grey-50 items-center py-4"
         {...touchableOpacityProps}
       >
         <Text className="font-outfit-bold text-lg tracking-wider text-[#0a0a0a]">

@@ -1,6 +1,7 @@
+import { colors } from "@/themes/color";
 import { cn } from "@/utils/cn";
 import { CircleAlert } from "lucide-react-native";
-import { forwardRef, useEffect, useRef } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import {
   Text,
   TextInput,
@@ -42,6 +43,9 @@ type FormFieldProps = TextInputVariant | TouchableOpacityVariant;
 const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
   (props, ref) => {
     const { value, placeholder, textInputProps, error, shakeTrigger } = props;
+
+    const [isFocused, setIsFocused] = useState<boolean>(false);
+
     const translateX = useSharedValue(0);
 
     //NOTE - Read via ref (not the `error` dep) so a submit re-fires the shake,
@@ -70,8 +74,12 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
       <Animated.View style={shakeStyle}>
         <View
           className={cn(
-            "flex-row items-center justify-between rounded-xl border bg-[#0e0e0e] px-4",
-            error ? "border-[#e5484d]" : "border-[#222222]",
+            "bg-grey-925 rounded-row flex-row items-center justify-between border px-4",
+            error
+              ? "border-red-400"
+              : isFocused
+                ? "border-orange-400"
+                : "border-grey-815",
           )}
         >
           <TextInput
@@ -79,10 +87,21 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
             value={value}
             placeholder={placeholder}
             placeholderTextColor="#666666"
-            className="flex-1 py-4 font-outfit-regular text-base leading-5 text-[#f0f0f0]"
-            cursorColor="#f5a623"
-            selectionColor="#f5a623"
+            className="text-bodyr text-grey-50 flex-1 py-4 font-outfit-regular leading-5"
+            cursorColor={colors.orange[400]}
+            selectionColor={colors.orange[400]}
             {...textInputProps}
+            //NOTE - Chain, don't replace: textInputProps.onBlur is RHF's validation
+            // trigger. Declared after the spread so local focus state still wins.
+
+            onFocus={(e) => {
+              setIsFocused(true);
+              textInputProps?.onFocus?.(e);
+            }}
+            onBlur={(e) => {
+              setIsFocused(false);
+              textInputProps?.onBlur?.(e);
+            }}
           ></TextInput>
           {error && <CircleAlert color="#e5484d" />}
         </View>
@@ -96,7 +115,7 @@ const FormField = forwardRef<TextInput, FormFieldProps>((props, ref) => {
     props;
   return (
     <View className="gap-2">
-      <Text className="font-outfit-regular text-base text-[#888888]">
+      <Text className="font-outfit-medium text-label text-grey-200">
         {label}
       </Text>
       {props.isTextInput ? (

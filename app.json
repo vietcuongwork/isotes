@@ -45,7 +45,8 @@
             "./assets/fonts/Outfit-Bold.ttf"
           ]
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true,

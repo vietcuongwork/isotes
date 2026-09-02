@@ -75,7 +75,7 @@ const CreateProjectForm = forwardRef<
   }));
 
   return (
-    <View className="gap-10">
+    <View className="gap-6 border border-red-500 px-5 pt-8">
       <Controller
         control={control}
         name="projectName"

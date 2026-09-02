@@ -1,6 +1,8 @@
 import Button from "@/components/Button";
 import { useCreateProjectScreen } from "@/features/createProject/hooks/useCreateProjectScreen";
-import { Text, View } from "react-native";
+import { colors } from "@/themes/color";
+import { MoveLeft } from "lucide-react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CreateProjectForm from "../components/CreateProjectForm";
@@ -14,6 +16,7 @@ export default function CreateProjectScreen() {
     scrollViewRef,
     formRef,
     onInvalid,
+    onBack,
   } = useCreateProjectScreen();
 
   const { control, handleSubmit, formState } = form;
@@ -22,8 +25,14 @@ export default function CreateProjectScreen() {
     <SafeAreaView className="flex-1 bg-[#0a0a0a]">
       <View>
         {/* Header */}
-        <View className="border border-b-[#f5a623]/25 p-2">
-          <Text className="font-fraunces text-xl text-[#f0f0f0]">Isotes</Text>
+        <View className="border-grey-825 relative flex-row items-center border-b px-5 py-3.5">
+          <TouchableOpacity onPress={onBack} className="z-10">
+            <MoveLeft color={colors.grey[200]} size={24} />
+          </TouchableOpacity>
+
+          <Text className="text-button text-grey-50 font-outfit-medium absolute inset-x-0 text-center">
+            New Trip
+          </Text>
         </View>
 
         <KeyboardAwareScrollView
@@ -31,13 +40,13 @@ export default function CreateProjectScreen() {
           ref={scrollViewRef}
         >
           {/* Content */}
-          <View className="gap-16 px-4 py-6">
-            <View className="gap-4">
-              <Text className="font-fraunces text-4xl text-[#f0f0f0]">
+          <View>
+            <View className="border border-red-500 px-5 pt-8">
+              <Text className="font-outfit-light text-display text-grey-50">
                 Create a new split
               </Text>
-              <Text className="font-outfit-regular text-base text-[#555555]">
-                Don't worry, you can edit details later.
+              <Text className="text-body text-grey-200 font-outfit-regular">
+                You can change any of this later.
               </Text>
             </View>
 

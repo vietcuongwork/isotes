@@ -1,106 +1,109 @@
 import Button from "@/components/Button";
+import Header from "@/components/Header";
 import { EXPO_ROUTER } from "@/navigation/route";
+import { colors } from "@/themes/color";
 import { useRouter } from "expo-router";
-import { Text, View } from "react-native";
+import { Link2 } from "lucide-react-native";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AvatarStack from "../components/AvatarStack";
+import ProjectList from "../components/ProjectList";
+import { HOW_IT_WORKS_STEPS } from "../constants";
 
+interface StepListItemProps {
+  index: number;
+  label: string;
+}
+const StepListItem = (props: StepListItemProps) => {
+  const { label, index } = props;
+  return (
+    <View className="flex-row items-center gap-4">
+      <View className="rounded-pill h-9 w-9 items-center justify-center border border-orange-700 bg-orange-800">
+        <Text className="font-outfit-medium text-meta text-orange-400">
+          {index}
+        </Text>
+      </View>
+      <Text className="text-body text-grey-200 font-outfit-regular">
+        {label}
+      </Text>
+    </View>
+  );
+};
 export default function OnboardingScreen() {
   const router = useRouter();
 
   const handleNavigation = () => {
     router.push(EXPO_ROUTER.CREATE_PROJECT);
   };
+
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0a0a]">
-      <View>
+    <SafeAreaView className="bg-grey-975 flex-1">
+      <ScrollView>
         {/* Header */}
-        <View className="border border-b-[#f5a623]/25 p-2">
-          <Text className="font-fraunces text-xl text-[#f0f0f0]">Isotes</Text>
-        </View>
+        <Header />
         {/* Content */}
-        <View className="gap-6 px-4 py-6">
-          <View className="self-start rounded-3xl border border-[#f5a623] bg-[#f5a623]/10 px-2 py-1">
-            <Text className="font-outfit-semibold text-sm tracking-widest text-[#f5a623]">
-              NO ACCOUNT NEEDED
-            </Text>
-          </View>
-
-          <View className="gap-2">
-            <Text className="font-fraunces text-6xl text-[#f0f0f0]">Split</Text>
-            <Text className="font-fraunces text-6xl text-[#f5a623]">
-              Travel
-            </Text>
-            <Text className="font-fraunces text-6xl text-[#f5a623]">
-              expenses
-            </Text>
-            <Text className="font-fraunces text-6xl text-[#f0f0f0]">
-              in Minutes.
-            </Text>
-          </View>
-
-          <View className="max-w-[80%]">
-            <Text className="font-outfit-regular text-lg text-[#666666]">
-              Tired of splitting bills? Create a project, add expenses, and
-              we'll figure out who owes what.
-            </Text>
-          </View>
-
-          <View className="gap-6">
-            <Button
-              onPress={handleNavigation}
-              buttonText={"Create a project   →"}
-            />
-
-            <View>
-              <Text className="font-outfit-regular text-lg text-[#555555]">
-                Learn more →
+        <View>
+          <View className="gap-4 px-5 pt-8">
+            {/* Hero block */}
+            <View className="rounded-pill self-start border border-orange-700 bg-orange-800 px-4 py-1.5">
+              <Text className="font-outfit-medium text-micro text-orange-400">
+                NO ACCOUNT NEEDED
               </Text>
             </View>
 
-            <AvatarStack />
+            <View className="pt-2">
+              <Text className="font-outfit-light text-hero text-grey-50">
+                Split
+              </Text>
+              <Text className="font-outfit-light text-hero text-orange-400">
+                Travel
+              </Text>
+              <Text className="font-outfit-light text-hero text-orange-400">
+                expenses
+              </Text>
+              <Text className="font-outfit-light text-hero text-grey-50">
+                in Minutes.
+              </Text>
+            </View>
+
+            <View className="max-w-[80%]">
+              <Text className="text-body text-grey-200 font-outfit-regular">
+                Start a trip, add expenses as they happen, and we'll work out
+                who owes what.
+              </Text>
+            </View>
           </View>
 
-          <View className="gap-4">
-            <Text className="font-outfit-semibold text-sm tracking-widest text-[#444444]">
+          {/* Button block */}
+          <View className="gap-4 px-5 pt-8">
+            <Button
+              onPress={handleNavigation}
+              buttonText="Start your first trip"
+            />
+
+            <View className="flex-row items-center gap-2 self-center">
+              <Link2 size={18} color={colors.orange[400]} />
+              <Text className="text-body font-outfit-regular text-orange-400">
+                or join one with a link
+              </Text>
+            </View>
+          </View>
+
+          <View className="px-5">
+            <ProjectList />
+          </View>
+
+          {/* How it works block */}
+          <View className="gap-5 px-5 py-11">
+            <Text className="font-outfit-medium text-micro text-grey-500">
               HOW IT WORKS
             </Text>
 
-            <View className="flex-row items-center gap-4">
-              <View className="h-8 w-8 items-center justify-center rounded-full border border-[#f5a623] bg-[#f5a623]/10 ">
-                <Text className="font-outfit-bold text-sm text-[#f5a623]">
-                  1
-                </Text>
-              </View>
-              <Text className="font-outfit-regular text-base text-[#888888]">
-                Create a project and name it
-              </Text>
-            </View>
-
-            <View className="flex-row items-center gap-4">
-              <View className="h-8 w-8 items-center justify-center rounded-full border border-[#f5a623] bg-[#f5a623]/10 ">
-                <Text className="font-outfit-bold text-sm text-[#f5a623]">
-                  2
-                </Text>
-              </View>
-              <Text className="font-outfit-regular text-base text-[#888888]">
-                Add members and log expenses
-              </Text>
-            </View>
-
-            <View className="flex-row items-center gap-4">
-              <View className="h-8 w-8 items-center justify-center rounded-full border border-[#f5a623] bg-[#f5a623]/10 ">
-                <Text className="font-outfit-bold text-sm text-[#f5a623]">
-                  3
-                </Text>
-              </View>
-              <Text className="font-outfit-regular text-base text-[#888888]">
-                See who owes what, instantly
-              </Text>
-            </View>
+            {HOW_IT_WORKS_STEPS.map((label, i) => (
+              <StepListItem key={label} index={i + 1} label={label} />
+            ))}
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
