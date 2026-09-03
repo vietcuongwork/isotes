@@ -145,7 +145,7 @@ const FormField = forwardRef<TextInput, FormFieldProps>((props, ref) => {
         </TouchableOpacity>
       )}
       {error && (
-        <Text className="px-2 font-outfit-regular text-sm text-[#e5484d]">
+        <Text className="text-meta px-2 font-outfit-regular text-red-400">
           {error}
         </Text>
       )}

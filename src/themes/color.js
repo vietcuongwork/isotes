@@ -6,8 +6,11 @@ module.exports = {
       50: "#F5F0E8",
       // secondary text
       100: "#C4BCB0",
+      // warm variant of 200 for metadata on tinted surfaces
+      180: "#A08F79",
       // muted text, icons
       200: "#8E877D",
+      250: "#8A837A",
       // the cents half of an amount
       300: "#7D766C",
       // faint text, chevrons

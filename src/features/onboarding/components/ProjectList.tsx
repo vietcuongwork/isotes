@@ -25,16 +25,16 @@ const ProjectItem = (props: ProjectItemProps) => {
 
   return (
     <TouchableOpacity
-      className="rounded-card bg-grey-900 gap-1 p-4"
+      className="gap-1 rounded-card bg-grey-900 p-4"
       {...touchableOpacityProps}
     >
       {/* Header */}
       <View className="flex-row justify-between">
-        <Text className="text-title text-grey-50 font-outfit-regular">
+        <Text className="font-outfit-regular text-title text-grey-50">
           {project.name}
         </Text>
         {/* //TODO - Mock data */}
-        <Text className="text-title font-outfit-regular text-green-400">
+        <Text className="font-outfit-regular text-title text-green-400">
           +$274.68
         </Text>
       </View>
@@ -42,11 +42,11 @@ const ProjectItem = (props: ProjectItemProps) => {
       {/* Summary */}
       <View className="flex-row justify-between">
         {/* //TODO - Mock data */}
-        <Text className="text-label text-grey-200 font-outfit-regular">
+        <Text className="font-outfit-regular text-label text-grey-200">
           5 expenses · $630.90
         </Text>
         {/* //TODO - Mock data */}
-        <Text className="text-label text-grey-200 font-outfit-regular">
+        <Text className="font-outfit-regular text-label text-grey-200">
           you're owed
         </Text>
       </View>
@@ -75,7 +75,7 @@ export default function ProjectList() {
   );
 
   return (
-    <View className="border-grey-825 gap-3 border-b pb-8 pt-7">
+    <View className="gap-3 border-b border-grey-825 pb-8 pt-7">
       {/* Item */}
       {projects.map((project) => (
         <ProjectItem
@@ -83,7 +83,7 @@ export default function ProjectList() {
           project={project}
           touchableOpacityProps={{
             onPress: () => {
-              router.push(EXPO_ROUTER.EXPENSE(project.id, project.name));
+              router.push(EXPO_ROUTER.EXPENSE(project.id));
             },
           }}
         />

@@ -1,4 +1,4 @@
-import ProjectHeader from "@/components/ProjectHeader";
+import TabScreenHeader from "@/components/TabScreenHeader";
 import { useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,9 +7,10 @@ export default function ExpenseScreen() {
   const { projectName } = useLocalSearchParams<{ projectName: string }>();
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0a0a]">
+    <SafeAreaView className="flex-1 bg-grey-975">
       <View>
-        <ProjectHeader title={projectName} />
+        {/* Header */}
+        <TabScreenHeader />
       </View>
     </SafeAreaView>
   );

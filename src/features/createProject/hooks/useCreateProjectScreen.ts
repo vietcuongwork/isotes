@@ -46,7 +46,7 @@ export function useCreateProjectScreen() {
       description: data.description,
       currencyCode: data.currency.code,
     });
-    router.push(EXPO_ROUTER.EXPENSE(projectId, data.projectName));
+    router.push(EXPO_ROUTER.EXPENSE(projectId));
   };
 
   const onInvalid = (errors: FieldErrors<CreateProjectFormData>) => {
