@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Isotes — Figma import</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#0B0A09; padding:80px; font-family:Outfit,sans-serif; }
+  .strip { display:flex; gap:80px; align-items:flex-start; flex-wrap:wrap; }
+</style>
+<template id="__bundler_thumbnail">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#100F0E"/><text x="50" y="62" font-family="sans-serif" font-size="34" font-weight="600" fill="#E3A85C" text-anchor="middle">Is</text></svg>
+</template>
+</head>
+<body>
+<div class="strip">
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Launcher — first launch, no trips</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+  <div style="height:62px;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 32px">
+    <span style="font:600 17px Outfit;letter-spacing:-.2px">22:07</span>
+    <div style="position:absolute;left:50%;top:12px;transform:translateX(-50%);width:118px;height:36px;border-radius:20px;background:#000"></div>
+    <div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:17px">wifi</span><div style="width:24px;height:12px;border:1.5px solid rgba(245,240,232,.5);border-radius:3.5px;padding:1.5px;display:flex"><div style="flex:1;background:#F5F0E8;border-radius:2px"></div></div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #24221F">
+    <span style="font:500 19px/24px Outfit;letter-spacing:-.19px">Isotes</span>
+    <span style="font-family:'Material Symbols Rounded';font-size:24px;color:#8E877D">menu</span>
+  </div>
+  <div style="padding:32px 20px 0">
+    <div style="display:inline-flex;padding:6px 12px;border-radius:999px;border:1px solid #4A3720;background:#231A10"><span style="font:500 11px Outfit;letter-spacing:1.1px;color:#E3A85C">NO ACCOUNT NEEDED</span></div>
+    <div style="font:300 44px/48px Outfit;letter-spacing:-1.3px;margin-top:24px">Split travel<br>expenses<br><span style="color:#E3A85C">in minutes.</span></div>
+    <div style="font:400 15px/22px Outfit;color:#8E877D;margin-top:16px;max-width:300px;text-wrap:pretty">Start a trip, add expenses as they happen, and we'll work out who owes what.</div>
+  </div>
+  <div style="padding:32px 20px 0">
+    <div style="padding:16px 0;text-align:center;border-radius:16px;background:#F5F0E8;color:#100F0E;font:600 16px/20px Outfit">Start your first trip</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px"><span style="font-family:'Material Symbols Rounded';font-size:19px;color:#E3A85C">link</span><span style="font:400 15px Outfit;color:#E3A85C">or join one with a link</span></div>
+  </div>
+  <div style="padding:44px 20px 0">
+    <div style="font:500 11px Outfit;letter-spacing:1.1px;color:#5C574F;margin-bottom:20px">HOW IT WORKS</div>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:14px"><div style="width:32px;height:32px;border-radius:999px;border:1px solid #4A3720;background:#231A10;display:flex;align-items:center;justify-content:center;font:500 12px Outfit;color:#E3A85C">1</div><span style="font:400 15px Outfit;color:#8E877D">Name your trip</span></div>
+      <div style="display:flex;align-items:center;gap:14px"><div style="width:32px;height:32px;border-radius:999px;border:1px solid #4A3720;background:#231A10;display:flex;align-items:center;justify-content:center;font:500 12px Outfit;color:#E3A85C">2</div><span style="font:400 15px Outfit;color:#8E877D">Log expenses, add people as you go</span></div>
+      <div style="display:flex;align-items:center;gap:14px"><div style="width:32px;height:32px;border-radius:999px;border:1px solid #4A3720;background:#231A10;display:flex;align-items:center;justify-content:center;font:500 12px Outfit;color:#E3A85C">3</div><span style="font:400 15px Outfit;color:#8E877D">Settle up in the fewest transfers</span></div>
+    </div>
+  </div>
+  <div style="position:absolute;left:20px;right:20px;bottom:52px;display:flex;align-items:flex-start;gap:10px"><span style="font-family:'Material Symbols Rounded';font-size:18px;color:#5C574F">lock</span><span style="font:400 12px/16px Outfit;color:#6D675F;text-wrap:pretty">Everything stays on this device until you share a link.</span></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:34px;display:flex;justify-content:center;align-items:center"><div style="width:140px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Launcher — two trips, net owed</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+  <div style="height:62px;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 32px">
+    <span style="font:600 17px Outfit;letter-spacing:-.2px">22:07</span>
+    <div style="position:absolute;left:50%;top:12px;transform:translateX(-50%);width:118px;height:36px;border-radius:20px;background:#000"></div>
+    <div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:17px">wifi</span><div style="width:24px;height:12px;border:1.5px solid rgba(245,240,232,.5);border-radius:3.5px;padding:1.5px;display:flex"><div style="flex:1;background:#F5F0E8;border-radius:2px"></div></div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #24221F">
+    <span style="font:500 19px/24px Outfit;letter-spacing:-.19px">Isotes</span>
+    <span style="font-family:'Material Symbols Rounded';font-size:24px;color:#8E877D">menu</span>
+  </div>
+  <div style="padding:28px 20px 0">
+    <div style="display:inline-flex;padding:6px 12px;border-radius:999px;border:1px solid #4A3720;background:#231A10"><span style="font:500 11px Outfit;letter-spacing:1.1px;color:#E3A85C">NO ACCOUNT NEEDED</span></div>
+    <div style="font:300 34px/37px Outfit;letter-spacing:-.95px;margin-top:20px">Welcome back.<br>You're owed <span style="color:#A8C98A">$236<span style="color:#7D766C">.58</span></span></div>
+  </div>
+  <div style="padding:28px 20px 0">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px"><span style="font:500 12px/16px Outfit;color:#8E877D">Active</span><span style="font:400 12px/16px Outfit;color:#8E877D">2 trips</span></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="padding:16px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font:400 19px/24px Outfit;letter-spacing:-.19px">Hue</div><div style="font:300 21px/26px Outfit;letter-spacing:-.42px;color:#A8C98A;white-space:nowrap">+$274<span style="color:#7D766C">.68</span></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px"><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">5 expenses · $630<span style="color:#7D766C">.90</span></div><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">you're owed</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+          <div style="display:flex">
+            <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #1A1917;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+            <div style="width:24px;height:24px;border-radius:999px;background:#A8C98A;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#141f0c">M</div>
+            <div style="width:24px;height:24px;border-radius:999px;background:#E88A72;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a120a">A</div>
+            <div style="width:24px;height:24px;border-radius:999px;background:#D9C48A;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a2312">S</div>
+          </div>
+          <span style="font-family:'Material Symbols Rounded';font-size:19px;color:#6D675F">chevron_right</span>
+        </div>
+      </div>
+      <div style="padding:16px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font:400 19px/24px Outfit;letter-spacing:-.19px">Flat 4B</div><div style="font:300 21px/26px Outfit;letter-spacing:-.42px;color:#E88A72;white-space:nowrap">−$38<span style="color:#7D766C">.10</span></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px"><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">31 expenses · $1,204<span style="color:#7D766C">.00</span></div><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">you owe</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+          <div style="display:flex">
+            <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #1A1917;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+            <div style="width:24px;height:24px;border-radius:999px;background:#D9C48A;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a2312">K</div>
+          </div>
+          <span style="font-family:'Material Symbols Rounded';font-size:19px;color:#6D675F">chevron_right</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:24px 20px 0">
+    <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:12px">Settled</div>
+    <div style="padding:16px;border-radius:20px;background:#151413;border:1px solid #1F1D1A">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font:400 19px/24px Outfit;letter-spacing:-.19px;color:#C4BCB0">Da Lat weekend</div><div style="font:300 21px/26px Outfit;letter-spacing:-.42px;color:#6D675F;white-space:nowrap">$0<span style="color:#4F4A44">.00</span></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px"><div style="font:400 12px/16px Outfit;color:#6D675F;white-space:nowrap">12 expenses · $388<span style="color:#4F4A44">.50</span></div><div style="font:400 12px/16px Outfit;color:#6D675F;white-space:nowrap">settled 3 Jul</div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+        <div style="display:flex;opacity:.55">
+          <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #151413;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+          <div style="width:24px;height:24px;border-radius:999px;background:#E88A72;border:2px solid #151413;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a120a">A</div>
+        </div>
+        <span style="font-family:'Material Symbols Rounded';font-size:19px;color:#4F4A44">chevron_right</span>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:140px;background:linear-gradient(to top,#100F0E 62%,rgba(16,15,14,0))"></div>
+  <div style="position:absolute;left:0;right:0;bottom:34px;padding:0 20px"><div style="padding:16px 0;text-align:center;border-radius:16px;background:#F5F0E8;color:#100F0E;font:600 16px/20px Outfit">New trip</div></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:34px;display:flex;justify-content:center;align-items:center"><div style="width:140px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Launcher — long version, everything on one scroll</div>
+    <div style="width:402px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+  <div style="height:62px;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 32px">
+    <span style="font:600 17px Outfit;letter-spacing:-.2px">22:07</span>
+    <div style="position:absolute;left:50%;top:12px;transform:translateX(-50%);width:118px;height:36px;border-radius:20px;background:#000"></div>
+    <div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:17px">wifi</span><div style="width:24px;height:12px;border:1.5px solid rgba(245,240,232,.5);border-radius:3.5px;padding:1.5px;display:flex"><div style="flex:1;background:#F5F0E8;border-radius:2px"></div></div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #24221F">
+    <span style="font:500 19px/24px Outfit;letter-spacing:-.19px">Isotes</span>
+    <span style="font-family:'Material Symbols Rounded';font-size:24px;color:#8E877D">menu</span>
+  </div>
+  <div style="padding:28px 20px 0">
+    <div style="display:inline-flex;padding:6px 12px;border-radius:999px;border:1px solid #4A3720;background:#231A10"><span style="font:500 11px Outfit;letter-spacing:1.1px;color:#E3A85C">NO ACCOUNT NEEDED</span></div>
+    <div style="font:300 34px/37px Outfit;letter-spacing:-.95px;margin-top:20px">Welcome back.<br>You're owed <span style="color:#A8C98A">$236<span style="color:#7D766C">.58</span></span></div>
+  </div>
+  <div style="padding:28px 20px 0">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px"><span style="font:500 12px/16px Outfit;color:#8E877D">Active</span><span style="font:400 12px/16px Outfit;color:#8E877D">2 trips</span></div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="padding:16px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font:400 19px/24px Outfit;letter-spacing:-.19px">Hue</div><div style="font:300 21px/26px Outfit;letter-spacing:-.42px;color:#A8C98A;white-space:nowrap">+$274<span style="color:#7D766C">.68</span></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px"><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">5 expenses · $630<span style="color:#7D766C">.90</span></div><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">you're owed</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+          <div style="display:flex">
+            <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #1A1917;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+            <div style="width:24px;height:24px;border-radius:999px;background:#A8C98A;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#141f0c">M</div>
+            <div style="width:24px;height:24px;border-radius:999px;background:#E88A72;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a120a">A</div>
+            <div style="width:24px;height:24px;border-radius:999px;background:#D9C48A;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a2312">S</div>
+          </div>
+          <span style="font-family:'Material Symbols Rounded';font-size:19px;color:#6D675F">chevron_right</span>
+        </div>
+      </div>
+      <div style="padding:16px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font:400 19px/24px Outfit;letter-spacing:-.19px">Flat 4B</div><div style="font:300 21px/26px Outfit;letter-spacing:-.42px;color:#E88A72;white-space:nowrap">−$38<span style="color:#7D766C">.10</span></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px"><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">31 expenses · $1,204<span style="color:#7D766C">.00</span></div><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">you owe</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+          <div style="display:flex">
+            <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #1A1917;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+            <div style="width:24px;height:24px;border-radius:999px;background:#D9C48A;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a2312">K</div>
+          </div>
+          <span style="font-family:'Material Symbols Rounded';font-size:19px;color:#6D675F">chevron_right</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:24px 20px 0">
+    <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:12px">Settled</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="padding:16px;border-radius:20px;background:#151413;border:1px solid #1F1D1A">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font:400 19px/24px Outfit;letter-spacing:-.19px;color:#C4BCB0">Da Lat weekend</div><div style="font:300 21px/26px Outfit;letter-spacing:-.42px;color:#6D675F;white-space:nowrap">$0<span style="color:#4F4A44">.00</span></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px"><div style="font:400 12px/16px Outfit;color:#6D675F;white-space:nowrap">12 expenses · $388<span style="color:#4F4A44">.50</span></div><div style="font:400 12px/16px Outfit;color:#6D675F;white-space:nowrap">settled 3 Jul</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+          <div style="display:flex;opacity:.55">
+            <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #151413;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+            <div style="width:24px;height:24px;border-radius:999px;background:#E88A72;border:2px solid #151413;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a120a">A</div>
+          </div>
+          <span style="font-family:'Material Symbols Rounded';font-size:19px;color:#4F4A44">chevron_right</span>
+        </div>
+      </div>
+      <div style="padding:16px;border-radius:20px;background:#151413;border:1px solid #1F1D1A">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font:400 19px/24px Outfit;letter-spacing:-.19px;color:#C4BCB0">Sapa, Mar</div><div style="font:300 21px/26px Outfit;letter-spacing:-.42px;color:#6D675F;white-space:nowrap">$0<span style="color:#4F4A44">.00</span></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px"><div style="font:400 12px/16px Outfit;color:#6D675F;white-space:nowrap">8 expenses · $412<span style="color:#4F4A44">.30</span></div><div style="font:400 12px/16px Outfit;color:#6D675F;white-space:nowrap">settled 12 Mar</div></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+          <div style="display:flex;opacity:.55">
+            <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #151413;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+            <div style="width:24px;height:24px;border-radius:999px;background:#D9C48A;border:2px solid #151413;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a2312">T</div>
+          </div>
+          <span style="font-family:'Material Symbols Rounded';font-size:19px;color:#4F4A44">chevron_right</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:32px 20px 0"><div style="height:1px;background:#211F1C"></div></div>
+  <div style="padding:26px 20px 0">
+    <div style="font:500 11px Outfit;letter-spacing:1.1px;color:#5C574F;margin-bottom:20px">HOW IT WORKS</div>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:14px"><div style="width:32px;height:32px;border-radius:999px;border:1px solid #4A3720;background:#231A10;display:flex;align-items:center;justify-content:center;font:500 12px Outfit;color:#E3A85C">1</div><span style="font:400 15px Outfit;color:#8E877D">Name your trip</span></div>
+      <div style="display:flex;align-items:center;gap:14px"><div style="width:32px;height:32px;border-radius:999px;border:1px solid #4A3720;background:#231A10;display:flex;align-items:center;justify-content:center;font:500 12px Outfit;color:#E3A85C">2</div><span style="font:400 15px Outfit;color:#8E877D">Log expenses, add people as you go</span></div>
+      <div style="display:flex;align-items:center;gap:14px"><div style="width:32px;height:32px;border-radius:999px;border:1px solid #4A3720;background:#231A10;display:flex;align-items:center;justify-content:center;font:500 12px Outfit;color:#E3A85C">3</div><span style="font:400 15px Outfit;color:#8E877D">Settle up in the fewest transfers</span></div>
+    </div>
+  </div>
+  <div style="padding:30px 20px 0">
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:19px;color:#E3A85C">link</span><span style="font:400 15px Outfit;color:#E3A85C">Join a trip with a link</span></div>
+  </div>
+  <div style="padding:28px 20px 0;display:flex;align-items:flex-start;gap:10px">
+    <span style="font-family:'Material Symbols Rounded';font-size:18px;color:#5C574F">lock</span>
+    <span style="font:400 12px/16px Outfit;color:#6D675F;text-wrap:pretty">Everything stays on this device until you share a link.</span>
+  </div>
+  <div style="padding:32px 20px 52px"><div style="padding:16px 0;text-align:center;border-radius:16px;background:#F5F0E8;color:#100F0E;font:600 16px/20px Outfit">New trip</div></div>
+  <div style="height:34px;display:flex;justify-content:center;align-items:center"><div style="width:140px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Create a new trip</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+  <div style="height:62px;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 32px">
+    <span style="font:600 17px Outfit;letter-spacing:-.2px">22:07</span>
+    <div style="position:absolute;left:50%;top:12px;transform:translateX(-50%);width:118px;height:36px;border-radius:20px;background:#000"></div>
+    <div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:17px">wifi</span><div style="width:24px;height:12px;border:1.5px solid rgba(245,240,232,.5);border-radius:3.5px;padding:1.5px;display:flex"><div style="flex:1;background:#F5F0E8;border-radius:2px"></div></div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #24221F">
+    <span style="font-family:'Material Symbols Rounded';font-size:24px;color:#8E877D">arrow_back</span>
+    <span style="font:500 16px/20px Outfit">New trip</span>
+    <span style="width:24px"></span>
+  </div>
+  <div style="padding:32px 20px 0">
+    <div style="font:300 34px/37px Outfit;letter-spacing:-.95px">Create a new trip</div>
+    <div style="font:400 15px/22px Outfit;color:#8E877D;margin-top:8px">You can change any of this later.</div>
+  </div>
+  <div style="padding:32px 20px 0;display:flex;flex-direction:column;gap:24px">
+    <div>
+      <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Trip name</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:14px;background:#171614;border:1px solid #E3A85C">
+        <span style="flex:1;font:400 15px/22px Outfit">Hue</span>
+        <span style="width:2px;height:20px;background:#E3A85C"></span>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><span style="font:500 12px/16px Outfit;color:#8E877D">Description</span><span style="font:400 12px/16px Outfit;color:#5C574F">optional</span></div>
+      <div style="padding:16px;border-radius:14px;background:#151413;border:1px solid #262320"><span style="font:400 15px/22px Outfit;color:#5C574F">Five days on the coast</span></div>
+    </div>
+    <div>
+      <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Default currency</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:14px;background:#151413;border:1px solid #262320">
+        <span style="width:32px;height:32px;border-radius:8px;background:#231A10;border:1px solid #4A3720;display:flex;align-items:center;justify-content:center;font:500 15px Outfit;color:#E3A85C">₫</span>
+        <div style="flex:1"><div style="font:400 15px/22px Outfit">Vietnamese Dong</div><div style="font:400 12px/16px Outfit;color:#6D675F">VND</div></div>
+        <span style="font-family:'Material Symbols Rounded';font-size:20px;color:#6D675F">unfold_more</span>
+      </div>
+    </div>
+  </div>
+  <div style="margin:28px 20px 0;padding:16px;border-radius:20px;background:#151413;border:1px solid #1F1D1A;display:flex;gap:12px;align-items:flex-start"><span style="font-family:'Material Symbols Rounded';font-size:20px;color:#6D675F">group_add</span><span style="font:400 12px/18px Outfit;color:#8E877D;text-wrap:pretty">No need to add people now — you'll add them as you log the first expense.</span></div>
+  <div style="position:absolute;left:0;right:0;bottom:34px;padding:0 20px">
+    <div style="font:400 12px/16px Outfit;color:#6D675F;text-align:center;margin-bottom:14px">No account required · share via link</div>
+    <div style="padding:16px 0;text-align:center;border-radius:16px;background:#F5F0E8;color:#100F0E;font:600 16px/20px Outfit">Create trip</div>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:34px;display:flex;justify-content:center;align-items:center"><div style="width:140px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Create trip — field error</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+  <div style="height:62px;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 32px">
+    <span style="font:600 17px Outfit;letter-spacing:-.2px">22:07</span>
+    <div style="position:absolute;left:50%;top:12px;transform:translateX(-50%);width:118px;height:36px;border-radius:20px;background:#000"></div>
+    <div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:17px">wifi</span><div style="width:24px;height:12px;border:1.5px solid rgba(245,240,232,.5);border-radius:3.5px;padding:1.5px;display:flex"><div style="flex:1;background:#F5F0E8;border-radius:2px"></div></div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #24221F">
+    <span style="font-family:'Material Symbols Rounded';font-size:24px;color:#8E877D">arrow_back</span>
+    <span style="font:500 16px/20px Outfit">New trip</span>
+    <span style="width:24px"></span>
+  </div>
+  <div style="padding:32px 20px 0">
+    <div style="font:300 34px/37px Outfit;letter-spacing:-.95px">Create a new trip</div>
+    <div style="font:400 15px/22px Outfit;color:#8E877D;margin-top:8px">You can change any of this later.</div>
+  </div>
+  <div style="padding:32px 20px 0;display:flex;flex-direction:column;gap:24px">
+    <div>
+      <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Trip name</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:14px;background:#151413;border:1px solid #E88A72">
+        <span style="flex:1;font:400 15px/22px Outfit;color:#5C574F">Trip to Vegas</span>
+        <span style="width:18px;height:18px;border-radius:999px;border:1.5px solid #E88A72;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#E88A72;flex:none">!</span>
+      </div>
+      <div style="font:400 12px/16px Outfit;color:#E88A72;margin-top:8px">Trip name is required</div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><span style="font:500 12px/16px Outfit;color:#8E877D">Description</span><span style="font:400 12px/16px Outfit;color:#5C574F">optional</span></div>
+      <div style="padding:16px;border-radius:14px;background:#151413;border:1px solid #262320"><span style="font:400 15px/22px Outfit;color:#5C574F">Five days on the coast</span></div>
+    </div>
+    <div>
+      <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Default currency</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:14px;background:#151413;border:1px solid #262320">
+        <span style="width:32px;height:32px;border-radius:8px;background:#231A10;border:1px solid #4A3720;display:flex;align-items:center;justify-content:center;font:500 15px Outfit;color:#E3A85C">₫</span>
+        <div style="flex:1"><div style="font:400 15px/22px Outfit">Vietnamese Dong</div><div style="font:400 12px/16px Outfit;color:#6D675F">VND</div></div>
+        <span style="font-family:'Material Symbols Rounded';font-size:20px;color:#6D675F">unfold_more</span>
+      </div>
+    </div>
+  </div>
+  <div style="margin:28px 20px 0;padding:16px;border-radius:20px;background:#151413;border:1px solid #1F1D1A;display:flex;gap:12px;align-items:flex-start"><span style="font-family:'Material Symbols Rounded';font-size:20px;color:#6D675F">group_add</span><span style="font:400 12px/18px Outfit;color:#8E877D;text-wrap:pretty">No need to add people now — you'll add them as you log the first expense.</span></div>
+  <div style="position:absolute;left:0;right:0;bottom:34px;padding:0 20px">
+    <div style="font:400 12px/16px Outfit;color:#6D675F;text-align:center;margin-bottom:14px">No account required · share via link</div>
+    <div style="padding:16px 0;text-align:center;border-radius:16px;background:#2A2721;color:#5C574F;font:600 16px/20px Outfit">Create trip</div>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:34px;display:flex;justify-content:center;align-items:center"><div style="width:140px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Currency wheel picker sheet</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+  <div style="height:62px;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 32px">
+    <span style="font:600 17px Outfit;letter-spacing:-.2px">22:07</span>
+    <div style="position:absolute;left:50%;top:12px;transform:translateX(-50%);width:118px;height:36px;border-radius:20px;background:#000"></div>
+    <div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:17px">wifi</span><div style="width:24px;height:12px;border:1.5px solid rgba(245,240,232,.5);border-radius:3.5px;padding:1.5px;display:flex"><div style="flex:1;background:#F5F0E8;border-radius:2px"></div></div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #24221F">
+    <span style="font-family:'Material Symbols Rounded';font-size:24px;color:#8E877D">arrow_back</span>
+    <span style="font:500 16px/20px Outfit">New trip</span>
+    <span style="width:24px"></span>
+  </div>
+  <div style="padding:32px 20px 0">
+    <div style="font:300 34px/37px Outfit;letter-spacing:-.95px">Create a new trip</div>
+    <div style="font:400 15px/22px Outfit;color:#8E877D;margin-top:8px">You can change any of this later.</div>
+  </div>
+  <div style="padding:32px 20px 0;display:flex;flex-direction:column;gap:24px">
+    <div>
+      <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Trip name</div>
+      <div style="padding:16px;border-radius:14px;background:#171614;border:1px solid #262320"><span style="font:400 15px/22px Outfit">Hue</span></div>
+    </div>
+    <div>
+      <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Description</div>
+      <div style="padding:16px;border-radius:14px;background:#151413;border:1px solid #262320"><span style="font:400 15px/22px Outfit;color:#5C574F">Five days on the coast</span></div>
+    </div>
+  </div>
+  <div style="position:absolute;inset:0;background:rgba(16,15,14,.72)"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#1A1917;border-radius:24px 24px 0 0;border-top:1px solid #2A2825">
+    <div style="height:26px;display:flex;justify-content:center;align-items:center"><div style="width:40px;height:4px;border-radius:2px;background:#3F3B36"></div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 16px;border-bottom:1px solid #24221F">
+      <span style="font:400 15px/22px Outfit;color:#8E877D">Cancel</span>
+      <span style="font:500 12px/16px Outfit;color:#8E877D">DEFAULT CURRENCY</span>
+      <span style="font:600 15px/22px Outfit;color:#E3A85C">Done</span>
+    </div>
+    <div style="position:relative;padding:8px 0 12px">
+      <div style="position:absolute;left:12px;right:12px;top:50%;transform:translateY(-50%);height:44px;border-radius:12px;background:#231A10"></div>
+      <div style="position:relative;display:flex;flex-direction:column">
+        <div style="height:44px;display:flex;align-items:center;justify-content:center;font:400 14px Outfit;color:#4F4A44">Turkish Lira (TRY) – ₺</div>
+        <div style="height:44px;display:flex;align-items:center;justify-content:center;font:400 15px Outfit;color:#8E877D">US Dollar (USD) – $</div>
+        <div style="height:44px;display:flex;align-items:center;justify-content:center;font:500 16px Outfit;color:#F5F0E8">Vietnamese Dong (VND) – ₫</div>
+        <div style="height:44px;display:flex;align-items:center;justify-content:center;font:400 15px Outfit;color:#8E877D">Yemeni Rial (YER) – ﷼</div>
+        <div style="height:44px;display:flex;align-items:center;justify-content:center;font:400 14px Outfit;color:#4F4A44">Zambian Kwacha (ZMW) – K</div>
+      </div>
+    </div>
+    <div style="height:34px;display:flex;justify-content:center;align-items:center"><div style="width:140px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+  </div>
+</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Trip card — four states</div>
+    <div style="width:402px;padding:20px;border-radius:24px;background:#100F0E;box-shadow:0 0 0 1px #211f1d;color:#F5F0E8;display:flex;flex-direction:column;gap:12px">
+
+  <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;color:#5C574F">OWED TO YOU</div>
+  <div style="padding:16px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font:400 19px/24px Outfit;letter-spacing:-.19px">Hue</div><div style="font:300 21px/26px Outfit;letter-spacing:-.42px;color:#A8C98A;white-space:nowrap">+$274<span style="color:#7D766C">.68</span></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px"><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">5 expenses · $630<span style="color:#7D766C">.90</span></div><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">you're owed</div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+      <div style="display:flex">
+        <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #1A1917;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#A8C98A;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#141f0c">M</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#E88A72;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a120a">A</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#D9C48A;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a2312">S</div>
+      </div>
+      <span style="font-family:'Material Symbols Rounded';font-size:19px;color:#6D675F">chevron_right</span>
+    </div>
+  </div>
+
+  <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;color:#5C574F;margin-top:6px">YOU OWE</div>
+  <div style="padding:16px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font:400 19px/24px Outfit;letter-spacing:-.19px">Flat 4B</div><div style="font:300 21px/26px Outfit;letter-spacing:-.42px;color:#E88A72;white-space:nowrap">−$38<span style="color:#7D766C">.10</span></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px"><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">31 expenses · $1,204<span style="color:#7D766C">.00</span></div><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">you owe</div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+      <div style="display:flex">
+        <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #1A1917;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#D9C48A;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a2312">K</div>
+      </div>
+      <span style="font-family:'Material Symbols Rounded';font-size:19px;color:#6D675F">chevron_right</span>
+    </div>
+  </div>
+
+  <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;color:#5C574F;margin-top:6px">ACTIVE, ALL SQUARE</div>
+  <div style="padding:16px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font:400 19px/24px Outfit;letter-spacing:-.19px">Sapa</div><div style="font:300 21px/26px Outfit;letter-spacing:-.42px;color:#8E877D;white-space:nowrap">$0<span style="color:#5C574F">.00</span></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px"><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">8 expenses · $412<span style="color:#7D766C">.30</span></div><div style="font:400 12px/16px Outfit;color:#8E877D;white-space:nowrap">all square</div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+      <div style="display:flex">
+        <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #1A1917;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#A8C98A;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#141f0c">M</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#D9C48A;border:2px solid #1A1917;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a2312">T</div>
+      </div>
+      <span style="font-family:'Material Symbols Rounded';font-size:19px;color:#6D675F">chevron_right</span>
+    </div>
+  </div>
+
+  <div style="font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.09em;color:#5C574F;margin-top:6px">SETTLED — SAME CARD, DIMMED</div>
+  <div style="padding:16px;border-radius:20px;background:#151413;border:1px solid #1F1D1A">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><div style="font:400 19px/24px Outfit;letter-spacing:-.19px;color:#C4BCB0">Da Lat weekend</div><div style="font:300 21px/26px Outfit;letter-spacing:-.42px;color:#6D675F;white-space:nowrap">$0<span style="color:#4F4A44">.00</span></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:4px"><div style="font:400 12px/16px Outfit;color:#6D675F;white-space:nowrap">12 expenses · $388<span style="color:#4F4A44">.50</span></div><div style="font:400 12px/16px Outfit;color:#6D675F;white-space:nowrap">settled 3 Jul</div></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+      <div style="display:flex;opacity:.55">
+        <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #151413;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#E88A72;border:2px solid #151413;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a120a">A</div>
+      </div>
+      <span style="font-family:'Material Symbols Rounded';font-size:19px;color:#4F4A44">chevron_right</span>
+    </div>
+  </div>
+</div>
+  </div>
+
+  <div style="display:flex;gap:80px;align-items:flex-start">
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Same trip, with expenses</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8;display:flex;flex-direction:column">
+    <div style="height:62px;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 32px;flex:none">
+    <span style="font:600 17px Outfit;letter-spacing:-.2px">22:07</span>
+    <div style="position:absolute;left:50%;top:12px;transform:translateX(-50%);width:118px;height:36px;border-radius:20px;background:#000"></div>
+    <div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:17px">wifi</span><div style="width:24px;height:12px;border:1.5px solid rgba(245,240,232,.5);border-radius:3.5px;padding:1.5px;display:flex"><div style="flex:1;background:#F5F0E8;border-radius:2px"></div></div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 6px;flex:none">
+    <span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">grid_view</span>
+    <div style="display:flex;gap:20px"><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">show_chart</span><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">ios_share</span><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">more_horiz</span></div>
+  </div>
+  <div style="padding:14px 20px 0;flex:none">
+    <div style="font:400 34px/37px Outfit;letter-spacing:-.95px">Hue</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+      <div style="display:flex">
+        <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #100F0E;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#A8C98A;border:2px solid #100F0E;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#141f0c">M</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#E88A72;border:2px solid #100F0E;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a120a">A</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#D9C48A;border:2px solid #100F0E;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a2312">S</div>
+      </div>
+      <span style="font:400 13px/16px Outfit;color:#8A837A">4 people · 27–31 Aug · USD</span>
+    </div>
+  </div>
+  <div style="padding:20px 20px 0;flex:none">
+    <div style="padding:20px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div><div style="font:400 12px/16px Outfit;color:#8E877D">You're owed</div><div style="font:300 34px/37px Outfit;letter-spacing:-.95px;margin-top:4px">$274<span style="color:#7D766C">.68</span></div></div>
+        <div style="text-align:right"><div style="font:400 12px/16px Outfit;color:#8E877D">Trip total</div><div style="font:400 15px/20px Outfit;margin-top:4px">$630<span style="color:#7D766C">.90</span></div></div>
+      </div>
+      <div style="height:6px;border-radius:3px;overflow:hidden;display:flex;margin-top:16px">
+        <div style="width:44%;background:#E3A85C"></div>
+        <div style="width:24%;background:#E88A72"></div>
+        <div style="width:17%;background:#D9C48A"></div>
+        <div style="width:15%;background:#A8C98A"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <div style="flex:1;padding:15px 0;text-align:center;border-radius:16px;background:#E3A85C;color:#2A1B08;font:600 15px/20px Outfit">Settle up</div>
+        <div style="padding:15px 22px;text-align:center;border-radius:16px;border:1px solid #2A2825;color:#8E877D;font:500 15px/20px Outfit">Details</div>
+      </div>
+    </div>
+  </div>
+  <div style="flex:1;overflow:hidden;padding:22px 20px 0">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><span style="font:500 12px/16px Outfit;color:#8E877D">Today · Sat 31 Aug</span><span style="font:400 12px/16px Outfit;color:#8A837A">$528.40</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;gap:13px;padding:13px 14px;border-radius:16px;background:#171614">
+        <div style="width:36px;height:36px;border-radius:999px;background:#241F1A;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:18px;color:#E3A85C">bed</span></div>
+        <div style="flex:1;min-width:0"><div style="font:400 15px/20px Outfit">Hotel Alba · 3 nights</div><div style="font:400 12px/16px Outfit;color:#8A837A;margin-top:1px">You paid · everyone</div></div>
+        <div style="text-align:right;flex:none"><div style="font:400 15px/20px Outfit">$420.00</div><div style="font:500 12px/16px Outfit;color:#A8C98A;margin-top:1px">you lent 315</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:13px;padding:13px 14px;border-radius:16px;background:#171614">
+        <div style="width:36px;height:36px;border-radius:999px;background:#241F1A;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:18px;color:#E3A85C">sailing</span></div>
+        <div style="flex:1;min-width:0"><div style="font:400 15px/20px Outfit">Boat tour</div><div style="font:400 12px/16px Outfit;color:#8A837A;margin-top:1px">Mai paid · everyone</div></div>
+        <div style="text-align:right;flex:none"><div style="font:400 15px/20px Outfit">$96.00</div><div style="font:500 12px/16px Outfit;color:#E88A72;margin-top:1px">you owe 24</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:13px;padding:13px 14px;border-radius:16px;background:#171614">
+        <div style="width:36px;height:36px;border-radius:999px;background:#241F1A;display:flex;align-items:center;justify-content:center;flex:none"><span style="font-family:'Material Symbols Rounded';font-size:18px;color:#E3A85C">local_cafe</span></div>
+        <div style="flex:1;min-width:0"><div style="font:400 15px/20px Outfit">Cà phê muối</div><div style="font:400 12px/16px Outfit;color:#8A837A;margin-top:1px">You paid · everyone</div></div>
+        <div style="text-align:right;flex:none"><div style="font:400 15px/20px Outfit">$12.40</div><div style="font:500 12px/16px Outfit;color:#A8C98A;margin-top:1px">you lent 9.30</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="position:relative;flex:none;padding-bottom:34px">
+    <div style="position:absolute;right:20px;bottom:96px"><div style="display:flex;align-items:center;gap:8px;padding:15px 22px;border-radius:999px;background:#F5F0E8;color:#100F0E;font:600 15px/20px Outfit;box-shadow:0 8px 20px rgba(0,0,0,.35)"><span style="font-family:'Material Symbols Rounded';font-size:19px">add</span>Expense</div></div>
+    <div style="border-top:1px solid #24221F;background:#151412;padding:10px 0 0;display:flex">
+      <div style="flex:1;text-align:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#E3A85C">receipt_long</span><div style="font:500 11px Outfit;color:#E3A85C;margin-top:2px">Expenses</div></div>
+      <div style="flex:1;text-align:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#6D675F">balance</span><div style="font:500 11px Outfit;color:#6D675F;margin-top:2px">Balances</div></div>
+      <div style="flex:1;text-align:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#6D675F">insights</span><div style="font:500 11px Outfit;color:#6D675F;margin-top:2px">Insights</div></div>
+    </div>
+    <div style="height:22px;display:flex;justify-content:center;align-items:flex-start"><div style="width:134px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+  </div>
+</div></div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">New trip, no expenses yet</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8;display:flex;flex-direction:column">
+    <div style="height:62px;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 32px;flex:none">
+    <span style="font:600 17px Outfit;letter-spacing:-.2px">22:07</span>
+    <div style="position:absolute;left:50%;top:12px;transform:translateX(-50%);width:118px;height:36px;border-radius:20px;background:#000"></div>
+    <div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:17px">wifi</span><div style="width:24px;height:12px;border:1.5px solid rgba(245,240,232,.5);border-radius:3.5px;padding:1.5px;display:flex"><div style="flex:1;background:#F5F0E8;border-radius:2px"></div></div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 6px;flex:none">
+    <span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">grid_view</span>
+    <div style="display:flex;gap:20px"><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">show_chart</span><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">ios_share</span><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">more_horiz</span></div>
+  </div>
+  <div style="padding:14px 20px 0;flex:none">
+    <div style="font:400 34px/37px Outfit;letter-spacing:-.95px">Sapa, Mar</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+      <div style="display:flex">
+        <div style="width:24px;height:24px;border-radius:999px;background:#E3A85C;border:2px solid #100F0E;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#A8C98A;border:2px solid #100F0E;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#141f0c">M</div>
+        <div style="width:24px;height:24px;border-radius:999px;background:#E88A72;border:2px solid #100F0E;margin-left:-8px;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a120a">A</div>
+      </div>
+      <span style="font:400 13px/16px Outfit;color:#8A837A">3 people · 12–18 Mar · USD</span>
+    </div>
+  </div>
+  <div style="padding:20px 20px 0;flex:none">
+    <div style="padding:20px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div><div style="font:400 12px/16px Outfit;color:#8E877D">You're owed</div><div style="font:300 34px/37px Outfit;letter-spacing:-.95px;margin-top:4px;color:#6D675F">$0<span style="color:#4F4A44">.00</span></div></div>
+        <div style="text-align:right"><div style="font:400 12px/16px Outfit;color:#8E877D">Trip total</div><div style="font:400 15px/20px Outfit;margin-top:4px;color:#6D675F">$0<span style="color:#4F4A44">.00</span></div></div>
+      </div>
+      <div style="height:6px;border-radius:3px;background:#262320;margin-top:16px"></div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <div style="flex:1;padding:15px 0;text-align:center;border-radius:16px;background:#2A2721;color:#5C574F;font:600 15px/20px Outfit">Settle up</div>
+        <div style="padding:15px 22px;text-align:center;border-radius:16px;border:1px solid #2A2825;color:#8E877D;font:500 15px/20px Outfit">Details</div>
+      </div>
+    </div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 40px;text-align:center">
+    <div style="width:60px;height:60px;border-radius:999px;background:#171614;border:1px solid #262320;display:flex;align-items:center;justify-content:center;margin-bottom:18px"><span style="font-family:'Material Symbols Rounded';font-size:28px;color:#5C574F">receipt_long</span></div>
+    <div style="font:400 19px/24px Outfit">No expenses yet</div>
+    <div style="font:400 14px/20px Outfit;color:#8A837A;margin-top:8px;text-wrap:pretty">Log the first one and we'll work out who owes what.</div>
+  </div>
+  <div style="position:relative;flex:none;padding-bottom:34px">
+    <div style="position:absolute;right:20px;bottom:96px"><div style="display:flex;align-items:center;gap:8px;padding:15px 22px;border-radius:999px;background:#F5F0E8;color:#100F0E;font:600 15px/20px Outfit;box-shadow:0 8px 20px rgba(0,0,0,.35)"><span style="font-family:'Material Symbols Rounded';font-size:19px">add</span>Expense</div></div>
+    <div style="border-top:1px solid #24221F;background:#151412;padding:10px 0 0;display:flex">
+      <div style="flex:1;text-align:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#E3A85C">receipt_long</span><div style="font:500 11px Outfit;color:#E3A85C;margin-top:2px">Expenses</div></div>
+      <div style="flex:1;text-align:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#6D675F">balance</span><div style="font:500 11px Outfit;color:#6D675F;margin-top:2px">Balances</div></div>
+      <div style="flex:1;text-align:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#6D675F">insights</span><div style="font:500 11px Outfit;color:#6D675F;margin-top:2px">Insights</div></div>
+    </div>
+    <div style="height:22px;display:flex;justify-content:center;align-items:flex-start"><div style="width:134px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+  </div>
+</div></div>
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Split — Equally</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+    <div style="filter:blur(4px);opacity:.35;padding:62px 20px 0"><div style="font:300 34px Outfit">Hue</div></div>
+  <div style="position:absolute;inset:0;background:rgba(10,9,8,.55)"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#191816;border-radius:28px 28px 0 0;border-top:1px solid #2A2825">
+    <div style="display:flex;justify-content:center;padding:10px 0 12px"><div style="width:40px;height:4px;border-radius:2px;background:#3F3B36"></div></div>
+    <div style="padding:0 20px 16px;display:flex;justify-content:space-between;align-items:center"><span style="font:500 16px/20px Outfit">New expense</span><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">close</span></div>
+    <div style="padding:14px 20px;background:#131211;text-align:center">
+      <div style="display:flex;align-items:baseline;justify-content:center;gap:4px"><span style="font:300 21px Outfit;color:#6D675F">$</span><span style="font:300 40px Outfit;letter-spacing:-1px">420<span style="color:#6D675F">.00</span></span></div>
+    </div>
+    <div style="padding:16px 20px 0">
+      <div style="padding:14px 16px;border-radius:14px;background:#131211;border:1px solid #262320"><span style="font:400 15px/22px Outfit">Hotel Alba · 3 nights</span></div>
+    </div>
+    <div style="padding:14px 20px 0;display:flex;gap:10px">
+      <div style="flex:1">
+        <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Activity</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:#131211;border:1px solid #262320"><span style="font-family:'Material Symbols Rounded';font-size:19px;color:#E3A85C">bed</span><span style="flex:1;font:400 14px/20px Outfit">Lodging</span><span style="font-family:'Material Symbols Rounded';font-size:18px;color:#5C574F">expand_more</span></div>
+      </div>
+      <div style="flex:1">
+        <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Date</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:#131211;border:1px solid #262320"><span style="font-family:'Material Symbols Rounded';font-size:19px;color:#8A837A">calendar_today</span><span style="flex:1;font:400 14px/20px Outfit">Today</span></div>
+      </div>
+    </div>
+    <div style="padding:18px 20px 0">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><span style="font:500 12px/16px Outfit;color:#8E877D">Paid by</span><span style="font:400 12px/16px Outfit;color:#5C574F">tap to change</span></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#131211;border:1px solid #262320">
+        <div style="display:flex;gap:8px;flex:1;overflow:hidden">
+          <span style="padding:8px 14px;border-radius:999px;background:#E3A85C;font:600 13px Outfit;color:#2A1B08;white-space:nowrap">You</span>
+        </div>
+        <span style="font-family:'Material Symbols Rounded';font-size:18px;color:#5C574F">expand_more</span>
+      </div>
+    </div>
+    <div style="padding:18px 20px 0">
+      <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:10px">Split</div>
+      <div style="display:flex;background:#131211;border-radius:12px;padding:3px;gap:2px">
+        <span style="flex:1;padding:9px 0;text-align:center;border-radius:10px;background:#E3A85C;font:600 13px Outfit;color:#2A1B08">Equally</span>
+        <span style="flex:1;padding:9px 0;text-align:center;font:400 13px Outfit;color:#8A837A">Amounts</span>
+        <span style="flex:1;padding:9px 0;text-align:center;font:400 13px Outfit;color:#8A837A">Shares</span>
+        <span style="flex:1;padding:9px 0;text-align:center;font:400 13px Outfit;color:#8A837A">%</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-top:12px">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:#151413"><div style="width:26px;height:26px;border-radius:999px;background:#E3A85C;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div><span style="flex:1;font:400 14px Outfit">You</span><span style="font-family:'Material Symbols Rounded';font-size:20px;color:#A8C98A">check_circle</span></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:#151413"><div style="width:26px;height:26px;border-radius:999px;background:#A8C98A;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#141f0c">M</div><span style="flex:1;font:400 14px Outfit">Mai</span><span style="font-family:'Material Symbols Rounded';font-size:20px;color:#A8C98A">check_circle</span></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:#151413"><div style="width:26px;height:26px;border-radius:999px;background:#E88A72;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a120a">A</div><span style="flex:1;font:400 14px Outfit">Alex</span><span style="font-family:'Material Symbols Rounded';font-size:20px;color:#A8C98A">check_circle</span></div>
+      </div>
+      <div style="font:400 12px/16px Outfit;color:#8E877D;margin-top:10px;text-align:center">$140.00 each</div>
+    </div>
+    <div style="padding:16px 20px 0"><div style="padding:15px 0;text-align:center;border-radius:16px;background:#F5F0E8;color:#100F0E;font:600 16px/20px Outfit">Save expense</div></div>
+    <div style="height:26px;display:flex;justify-content:center;align-items:center"><div style="width:134px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+  </div>
+</div></div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Split — Amounts, unbalanced</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+    <div style="filter:blur(4px);opacity:.35;padding:62px 20px 0"><div style="font:300 34px Outfit">Hue</div></div>
+  <div style="position:absolute;inset:0;background:rgba(10,9,8,.55)"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#191816;border-radius:28px 28px 0 0;border-top:1px solid #2A2825">
+    <div style="display:flex;justify-content:center;padding:10px 0 12px"><div style="width:40px;height:4px;border-radius:2px;background:#3F3B36"></div></div>
+    <div style="padding:0 20px 16px;display:flex;justify-content:space-between;align-items:center"><span style="font:500 16px/20px Outfit">New expense</span><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">close</span></div>
+    <div style="padding:14px 20px;background:#131211;text-align:center">
+      <div style="display:flex;align-items:baseline;justify-content:center;gap:4px"><span style="font:300 21px Outfit;color:#6D675F">$</span><span style="font:300 40px Outfit;letter-spacing:-1px">420<span style="color:#6D675F">.00</span></span></div>
+    </div>
+    <div style="padding:16px 20px 0">
+      <div style="padding:14px 16px;border-radius:14px;background:#131211;border:1px solid #262320"><span style="font:400 15px/22px Outfit">Hotel Alba · 3 nights</span></div>
+    </div>
+    <div style="padding:14px 20px 0;display:flex;gap:10px">
+      <div style="flex:1">
+        <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Activity</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:#131211;border:1px solid #262320"><span style="font-family:'Material Symbols Rounded';font-size:19px;color:#E3A85C">bed</span><span style="flex:1;font:400 14px/20px Outfit">Lodging</span><span style="font-family:'Material Symbols Rounded';font-size:18px;color:#5C574F">expand_more</span></div>
+      </div>
+      <div style="flex:1">
+        <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Date</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:#131211;border:1px solid #262320"><span style="font-family:'Material Symbols Rounded';font-size:19px;color:#8A837A">calendar_today</span><span style="flex:1;font:400 14px/20px Outfit">Today</span></div>
+      </div>
+    </div>
+    <div style="padding:18px 20px 0">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><span style="font:500 12px/16px Outfit;color:#8E877D">Paid by</span><span style="font:400 12px/16px Outfit;color:#5C574F">tap to change</span></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#131211;border:1px solid #262320">
+        <div style="display:flex;gap:8px;flex:1;overflow:hidden">
+          <span style="padding:8px 14px;border-radius:999px;background:#E3A85C;font:600 13px Outfit;color:#2A1B08;white-space:nowrap">You</span>
+        </div>
+        <span style="font-family:'Material Symbols Rounded';font-size:18px;color:#5C574F">expand_more</span>
+      </div>
+    </div>
+    <div style="padding:18px 20px 0">
+      <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:10px">Split</div>
+      <div style="display:flex;background:#131211;border-radius:12px;padding:3px;gap:2px">
+        <span style="flex:1;padding:9px 0;text-align:center;font:400 13px Outfit;color:#8A837A">Equally</span>
+        <span style="flex:1;padding:9px 0;text-align:center;border-radius:10px;background:#E3A85C;font:600 13px Outfit;color:#2A1B08">Amounts</span>
+        <span style="flex:1;padding:9px 0;text-align:center;font:400 13px Outfit;color:#8A837A">Shares</span>
+        <span style="flex:1;padding:9px 0;text-align:center;font:400 13px Outfit;color:#8A837A">%</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-top:12px">
+        <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:14px;background:#151413"><div style="width:26px;height:26px;border-radius:999px;background:#E3A85C;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div><span style="flex:1;font:400 14px Outfit">You</span><div style="display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:10px;background:#131211;border:1px solid #262320"><span style="font:400 13px Outfit;color:#6D675F">$</span><span style="font:400 14px Outfit">150.00</span></div></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:14px;background:#151413"><div style="width:26px;height:26px;border-radius:999px;background:#A8C98A;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#141f0c">M</div><span style="flex:1;font:400 14px Outfit">Mai</span><div style="display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:10px;background:#131211;border:1px solid #262320"><span style="font:400 13px Outfit;color:#6D675F">$</span><span style="font:400 14px Outfit">100.00</span></div></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:14px;background:#151413"><div style="width:26px;height:26px;border-radius:999px;background:#E88A72;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a120a">A</div><span style="flex:1;font:400 14px Outfit">Alex</span><div style="display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:10px;background:#131211;border:1px solid #262320"><span style="font:400 13px Outfit;color:#6D675F">$</span><span style="font:400 14px Outfit">100.00</span></div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px"><span style="font-family:'Material Symbols Rounded';font-size:16px;color:#E88A72">error</span><span style="font:500 13px Outfit;color:#E88A72">$70.00 left to assign</span></div>
+    </div>
+    <div style="padding:14px 20px 0"><div style="padding:15px 0;text-align:center;border-radius:16px;background:#2A2721;color:#5C574F;font:600 16px/20px Outfit">Save expense</div></div>
+    <div style="height:26px;display:flex;justify-content:center;align-items:center"><div style="width:134px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+  </div>
+</div></div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Split — Shares, balanced</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+    <div style="filter:blur(4px);opacity:.35;padding:62px 20px 0"><div style="font:300 34px Outfit">Hue</div></div>
+  <div style="position:absolute;inset:0;background:rgba(10,9,8,.55)"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#191816;border-radius:28px 28px 0 0;border-top:1px solid #2A2825">
+    <div style="display:flex;justify-content:center;padding:10px 0 12px"><div style="width:40px;height:4px;border-radius:2px;background:#3F3B36"></div></div>
+    <div style="padding:0 20px 16px;display:flex;justify-content:space-between;align-items:center"><span style="font:500 16px/20px Outfit">New expense</span><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">close</span></div>
+    <div style="padding:14px 20px;background:#131211;text-align:center">
+      <div style="display:flex;align-items:baseline;justify-content:center;gap:4px"><span style="font:300 21px Outfit;color:#6D675F">$</span><span style="font:300 40px Outfit;letter-spacing:-1px">420<span style="color:#6D675F">.00</span></span></div>
+    </div>
+    <div style="padding:16px 20px 0">
+      <div style="padding:14px 16px;border-radius:14px;background:#131211;border:1px solid #262320"><span style="font:400 15px/22px Outfit">Hotel Alba · 3 nights</span></div>
+    </div>
+    <div style="padding:14px 20px 0;display:flex;gap:10px">
+      <div style="flex:1">
+        <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Activity</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:#131211;border:1px solid #262320"><span style="font-family:'Material Symbols Rounded';font-size:19px;color:#E3A85C">bed</span><span style="flex:1;font:400 14px/20px Outfit">Lodging</span><span style="font-family:'Material Symbols Rounded';font-size:18px;color:#5C574F">expand_more</span></div>
+      </div>
+      <div style="flex:1">
+        <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:8px">Date</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;background:#131211;border:1px solid #262320"><span style="font-family:'Material Symbols Rounded';font-size:19px;color:#8A837A">calendar_today</span><span style="flex:1;font:400 14px/20px Outfit">Today</span></div>
+      </div>
+    </div>
+    <div style="padding:18px 20px 0">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px"><span style="font:500 12px/16px Outfit;color:#8E877D">Paid by</span><span style="font:400 12px/16px Outfit;color:#5C574F">tap to change</span></div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#131211;border:1px solid #262320">
+        <div style="display:flex;gap:8px;flex:1;overflow:hidden">
+          <span style="padding:8px 14px;border-radius:999px;background:#E3A85C;font:600 13px Outfit;color:#2A1B08;white-space:nowrap">You</span>
+        </div>
+        <span style="font-family:'Material Symbols Rounded';font-size:18px;color:#5C574F">expand_more</span>
+      </div>
+    </div>
+    <div style="padding:18px 20px 0">
+      <div style="font:500 12px/16px Outfit;color:#8E877D;margin-bottom:10px">Split</div>
+      <div style="display:flex;background:#131211;border-radius:12px;padding:3px;gap:2px">
+        <span style="flex:1;padding:9px 0;text-align:center;font:400 13px Outfit;color:#8A837A">Equally</span>
+        <span style="flex:1;padding:9px 0;text-align:center;font:400 13px Outfit;color:#8A837A">Amounts</span>
+        <span style="flex:1;padding:9px 0;text-align:center;border-radius:10px;background:#E3A85C;font:600 13px Outfit;color:#2A1B08">Shares</span>
+        <span style="flex:1;padding:9px 0;text-align:center;font:400 13px Outfit;color:#8A837A">%</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-top:12px">
+        <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:14px;background:#151413"><div style="width:26px;height:26px;border-radius:999px;background:#E3A85C;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2A1B08">Y</div><span style="flex:1;font:400 14px Outfit">You</span><div style="display:flex;align-items:center;gap:10px;background:#131211;border-radius:10px;padding:4px 6px"><span style="font-family:'Material Symbols Rounded';font-size:17px;color:#8A837A">remove</span><span style="font:500 14px Outfit;width:14px;text-align:center">2</span><span style="font-family:'Material Symbols Rounded';font-size:17px;color:#E3A85C">add</span></div></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:14px;background:#151413"><div style="width:26px;height:26px;border-radius:999px;background:#A8C98A;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#141f0c">M</div><span style="flex:1;font:400 14px Outfit">Mai</span><div style="display:flex;align-items:center;gap:10px;background:#131211;border-radius:10px;padding:4px 6px"><span style="font-family:'Material Symbols Rounded';font-size:17px;color:#8A837A">remove</span><span style="font:500 14px Outfit;width:14px;text-align:center">1</span><span style="font-family:'Material Symbols Rounded';font-size:17px;color:#E3A85C">add</span></div></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:14px;background:#151413"><div style="width:26px;height:26px;border-radius:999px;background:#E88A72;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#2a120a">A</div><span style="flex:1;font:400 14px Outfit">Alex</span><div style="display:flex;align-items:center;gap:10px;background:#131211;border-radius:10px;padding:4px 6px"><span style="font-family:'Material Symbols Rounded';font-size:17px;color:#8A837A">remove</span><span style="font:500 14px Outfit;width:14px;text-align:center">1</span><span style="font-family:'Material Symbols Rounded';font-size:17px;color:#E3A85C">add</span></div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px"><span style="font-family:'Material Symbols Rounded';font-size:16px;color:#A8C98A">check_circle</span><span style="font:500 13px Outfit;color:#A8C98A">4 shares · $105.00 each share</span></div>
+    </div>
+    <div style="padding:14px 20px 0"><div style="padding:15px 0;text-align:center;border-radius:16px;background:#F5F0E8;color:#100F0E;font:600 16px/20px Outfit">Save expense</div></div>
+    <div style="height:26px;display:flex;justify-content:center;align-items:center"><div style="width:134px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+  </div>
+</div></div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Paid by — picker, with add person right there</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+    <div style="filter:blur(4px);opacity:.35;padding:62px 20px 0"><div style="font:400 16px Outfit">New expense</div></div>
+  <div style="position:absolute;inset:0;background:rgba(10,9,8,.55)"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#191816;border-radius:28px 28px 0 0;border-top:1px solid #2A2825">
+    <div style="display:flex;justify-content:center;padding:10px 0 12px"><div style="width:40px;height:4px;border-radius:2px;background:#3F3B36"></div></div>
+    <div style="padding:0 20px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #24221F"><span style="font:400 15px/22px Outfit;color:#8A837A">Cancel</span><span style="font:500 12px/16px Outfit;color:#8E877D">PAID BY</span><span style="font:600 15px/22px Outfit;color:#E3A85C">Done</span></div>
+    <div style="padding:16px 20px 0;display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:14px;background:#151413"><div style="width:30px;height:30px;border-radius:999px;background:#E3A85C;display:flex;align-items:center;justify-content:center;font:600 12px Outfit;color:#2A1B08">Y</div><span style="flex:1;font:400 15px Outfit">You</span><span style="font-family:'Material Symbols Rounded';font-size:20px;color:#E3A85C">radio_button_checked</span></div>
+      <div style="display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:14px;background:#151413"><div style="width:30px;height:30px;border-radius:999px;background:#A8C98A;display:flex;align-items:center;justify-content:center;font:600 12px Outfit;color:#141f0c">M</div><span style="flex:1;font:400 15px Outfit">Mai</span><span style="font-family:'Material Symbols Rounded';font-size:20px;color:#5C574F">radio_button_unchecked</span></div>
+      <div style="display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:14px;background:#151413"><div style="width:30px;height:30px;border-radius:999px;background:#E88A72;display:flex;align-items:center;justify-content:center;font:600 12px Outfit;color:#2a120a">A</div><span style="flex:1;font:400 15px Outfit">Alex</span><span style="font-family:'Material Symbols Rounded';font-size:20px;color:#5C574F">radio_button_unchecked</span></div>
+      <div style="display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:14px;background:#151413"><div style="width:30px;height:30px;border-radius:999px;background:#D9C48A;display:flex;align-items:center;justify-content:center;font:600 12px Outfit;color:#2a2312">S</div><span style="flex:1;font:400 15px Outfit">Sam</span><span style="font-family:'Material Symbols Rounded';font-size:20px;color:#5C574F">radio_button_unchecked</span></div>
+    </div>
+    <div style="padding:14px 20px 0"><div style="height:1px;background:#211F1C"></div></div>
+    <div style="padding:16px 20px 26px">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:1px dashed #3A3630"><span style="font-family:'Material Symbols Rounded';font-size:19px;color:#E3A85C">person_add</span><span style="font:500 14px Outfit;color:#E3A85C">Add a new person to this trip</span></div>
+    </div>
+    <div style="height:26px;display:flex;justify-content:center;align-items:center"><div style="width:134px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+  </div>
+  </div>
+</div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">People on this trip</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+    <div style="height:62px;position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 32px">
+    <span style="font:600 17px Outfit;letter-spacing:-.2px">22:07</span>
+    <div style="position:absolute;left:50%;top:12px;transform:translateX(-50%);width:118px;height:36px;border-radius:20px;background:#000"></div>
+    <div style="display:flex;align-items:center;gap:6px"><span style="font-family:'Material Symbols Rounded';font-size:17px">wifi</span><div style="width:24px;height:12px;border:1.5px solid rgba(245,240,232,.5);border-radius:3.5px;padding:1.5px;display:flex"><div style="flex:1;background:#F5F0E8;border-radius:2px"></div></div></div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #24221F">
+    <span style="font-family:'Material Symbols Rounded';font-size:24px;color:#8E877D">arrow_back</span>
+    <span style="font:500 16px/20px Outfit">People</span>
+    <span style="width:24px"></span>
+  </div>
+  <div style="padding:24px 20px 0;display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+      <div style="width:38px;height:38px;border-radius:999px;background:#E3A85C;display:flex;align-items:center;justify-content:center;font:600 14px Outfit;color:#2A1B08">Y</div>
+      <div style="flex:1"><div style="font:400 16px/20px Outfit">You</div><div style="font:400 12px/16px Outfit;color:#8A837A;margin-top:2px">5 expenses</div></div>
+      <div style="text-align:right"><div style="font:400 15px/20px Outfit;color:#A8C98A">+$274<span style="color:#7D766C">.68</span></div><div style="font:400 11px/16px Outfit;color:#8A837A">you're owed</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+      <div style="width:38px;height:38px;border-radius:999px;background:#A8C98A;display:flex;align-items:center;justify-content:center;font:600 14px Outfit;color:#141f0c">M</div>
+      <div style="flex:1"><div style="font:400 16px/20px Outfit">Mai</div><div style="font:400 12px/16px Outfit;color:#8A837A;margin-top:2px">4 expenses</div></div>
+      <div style="text-align:right"><div style="font:400 15px/20px Outfit;color:#E88A72">−$140<span style="color:#7D766C">.00</span></div><div style="font:400 11px/16px Outfit;color:#8A837A">owes you</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:20px;background:#1A1917;border:1px solid #2A2825">
+      <div style="width:38px;height:38px;border-radius:999px;background:#E88A72;display:flex;align-items:center;justify-content:center;font:600 14px Outfit;color:#2a120a">A</div>
+      <div style="flex:1"><div style="font:400 16px/20px Outfit">Alex</div><div style="font:400 12px/16px Outfit;color:#8A837A;margin-top:2px">3 expenses</div></div>
+      <div style="text-align:right"><div style="font:400 15px/20px Outfit;color:#E88A72">−$74<span style="color:#7D766C">.68</span></div><div style="font:400 11px/16px Outfit;color:#8A837A">owes you</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:20px;background:#151413;border:1px solid #1F1D1A">
+      <div style="width:38px;height:38px;border-radius:999px;background:#D9C48A;display:flex;align-items:center;justify-content:center;font:600 14px Outfit;color:#2a2312">S</div>
+      <div style="flex:1"><div style="font:400 16px/20px Outfit;color:#C4BCB0">Sam</div><div style="font:400 12px/16px Outfit;color:#6D675F;margin-top:2px">1 expense</div></div>
+      <div style="text-align:right"><div style="font:400 15px/20px Outfit;color:#6D675F">$0<span style="color:#4F4A44">.00</span></div><div style="font:400 11px/16px Outfit;color:#6D675F">all square</div></div>
+    </div>
+  </div>
+  <div style="padding:20px 20px 0">
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:20px;border:1px dashed #3A3630"><span style="font-family:'Material Symbols Rounded';font-size:20px;color:#E3A85C">person_add</span><span style="font:500 15px Outfit;color:#E3A85C">Add person</span></div>
+  </div>
+  <div style="padding:14px 20px 0;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:19px;color:#6D675F">link</span><span style="font:400 13px Outfit;color:#8A837A">or share the trip link to let them join themselves</span></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;height:34px;display:flex;justify-content:center;align-items:center"><div style="width:140px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+</div></div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Add person sheet</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+    <div style="filter:blur(4px);opacity:.35;padding:62px 20px 0"><div style="font:500 16px Outfit">People</div></div>
+  <div style="position:absolute;inset:0;background:rgba(10,9,8,.55)"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#191816;border-radius:28px 28px 0 0;border-top:1px solid #2A2825">
+    <div style="display:flex;justify-content:center;padding:10px 0 12px"><div style="width:40px;height:4px;border-radius:2px;background:#3F3B36"></div></div>
+    <div style="padding:0 20px 16px;display:flex;justify-content:space-between;align-items:center"><span style="font:500 16px/20px Outfit">Add person</span><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">close</span></div>
+    <div style="padding:16px 20px 0;display:flex;flex-direction:column;align-items:center;gap:14px">
+      <div style="width:64px;height:64px;border-radius:999px;background:#D9C48A;display:flex;align-items:center;justify-content:center;font:600 24px Outfit;color:#2a2312">T</div>
+      <div style="width:100%;display:flex;align-items:center;gap:12px;padding:16px;border-radius:14px;background:#151413;border:1px solid #E3A85C">
+        <span style="flex:1;font:400 15px/22px Outfit">Tan</span>
+        <span style="width:2px;height:20px;background:#E3A85C"></span>
+      </div>
+      <div style="font:400 12px/16px Outfit;color:#6D675F;text-align:center;text-wrap:pretty">A colour is picked for them automatically — you can change it later from their profile.</div>
+    </div>
+    <div style="padding:24px 20px 0"><div style="padding:16px 0;text-align:center;border-radius:16px;background:#F5F0E8;color:#100F0E;font:600 16px/20px Outfit">Add to trip</div></div>
+    <div style="height:30px;display:flex;justify-content:center;align-items:center"><div style="width:134px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+  </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+    <div style="font:500 13px Outfit;letter-spacing:.06em;color:#8A837A">Add person — name required error</div>
+    <div style="width:402px;height:874px;overflow:hidden;position:relative;background:#100F0E;color:#F5F0E8">
+    <div style="filter:blur(4px);opacity:.35;padding:62px 20px 0"><div style="font:500 16px Outfit">People</div></div>
+  <div style="position:absolute;inset:0;background:rgba(10,9,8,.55)"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;background:#191816;border-radius:28px 28px 0 0;border-top:1px solid #2A2825">
+    <div style="display:flex;justify-content:center;padding:10px 0 12px"><div style="width:40px;height:4px;border-radius:2px;background:#3F3B36"></div></div>
+    <div style="padding:0 20px 16px;display:flex;justify-content:space-between;align-items:center"><span style="font:500 16px/20px Outfit">Add person</span><span style="font-family:'Material Symbols Rounded';font-size:23px;color:#8A837A">close</span></div>
+    <div style="padding:16px 20px 0;display:flex;flex-direction:column;align-items:center;gap:14px">
+      <div style="width:64px;height:64px;border-radius:999px;background:#2A2825;display:flex;align-items:center;justify-content:center;font-family:'Material Symbols Rounded';font-size:26px;color:#5C574F">person</div>
+      <div style="width:100%;display:flex;align-items:center;gap:12px;padding:16px;border-radius:14px;background:#151413;border:1px solid #E88A72">
+        <span style="flex:1;font:400 15px/22px Outfit;color:#5C574F">Name</span>
+        <span style="width:18px;height:18px;border-radius:999px;border:1.5px solid #E88A72;display:flex;align-items:center;justify-content:center;font:600 11px Outfit;color:#E88A72;flex:none">!</span>
+      </div>
+      <div style="width:100%;font:400 12px/16px Outfit;color:#E88A72">Name is required</div>
+    </div>
+    <div style="padding:24px 20px 0"><div style="padding:16px 0;text-align:center;border-radius:16px;background:#2A2721;color:#5C574F;font:600 16px/20px Outfit">Add to trip</div></div>
+    <div style="height:30px;display:flex;justify-content:center;align-items:center"><div style="width:134px;height:5px;border-radius:3px;background:#3F3B36"></div></div>
+  </div>
+  </div>
+  </div>
+
+</div>
+
+</div>
+</div>
+</body>
+</html>

@@ -11,6 +11,7 @@ import {
 import { Keyboard, TextInput, View } from "react-native";
 import { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 import { CreateProjectFormData } from "../validation/createProjectFormSchema";
+import CurrencyField from "./CurrencyField";
 import CurrencyPicker from "./CurrencyPicker";
 import FormField from "./FormField";
 import { PickerOption } from "./Picker";
@@ -75,7 +76,7 @@ const CreateProjectForm = forwardRef<
   }));
 
   return (
-    <View className="gap-6 border border-red-500 px-5 pt-8">
+    <View className="gap-6 px-5 pt-8">
       <Controller
         control={control}
         name="projectName"
@@ -134,11 +135,8 @@ const CreateProjectForm = forwardRef<
         name="currency"
         render={({ field: { value } }) => (
           <>
-            <FormField
-              label="Default currency"
-              placeholder="Optional"
-              value={value.code}
-              isTextInput={false}
+            <CurrencyField
+              value={value}
               touchableOpacityProps={{
                 onPress: () => {
                   Keyboard.dismiss();

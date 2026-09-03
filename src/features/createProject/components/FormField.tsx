@@ -73,8 +73,11 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
     return (
       <Animated.View style={shakeStyle}>
         <View
+          //NOTE - h-14 is load-bearing: it pins the border box so it can't track the
+          //TextInput's ~1-2px placeholder/value height flip. See
+          //documentation/log/encountered_errors_ii.md
           className={cn(
-            "bg-grey-925 rounded-row flex-row items-center justify-between border px-4",
+            "bg-grey-925 rounded-row h-14 flex-row items-center justify-between border px-4",
             error
               ? "border-red-400"
               : isFocused
@@ -86,8 +89,8 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
             ref={ref}
             value={value}
             placeholder={placeholder}
-            placeholderTextColor="#666666"
-            className="text-bodyr text-grey-50 flex-1 py-4 font-outfit-regular leading-5"
+            placeholderTextColor={colors.grey[500]}
+            className="text-grey-50 text-field h-full flex-1 py-4 font-outfit-regular"
             cursorColor={colors.orange[400]}
             selectionColor={colors.orange[400]}
             {...textInputProps}
@@ -103,7 +106,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
               textInputProps?.onBlur?.(e);
             }}
           ></TextInput>
-          {error && <CircleAlert color="#e5484d" />}
+          {error && <CircleAlert color={colors.red[400]} />}
         </View>
       </Animated.View>
     );

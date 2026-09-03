@@ -14,6 +14,7 @@ module.exports = {
     item: "9px",
     row: "10px",
     block: "15px",
+    cta: "14px", // ← form footer: helper text ↔ submit button
     section: "26px",
     stack: "7px",
   },
@@ -28,6 +29,7 @@ module.exports = {
     row: "14px",
     seg: "12px",
     chip: "9px",
+    badge: "8px", // currency-symbol badge, small square avatars
     pill: "9999px",
   },
 };

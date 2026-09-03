@@ -20,6 +20,8 @@ module.exports = {
     button: ["16px", { lineHeight: "20px" }],
     // paragraphs, input text, row labels
     body: ["15px", { lineHeight: "22px" }],
+    // text inside a TextInput — tighter line box so a single line sits centered
+    field: ["15px"],
     // 12 — section headers, field labels
     label: ["12px", { lineHeight: "16px" }],
     // 12 — relation line, counts (same size, lighter weight)

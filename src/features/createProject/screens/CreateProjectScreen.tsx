@@ -1,7 +1,7 @@
 import Button from "@/components/Button";
 import { useCreateProjectScreen } from "@/features/createProject/hooks/useCreateProjectScreen";
 import { colors } from "@/themes/color";
-import { MoveLeft } from "lucide-react-native";
+import { MoveLeft, UserPlus } from "lucide-react-native";
 import { Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -41,7 +41,7 @@ export default function CreateProjectScreen() {
         >
           {/* Content */}
           <View>
-            <View className="border border-red-500 px-5 pt-8">
+            <View className="px-5 pt-8">
               <Text className="font-outfit-light text-display text-grey-50">
                 Create a new split
               </Text>
@@ -61,26 +61,28 @@ export default function CreateProjectScreen() {
             />
 
             {/* Footer */}
-            <View className="gap-10">
-              <View className="flex-row gap-2 rounded-xl border border-[#1e1e1e] bg-[#111111] p-4">
-                <Text>👥</Text>
-                <Text className="max-w-[95%] font-outfit-regular text-base text-[#777777]">
-                  Add people when you record your first expense — no pre-setup
-                  needed.
+            <View className="px-5 pt-7">
+              <View className="rounded-card bg-grey-950 border-grey-850 flex-row items-center gap-3 border p-4">
+                <UserPlus color={colors.grey[400]} size={20} />
+                <Text className="text-meta text-grey-200 max-w-[90%] font-outfit-regular">
+                  No need to add people now — you'll add them as you log the
+                  first expense.
                 </Text>
               </View>
-              <View className="gap-4">
-                <Button
-                  buttonText="Create"
-                  onPress={handleSubmit(onFormSubmit, onInvalid)}
-                  touchableOpacityProps={{
-                    disabled: formState.isSubmitting,
-                  }}
-                />
-                <Text className="text-center font-outfit-regular text-base text-[#333333]">
-                  No account required · share via link
-                </Text>
-              </View>
+            </View>
+
+            {/* Button group */}
+            <View className="gap-cta px-5 pt-28">
+              <Text className="text-grey-400 text-meta text-center font-outfit-regular">
+                No account required · share via link
+              </Text>
+              <Button
+                buttonText="Create trip"
+                onPress={handleSubmit(onFormSubmit, onInvalid)}
+                touchableOpacityProps={{
+                  disabled: formState.isSubmitting,
+                }}
+              />
             </View>
           </View>
         </KeyboardAwareScrollView>
