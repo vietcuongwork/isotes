@@ -12,7 +12,7 @@ import { Keyboard, TextInput, View } from "react-native";
 import { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 import { CreateProjectFormData } from "../validation/createProjectFormSchema";
 import CurrencyField from "./CurrencyField";
-import CurrencyPicker from "./CurrencyPicker";
+import CurrencyPickerBottomSheet from "./CurrencyPickerBottomSheet";
 import FormField from "./FormField";
 import { PickerOption } from "./Picker";
 
@@ -144,7 +144,7 @@ const CreateProjectForm = forwardRef<
                 },
               }}
             />
-            <CurrencyPicker
+            <CurrencyPickerBottomSheet
               ref={currencyPickerRef}
               selectedCurrency={value}
               onCurrencyChange={handleCurrencyChange}

@@ -1,6 +1,8 @@
-const { fontFamily, fontSize } = require("./src/themes/typography");
+const plugin = require("tailwindcss/plugin");
+const { fontFamily, textUtilities } = require("./src/themes/typography");
 const { padding, gap, space, borderRadius } = require("./src/themes/spacing");
 const { colors } = require("./src/themes/color");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // NOTE: Update this to include the paths to all files that contain Nativewind classes.
@@ -9,7 +11,6 @@ module.exports = {
   theme: {
     extend: {
       fontFamily,
-      fontSize,
       padding,
       gap,
       space,
@@ -17,5 +18,5 @@ module.exports = {
       colors,
     },
   },
-  plugins: [],
+  plugins: [plugin(({ addUtilities }) => addUtilities(textUtilities))],
 };

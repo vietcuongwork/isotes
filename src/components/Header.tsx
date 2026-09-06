@@ -4,10 +4,8 @@ import { Text, View } from "react-native";
 
 export default function Header() {
   return (
-    <View className="border-b-grey-825 flex-row justify-between border px-5 py-3.5">
-      <Text className="text-title text-grey-50 font-outfit-semibold">
-        Isotes
-      </Text>
+    <View className="flex-row justify-between border border-b-grey-825 px-5 py-3.5">
+      <Text className="text-title-semibold text-grey-50">Isotes</Text>
       <Menu color={colors.grey[200]} />
     </View>
   );

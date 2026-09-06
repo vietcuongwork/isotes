@@ -180,5 +180,57 @@ Tailwind class sort order is Tailwind's internal CSS-generation order (layout �
 - https://prettier.io/docs/configuration#typescript-configuration-files
 - https://tailwindcss.com/blog/automatic-class-sorting-with-prettier
 
+---
+
+## 10. v2.0 — Typography roles as a Tailwind plugin
+
+*Supersedes the `font-outfit-* text-<size>` class pairing shown in §7. The font-family token flow in §8 is unchanged — this sits on top of it.*
+
+### What changed
+
+Text styling moved from two classes per element (`font-outfit-medium text-label`) to one **role** class (`text-label`) that carries family + size + line-height + tracking together. Roles are defined as data in `src/themes/typography.js` and registered as real utilities by a plugin in `tailwind.config.js`:
+
+```js
+// tailwind.config.js
+const plugin = require("tailwindcss/plugin");
+const { fontFamily, textUtilities } = require("./src/themes/typography");
+
+plugins: [plugin(({ addUtilities }) => addUtilities(textUtilities))],
+```
+
+`src/themes/typography.js` now exports:
+
+- `fontFamily` — Tailwind `fontFamily` tokens (§5, §8) and native `style={{ fontFamily }}` lookups (unchanged)
+- `roles` — `{ family, size, line?, tracking?, uppercase? }` per role, the single source
+- `textUtilities` — `{ ".text-<role>": { …CSS… } }`, fed to `addUtilities`
+- `textStyle(name)` — the same role as a React Native style object (numbers, not `px` strings) for code that can't take `className` (Reanimated, `StyleSheet.create`, `Picker` itemStyle)
+
+### Why a plugin, not `theme.extend.fontSize`
+
+The claim "`fontSize` config can't bake in the family" was half right. Tailwind v3's `fontSize` tuple — `[size, { lineHeight, letterSpacing, fontWeight }]` — supports `fontWeight` but **not** `fontFamily`. And because the Outfit weights are loaded as separate named faces (`outfit-light`, `outfit-medium`, …), not a variable font, `fontWeight: 300` wouldn't switch faces — it would just set an ignored CSS property. A plugin has no such limit: `addUtilities` takes a full CSS declaration block, `fontFamily` included.
+
+An intermediate attempt used `@layer utilities { .text-hero { @apply … } }` in `global.css`. It compiles, but Tailwind CSS IntelliSense doesn't enumerate hand-written `@layer` classes — no autocomplete, no hover, no typo warnings. Plugin-added utilities **are** enumerated, so the plugin route keeps editor support while keeping tokens in JS.
+
+Reference: <https://v3.tailwindcss.com/docs/plugins>
+
+### Why still Tailwind v3 / NativeWind v4
+
+The CSS-first model (`@theme`, `@utility`, no `tailwind.config.js`) is **Tailwind v4**, which needs **NativeWind v5** — currently preview/alpha. Expo SDK 57 is built and tested against NativeWind v4. Adopting v5 now means a preview dependency plus Metro/Babel config to debug ourselves, for a project not blocked on any v4 limitation. The `roles` + plugin setup converts cleanly to `@theme` + `@utility` when v5 stabilises.
+
+Keeping tokens in JS also stays friendlier to native `StyleSheet` code: in v4 the tokens become CSS variables, and React Native has no runtime CSSOM to read them back (`vars()` in v5 is more friction than `import { fontFamily }`).
+
+### IntelliSense: set the CSS language mode
+
+Tailwind CSS IntelliSense adds completions but **doesn't replace** VS Code's built-in CSS validator, which flags `@tailwind` and `@apply` as "Unknown at-rule" (`@layer` is standard CSS, so it isn't flagged). Fix by handing validation to the extension:
+
+```jsonc
+// .vscode/settings.json
+{
+  "files.associations": { "*.css": "tailwindcss" }
+}
+```
+
+Or the narrower `"css.lint.unknownAtRules": "ignore"`. Editor-only — neither affects the build.
+
 
 ---

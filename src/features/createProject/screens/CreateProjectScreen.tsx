@@ -22,15 +22,15 @@ export default function CreateProjectScreen() {
   const { control, handleSubmit, formState } = form;
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0a0a0a]">
+    <SafeAreaView className="flex-1 bg-grey-975">
       <View>
         {/* Header */}
-        <View className="border-grey-825 relative flex-row items-center border-b px-5 py-3.5">
+        <View className="relative flex-row items-center border-b border-grey-825 px-5 py-3.5">
           <TouchableOpacity onPress={onBack} className="z-10">
             <MoveLeft color={colors.grey[200]} size={24} />
           </TouchableOpacity>
 
-          <Text className="text-button text-grey-50 font-outfit-medium absolute inset-x-0 text-center">
+          <Text className="absolute inset-x-0 text-center text-body-lg-medium text-grey-50">
             New Trip
           </Text>
         </View>
@@ -42,10 +42,10 @@ export default function CreateProjectScreen() {
           {/* Content */}
           <View>
             <View className="px-5 pt-8">
-              <Text className="font-outfit-light text-display text-grey-50">
+              <Text className="text-display text-grey-50">
                 Create a new split
               </Text>
-              <Text className="text-body text-grey-200 font-outfit-regular">
+              <Text className="text-body text-grey-200">
                 You can change any of this later.
               </Text>
             </View>
@@ -62,9 +62,9 @@ export default function CreateProjectScreen() {
 
             {/* Footer */}
             <View className="px-5 pt-7">
-              <View className="rounded-card bg-grey-950 border-grey-850 flex-row items-center gap-3 border p-4">
+              <View className="flex-row items-center gap-3 rounded-card border border-grey-850 bg-grey-950 p-4">
                 <UserPlus color={colors.grey[400]} size={20} />
-                <Text className="text-meta text-grey-200 max-w-[90%] font-outfit-regular">
+                <Text className="max-w-[90%] text-meta text-grey-200">
                   No need to add people now — you'll add them as you log the
                   first expense.
                 </Text>
@@ -73,7 +73,7 @@ export default function CreateProjectScreen() {
 
             {/* Button group */}
             <View className="gap-cta px-5 pt-28">
-              <Text className="text-grey-400 text-meta text-center font-outfit-regular">
+              <Text className="text-center text-meta text-grey-400">
                 No account required · share via link
               </Text>
               <Button

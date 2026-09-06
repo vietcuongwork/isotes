@@ -30,11 +30,9 @@ const ProjectItem = (props: ProjectItemProps) => {
     >
       {/* Header */}
       <View className="flex-row justify-between">
-        <Text className="font-outfit-regular text-title text-grey-50">
-          {project.name}
-        </Text>
+        <Text className="text-title text-grey-50">{project.name}</Text>
         {/* //TODO - Mock data */}
-        <Text className="font-outfit-regular text-title text-green-400">
+        <Text className="text-title text-green-400">
           +$274.68
         </Text>
       </View>
@@ -42,13 +40,9 @@ const ProjectItem = (props: ProjectItemProps) => {
       {/* Summary */}
       <View className="flex-row justify-between">
         {/* //TODO - Mock data */}
-        <Text className="font-outfit-regular text-label text-grey-200">
-          5 expenses · $630.90
-        </Text>
+        <Text className="text-meta text-grey-200">5 expenses · $630.90</Text>
         {/* //TODO - Mock data */}
-        <Text className="font-outfit-regular text-label text-grey-200">
-          you're owed
-        </Text>
+        <Text className="text-meta text-grey-200">you're owed</Text>
       </View>
 
       {/* Footer */}

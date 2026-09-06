@@ -56,7 +56,7 @@ function AnimatedAvatar(props: AvatarData) {
         style={animatedStyle}
         className={`rounded-pill h-7 w-7 items-center justify-center overflow-hidden ${bg}`}
       >
-        <Text className="text-grey-900 text-initial text-center font-outfit-semibold leading-5">
+        <Text className="text-grey-900 text-initial-loose text-center">
           {label}
         </Text>
       </Animated.View>

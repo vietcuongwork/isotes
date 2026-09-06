@@ -17,24 +17,24 @@ export default function CurrencyField(props: CurrencyFieldProps) {
 
   return (
     <TouchableOpacity className="gap-2" {...touchableOpacityProps}>
-      <Text className="font-outfit-medium text-label text-grey-300">
+      <Text className="text-label text-grey-300">
         Default Currency
       </Text>
 
-      <View className="rounded-row bg-grey-950 border-grey-815 flex-row items-center justify-between gap-3 border p-4">
+      <View className="flex-row items-center justify-between gap-3 rounded-row border border-grey-815 bg-grey-950 p-4">
         {/* Left cluster: badge + label stack */}
         <View className="flex-row items-center gap-3">
-          <View className="rounded-badge h-10 w-10 items-center justify-center border border-orange-700 bg-orange-800">
-            <Text className="font-outfit-medium text-field text-orange-400">
+          <View className="h-12 w-12 items-center justify-center rounded-badge border border-orange-700 bg-orange-800">
+            <Text className="text-body-medium-flat text-orange-400">
               {value.symbol}
             </Text>
           </View>
 
           <View>
-            <Text className="text-grey-50 text-body font-outfit-regular">
+            <Text className="text-body text-grey-50">
               {value.name}
             </Text>
-            <Text className="text-grey-400 text-meta font-outfit-regular">
+            <Text className="text-meta text-grey-400">
               {value.code}
             </Text>
           </View>

@@ -19,3 +19,13 @@ When a minor issue gets resolved through discussion (not big enough for its own 
 Scale the entry to the issue:
 - **Syntax/concept-level** (e.g. language or API semantics, not tied to this codebase's specific files): write it generically, without file names, component names, or project-specific types — it should read the same in any codebase.
 - **Codebase-specific/complex** (a real bug, a library quirk, a design decision): keep concrete references — file paths, component/type names, code snippets — since the fix only makes sense in that context.
+
+# Walking through a function
+
+When asked to walk through or explain a function (or a small group of related functions):
+- One-line purpose per function: what it takes, what it returns, why it exists in the flow.
+- A concrete example: a real input value from the codebase and the exact output value it produces.
+- Trace the branches: a second example that hits the optional paths / guards / error cases.
+- For pipelines (map/filter/reduce, `Object.entries`/`fromEntries`, chained transforms): show the intermediate value between every step.
+- Close with a flow diagram tying the functions together: source data → each transform → final consumer.
+- Use real values and names from the code, not `foo`/`bar`.

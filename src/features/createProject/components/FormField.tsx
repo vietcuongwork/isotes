@@ -90,7 +90,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
             value={value}
             placeholder={placeholder}
             placeholderTextColor={colors.grey[500]}
-            className="text-grey-50 text-field h-full flex-1 py-4 font-outfit-regular"
+            className="text-grey-50 text-body-tight-flat h-full flex-1 py-4"
             cursorColor={colors.orange[400]}
             selectionColor={colors.orange[400]}
             {...textInputProps}
@@ -118,7 +118,7 @@ const FormField = forwardRef<TextInput, FormFieldProps>((props, ref) => {
     props;
   return (
     <View className="gap-2">
-      <Text className="font-outfit-medium text-label text-grey-200">
+      <Text className="text-label text-grey-200">
         {label}
       </Text>
       {props.isTextInput ? (
@@ -145,7 +145,7 @@ const FormField = forwardRef<TextInput, FormFieldProps>((props, ref) => {
         </TouchableOpacity>
       )}
       {error && (
-        <Text className="text-meta px-2 font-outfit-regular text-red-400">
+        <Text className="text-meta px-2 text-red-400">
           {error}
         </Text>
       )}
