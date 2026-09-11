@@ -20,7 +20,7 @@ const avatars: AvatarData[] = [
   { index: 3, label: "S", bg: "bg-orange-200" },
 ];
 
-const AVATAR_STAGGER = 130;
+const AVATAR_STAGGER = 100;
 const ANIMATION_DURATION = 400;
 const CAPTION_DELAY =
   (avatars.length - 1) * AVATAR_STAGGER + ANIMATION_DURATION + 100;
@@ -50,13 +50,13 @@ function AnimatedAvatar(props: AvatarData) {
   return (
     // ring wrapper (static)
     <View
-      className={`bg-grey-900 rounded-full p-0.5 ${index === 0 ? "" : "-ml-2"}`}
+      className={`rounded-full bg-grey-900 p-0.5 ${index === 0 ? "" : "-ml-2"}`}
     >
       <Animated.View
         style={animatedStyle}
-        className={`rounded-pill h-7 w-7 items-center justify-center overflow-hidden ${bg}`}
+        className={`h-7 w-7 items-center justify-center overflow-hidden rounded-pill ${bg}`}
       >
-        <Text className="text-grey-900 text-initial-loose text-center">
+        <Text className="text-initial-loose text-center text-grey-900">
           {label}
         </Text>
       </Animated.View>
@@ -65,19 +65,19 @@ function AnimatedAvatar(props: AvatarData) {
 }
 
 export default function AvatarStack() {
-  const captionOpacity = useSharedValue(0);
-  const captionTranslate = useSharedValue(4);
+  // const captionOpacity = useSharedValue(0);
+  // const captionTranslate = useSharedValue(4);
 
-  useEffect(() => {
-    captionOpacity.value = withDelay(
-      CAPTION_DELAY,
-      withTiming(1, { duration: ANIMATION_DURATION }),
-    );
-    captionTranslate.value = withDelay(
-      CAPTION_DELAY,
-      withTiming(0, { duration: ANIMATION_DURATION }),
-    );
-  }, []);
+  // useEffect(() => {
+  //   captionOpacity.value = withDelay(
+  //     CAPTION_DELAY,
+  //     withTiming(1, { duration: ANIMATION_DURATION }),
+  //   );
+  //   captionTranslate.value = withDelay(
+  //     CAPTION_DELAY,
+  //     withTiming(0, { duration: ANIMATION_DURATION }),
+  //   );
+  // }, []);
 
   // const captionStyle = useAnimatedStyle(() => ({
   //   opacity: captionOpacity.value,
@@ -85,7 +85,7 @@ export default function AvatarStack() {
   // }));
 
   return (
-    <View className="bg-grey-900 flex-row items-center">
+    <View className="flex-row items-center bg-grey-900">
       {avatars.map((a, i) => (
         <AnimatedAvatar key={`${i}-${a.label}`} {...a} />
       ))}

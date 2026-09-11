@@ -1,3 +1,4 @@
+import TextField from "@/components/formfield/TextField";
 import { mergeRefs } from "@/utils/utils";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { forwardRef, RefObject, useImperativeHandle, useRef } from "react";
@@ -13,7 +14,6 @@ import { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 import { CreateProjectFormData } from "../validation/createProjectFormSchema";
 import CurrencyField from "./CurrencyField";
 import CurrencyPickerBottomSheet from "./CurrencyPickerBottomSheet";
-import FormField from "./FormField";
 import { PickerOption } from "./Picker";
 
 interface CreateProjectFormProps {
@@ -84,11 +84,10 @@ const CreateProjectForm = forwardRef<
           field: { value, onChange, onBlur, ref: rhfRef },
           fieldState: { error },
         }) => (
-          <FormField
+          <TextField
             ref={mergeRefs(projectNameRef, rhfRef)}
             label="Project name"
             placeholder="Trip to Vegas"
-            isTextInput={true}
             value={value}
             textInputProps={{
               onChangeText: onChange,
@@ -110,11 +109,10 @@ const CreateProjectForm = forwardRef<
         control={control}
         name="description"
         render={({ field: { value, onChange, onBlur, ref: rhfRef } }) => (
-          <FormField
+          <TextField
             ref={mergeRefs(descriptionRef, rhfRef)}
             label="Description"
             placeholder="Optional"
-            isTextInput={true}
             value={value}
             textInputProps={{
               onChangeText: onChange,
@@ -137,13 +135,12 @@ const CreateProjectForm = forwardRef<
           <>
             <CurrencyField
               value={value}
-              touchableOpacityProps={{
-                onPress: () => {
-                  Keyboard.dismiss();
-                  currencyPickerRef.current?.present();
-                },
+              onPress={() => {
+                Keyboard.dismiss();
+                currencyPickerRef.current?.present();
               }}
             />
+
             <CurrencyPickerBottomSheet
               ref={currencyPickerRef}
               selectedCurrency={value}

@@ -12,7 +12,6 @@ import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCreateProject } from "../hooks/useCurrencyPicker";
 import Picker, { PickerOption } from "./Picker";
-
 interface CurrencyPickerBottomSheetProps {
   selectedCurrency: Currency;
   onCurrencyChange: (option: PickerOption<string>) => void;
@@ -43,6 +42,7 @@ const CurrencyPickerBottomSheet = forwardRef<
   return (
     <BottomSheetModal
       ref={ref}
+      style={styles.sheetStyle}
       backdropComponent={renderBackDrop}
       backgroundStyle={styles.sheetBackground}
       handleIndicatorStyle={styles.handleIndicator}
@@ -70,8 +70,17 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily["outfit-medium"],
     fontSize: 16,
   },
+  sheetStyle: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -20 }, // negative = upward
+    shadowRadius: 30, // ~half the CSS blur
+    shadowOpacity: 0.45,
+  },
   sheetBackground: {
     backgroundColor: colors.grey[900],
+    //NOTE - borderRadius.sheet
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
   },
   handleIndicator: {
     backgroundColor: colors.grey[700],

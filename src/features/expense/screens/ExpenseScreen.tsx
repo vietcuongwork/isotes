@@ -7,10 +7,14 @@ import { useRef } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddExpenseBottomSheet from "../components/AddExpenseBottomSheet";
+import AddDateBottomSheet from "../components/date/AddDateBottomSheet";
 
 export default function ExpenseScreen() {
-  const { projectName } = useLocalSearchParams<{ projectName: string }>();
   const addExpenseSheetRef = useRef<BottomSheetModal>(null);
+  const addDateSheetRef = useRef<BottomSheetModal>(null);
+
+  const { projectName } = useLocalSearchParams<{ projectName: string }>();
+
   return (
     <SafeAreaView className="flex-1 bg-grey-975">
       <View>
@@ -25,7 +29,11 @@ export default function ExpenseScreen() {
           <Plus size={20} color={colors.grey[975]} />
         </TouchableOpacity>
 
-        <AddExpenseBottomSheet ref={addExpenseSheetRef} />
+        <AddExpenseBottomSheet
+          onDatePress={() => addDateSheetRef.current?.present()}
+          ref={addExpenseSheetRef}
+        />
+        <AddDateBottomSheet ref={addDateSheetRef} />
       </View>
     </SafeAreaView>
   );

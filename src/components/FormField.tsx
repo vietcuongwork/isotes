@@ -27,6 +27,9 @@ interface CustomTextInputProps {
 
 interface BaseFormFieldProps extends CustomTextInputProps {
   label: string;
+  classNames?: {
+    wrapperView?: string;
+  };
 }
 
 interface TextInputVariant extends BaseFormFieldProps {
@@ -77,7 +80,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
           //TextInput's ~1-2px placeholder/value height flip. See
           //documentation/log/encountered_errors_ii.md
           className={cn(
-            "bg-grey-925 rounded-row h-14 flex-row items-center justify-between border px-4",
+            "h-14 flex-row items-center justify-between rounded-row border bg-grey-925 px-4",
             error
               ? "border-red-400"
               : isFocused
@@ -90,7 +93,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
             value={value}
             placeholder={placeholder}
             placeholderTextColor={colors.grey[500]}
-            className="text-grey-50 text-body-tight-flat h-full flex-1 py-4"
+            className="text-body-tight-flat h-full flex-1 py-4 text-grey-50"
             cursorColor={colors.orange[400]}
             selectionColor={colors.orange[400]}
             {...textInputProps}
@@ -114,13 +117,18 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(
 );
 
 const FormField = forwardRef<TextInput, FormFieldProps>((props, ref) => {
-  const { label, placeholder, value, textInputProps, error, shakeTrigger } =
-    props;
+  const {
+    label,
+    classNames,
+    placeholder,
+    value,
+    textInputProps,
+    error,
+    shakeTrigger,
+  } = props;
   return (
-    <View className="gap-2">
-      <Text className="text-label text-grey-200">
-        {label}
-      </Text>
+    <View className={cn("gap-2", classNames?.wrapperView)}>
+      <Text className="text-label text-grey-200">{label}</Text>
       {props.isTextInput ? (
         <CustomTextInput
           ref={ref}
@@ -144,11 +152,7 @@ const FormField = forwardRef<TextInput, FormFieldProps>((props, ref) => {
           </View>
         </TouchableOpacity>
       )}
-      {error && (
-        <Text className="text-meta px-2 text-red-400">
-          {error}
-        </Text>
-      )}
+      {error && <Text className="text-meta px-2 text-red-400">{error}</Text>}
     </View>
   );
 });

@@ -1,6 +1,12 @@
 const plugin = require("tailwindcss/plugin");
 const { fontFamily, textUtilities } = require("./src/themes/typography");
-const { padding, gap, space, borderRadius } = require("./src/themes/spacing");
+const {
+  padding,
+  gap,
+  space,
+  borderRadius,
+  boxShadow,
+} = require("./src/themes/spacing");
 const { colors } = require("./src/themes/color");
 
 /** @type {import('tailwindcss').Config} */
@@ -15,6 +21,7 @@ module.exports = {
       gap,
       space,
       borderRadius,
+      boxShadow,
       colors,
     },
   },

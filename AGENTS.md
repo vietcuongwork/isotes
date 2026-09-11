@@ -12,6 +12,16 @@ Break implementation work into the smallest reviewable increments and show each 
 
 Default to one file per answer. For small, low-risk tasks (e.g. extracting a component, adding a constants file, simple refactors), it's fine to show up to 2 related files in a single answer — but still wait for confirmation before writing any of them.
 
+# Highlighting diffs
+
+When showing a proposed change to an *existing* file in the conversation,
+lead with a unified diff (fenced ` ```diff ` block, `-`/`+` lines) of just the
+changed hunks — that's what actually makes the change scannable, since it's
+color-highlighted and skips the unchanged lines. Follow it with the full file
+content as usual (still required by "Smallest steps" above) so it's ready to
+apply as-is. Full-file-only is fine for brand-new files, where there's nothing
+to diff against.
+
 # Logging minor issues
 
 When a minor issue gets resolved through discussion (not big enough for its own doc), log it briefly in `documentation/encountered_errors.md` using the existing template — **Problem / Explanation / Solution**, kept short — with a `(YYYY-MM-DD)` timestamp in the heading.
@@ -19,6 +29,12 @@ When a minor issue gets resolved through discussion (not big enough for its own 
 Scale the entry to the issue:
 - **Syntax/concept-level** (e.g. language or API semantics, not tied to this codebase's specific files): write it generically, without file names, component names, or project-specific types — it should read the same in any codebase.
 - **Codebase-specific/complex** (a real bug, a library quirk, a design decision): keep concrete references — file paths, component/type names, code snippets — since the fix only makes sense in that context.
+
+# Code comments
+
+Keep inline comments to 1–3 lines. State the non-obvious *why* — a constraint, a gotcha, a magic number's derivation — not what the code already says. Show the arithmetic for a computed constant (`marginTop: 22 // 14 parent pad + 8 gap`), not a prose paragraph.
+
+When the reasoning is longer than that, put it in `documentation/log/encountered_errors_ii.md` (or a dedicated doc) and leave a one-line pointer in the code: `// why: encountered_errors_ii.md (YYYY-MM-DD)`. The date is the entry heading's timestamp so the reference stays findable.
 
 # Walking through a function
 

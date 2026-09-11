@@ -1,11 +1,14 @@
-import { Text, View } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import { Text, TextInput, View } from "react-native";
 
 export default function AmountField() {
   return (
-    <View className="flex-row items-center gap-1 px-5 py-3.5">
-      <Text className="font-outfit-light "></Text>
-      <TextInput />
+    <View className="bg-grey-965 flex-row items-baseline gap-1 px-5 py-3.5">
+      <Text className="text-amount text-grey-400">$</Text>
+      <TextInput
+        className="text-hero-amount flex-1 text-grey-50"
+        style={{ includeFontPadding: false }}
+        placeholder="0.00"
+      />
     </View>
   );
 }

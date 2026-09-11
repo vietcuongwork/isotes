@@ -25,11 +25,15 @@ module.exports = {
     card: "20px",
     sheet: "26px",
     btn: "16px",
-    field: "15px",
     row: "14px",
     seg: "12px",
     chip: "9px",
     badge: "8px", // currency-symbol badge, small square avatars
     pill: "9999px",
+  },
+  boxShadow: {
+    selected: "0 2px 12px rgba(227,168,92,0.12)", // selected Activity tile/chip — warm lift
+    fab: "0 8px 20px rgba(0,0,0,0.35)", // + Expense FAB, record-payment CTA
+    popover: "0 18px 44px rgba(0,0,0,0.55)", // anchored Activity dropdown
   },
 };

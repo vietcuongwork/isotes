@@ -1,27 +1,22 @@
+import PickerField from "@/components/formfield/PickerField";
 import { colors } from "@/themes/color";
 import { ChevronsUpDown } from "lucide-react-native";
-import {
-  Text,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-} from "react-native";
+import { Text, View } from "react-native";
 import { Currency } from "../types/TCreateProject";
 
 interface CurrencyFieldProps {
   value: Currency;
-  touchableOpacityProps: TouchableOpacityProps;
+  /** is the currency sheet open — drives the accent look */
+  open?: boolean;
+  onPress: () => void;
 }
+
 export default function CurrencyField(props: CurrencyFieldProps) {
-  const { value, touchableOpacityProps } = props;
+  const { value, open, onPress } = props;
 
   return (
-    <TouchableOpacity className="gap-2" {...touchableOpacityProps}>
-      <Text className="text-label text-grey-300">
-        Default Currency
-      </Text>
-
-      <View className="flex-row items-center justify-between gap-3 rounded-row border border-grey-815 bg-grey-950 p-4">
+    <PickerField label="Default Currency" open={open} onPress={onPress}>
+      <View className="flex-row items-center justify-between">
         {/* Left cluster: badge + label stack */}
         <View className="flex-row items-center gap-3">
           <View className="h-12 w-12 items-center justify-center rounded-badge border border-orange-700 bg-orange-800">
@@ -29,20 +24,13 @@ export default function CurrencyField(props: CurrencyFieldProps) {
               {value.symbol}
             </Text>
           </View>
-
           <View>
-            <Text className="text-body text-grey-50">
-              {value.name}
-            </Text>
-            <Text className="text-meta text-grey-400">
-              {value.code}
-            </Text>
+            <Text className="text-body text-grey-50">{value.name}</Text>
+            <Text className="text-meta text-grey-400">{value.code}</Text>
           </View>
         </View>
-
-        {/* Right side */}
         <ChevronsUpDown size={20} color={colors.grey[400]} />
       </View>
-    </TouchableOpacity>
+    </PickerField>
   );
 }
