@@ -298,3 +298,227 @@ it layers above instead of minimizing/dismissing whatever's already open:
 References: `node_modules/.pnpm/@gorhom+bottom-sheet@5.2.14.../src/
 {components/bottomSheetModalProvider/BottomSheetModalProvider.tsx (handleMountSheet),
 components/bottomSheetModal/constants.ts (DEFAULT_STACK_BEHAVIOR)}`.
+
+`@marceloterreiro/flash-calendar` integration issues (including one
+originally logged here) now live in their own dedicated file:
+[flash_calendar_integration.md](../flash_calendar_integration.md).
+
+---
+
+## Bottom sheet's own drop shadow visibly lags behind its slide animation (2026-09-12)
+
+**Problem**
+Every `BottomSheetModal` in the app (`AddExpenseBottomSheet`, `AddDateBottomSheet`,
+`CurrencyPickerBottomSheet`) had a `sheetStyle` with a soft shadow:
+
+```ts
+sheetStyle: {
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: -20 }, // negative = upward
+  shadowRadius: 30, // ~half the CSS blur
+  shadowOpacity: 0.45,
+},
+```
+
+During open/close, something dark appeared to trail behind the sheet and
+"go down after it" — screen-recorded and stepped through frame-by-frame
+(see the flash-calendar/bottom-sheet debugging earlier this session), which
+first looked like a stray overlay. Giving `BottomSheetView` a loud debug
+`backgroundColor` ruled that out — the sheet's own content was exactly where
+it should be. The lagging shape was the **shadow itself**, rendered a frame
+or more behind the sheet's actual position.
+
+**Explanation**
+`@gorhom/bottom-sheet` applies the consumer's `style` prop to the *same*
+`Animated.View` that carries the slide transform (`BottomSheetBody.tsx`):
+
+```tsx
+const containerAnimatedStyle = useAnimatedStyle(() => ({
+  transform: [{ translateY: animatedPosition.get() }],
+}));
+const containerStyle = useMemo(
+  () => [style, styles.container, containerAnimatedStyle], // consumer style + transform, same view
+  [style, containerAnimatedStyle],
+);
+```
+
+So the shadow and the transform live on the same native view — in principle
+a transform should carry its shadow along for free. The problem is *how*
+iOS computes that shadow: without an explicit `shadowPath`, `shadowRadius`/
+`shadowOpacity` require rasterizing and blurring the view's silhouette every
+frame. `shadowRadius: 30` is a large, expensive blur. Reanimated drives the
+`translateY` on the UI thread at up to 60–120fps; the shadow's blur pass
+can't always keep up at that rate, so it visibly falls behind the position
+update during a fast slide — a known React Native/iOS pattern with large,
+soft shadows on views under fast transform-driven animation, not specific to
+this library.
+
+**Solution**
+Removed `sheetStyle` (and its `style={styles.sheetStyle}` usage) from all
+three bottom sheets — no shadow, no lag.
+
+(`shouldRasterizeIOS: true` was tried as a way to keep the shadow without the
+lag — baking the view into a bitmap once and moving that instead of
+recomputing the blur per frame — but it didn't actually fix it in practice,
+so dropping the shadow entirely is the solution that stands.)
+
+Reference: `node_modules/.pnpm/@gorhom+bottom-sheet@5.2.14.../src/
+components/bottomSheet/BottomSheetBody.tsx`.
+
+---
+
+## A component that uses its own forwarded ref internally can't just pass it through (2026-09-12)
+
+**Problem**
+`AddDateBottomSheet` needed to call `.dismiss()` itself (its own Cancel/Done
+buttons) while also letting its parent (`ExpenseScreen`) call `.present()`
+externally via a forwarded ref. `AddExpenseBottomSheet` (which has no internal
+dismiss call) simply does `<BottomSheetModal ref={ref} .../>` — forwarding the
+parent's ref straight onto the element — but the same one-liner doesn't work
+once the component also needs to read that ref's `.current` internally.
+
+**Explanation**
+`forwardRef`'s second argument is typed `ForwardedRef<T>` — a union of
+`((instance: T | null) => void) | MutableRefObject<T | null> | null`. It might
+be a callback function, not an object, so there's no `.current` to safely
+read off it inside the component. A component that both consumes the ref
+itself and needs to expose the same instance upward has to keep its own
+local ref for internal reads, then mirror that instance into whatever the
+parent passed in as `ref`.
+
+**Solution**
+Keep a local `sheetRef = useRef<BottomSheetModal>(null)` for internal use
+(e.g. `handleDismiss`), and attach both the local and forwarded ref to the
+same element. Two ways to do the mirroring:
+
+```tsx
+// A: useImperativeHandle — proxies sheetRef.current out through ref
+useImperativeHandle(ref, () => sheetRef.current as BottomSheetModal);
+<BottomSheetModal ref={sheetRef} ... />
+
+// B: mergeRefs — attaches both refs directly, no proxying
+<BottomSheetModal ref={mergeRefs(ref, sheetRef)} ... />
+```
+
+Went with (B) once `mergeRefs` (`src/utils/utils.ts`) supported it — see the
+next entry for the type fix that required. `useImperativeHandle` is really
+for exposing a *curated* custom API (e.g. `{ open, close }`); using it to
+just re-expose the raw instance unchanged, as (A) did here, works but isn't
+what it's for — (B) does the same job with less machinery when no curation
+is needed.
+
+---
+
+## `mergeRefs` util rejected as a `BottomSheetModal` ref — callback ref must accept `null` (2026-09-12)
+
+**Problem**
+Passing `ref={mergeRefs(ref, sheetRef)}` to `BottomSheetModal` failed to
+typecheck:
+
+```
+Type '(node: BottomSheetModal) => void' is not assignable to type
+'ForwardedRef<BottomSheetModal<never>> | undefined'.
+  Type 'BottomSheetModal<never> | null' is not assignable to type
+  'BottomSheetModal'. Type 'null' is not assignable to type
+  'BottomSheetModalMethods<never>'.
+```
+
+**Explanation**
+`src/utils/utils.ts`'s `mergeRefs<T>` returned a callback typed
+`(node: T) => void`. A React callback ref must accept `null` (React calls it
+with `null` on unmount/detach) — its real shape is
+`(instance: T | null) => void`. A function that only promises to handle
+non-null input isn't a valid substitute for one that must also handle
+`null`, so passing `mergeRefs(...)` where `BottomSheetModal`'s
+`ForwardedRef<BottomSheetModal>` prop is expected failed.
+
+**Solution**
+Widen the parameter (and the object-ref branch) to `T | null`:
+
+```ts
+export function mergeRefs<T>(...refs: (React.Ref<T> | undefined)[]) {
+  return (node: T | null) => {
+    refs.forEach((ref) => {
+      if (!ref) return;
+      if (typeof ref === "function") ref(node);
+      else (ref as React.RefObject<T | null>).current = node;
+    });
+  };
+}
+```
+
+Generic util (also used by `CreateProjectForm.tsx`), so the fix applies
+everywhere `mergeRefs` is called, not just this one call site.
+
+---
+
+## `onChange` guard fired on close, not open — reverting Done to a stale value (2026-09-12)
+
+**Problem**
+Committing a new date via `AddDateBottomSheet`'s Done button intermittently
+reverted to the *previous* committed value instead of the one just picked.
+Logging `draftDate` in the hook showed three renders for one Done press:
+
+```
+draftDate: 2026-09-28   // tapped a date
+draftDate: 2026-09-28   // (unchanged — parent re-render, see below)
+draftDate: 2026-09-19   // reverted back to the old committed value
+```
+
+**Explanation**
+`useAddDateBottomSheet`'s reset-the-draft guard was wired to the sheet's
+close transition instead of its open transition:
+
+```ts
+const handleSheetChange = (index: number) => {
+  if (index === -1) {              // closed — wrong transition to reset on
+    setDraftDate(selectedDate);
+    setMonthId(selectedDate);
+  }
+};
+```
+
+`handleDone` calls `onSelectDate(draftDate)` (schedules the *parent's*
+`selectedDate` update) and then `sheetRef.current?.dismiss()` in the same
+handler. `dismiss()` starts the close animation, which eventually fires this
+guard via `onChange`/`onAnimate`. But `@gorhom/bottom-sheet`'s animation
+callback is driven by a Reanimated shared value on the UI thread and calls
+back into JS via `runOnJS` — a separate, later commit, not synchronous with
+the `onPress` handler. So the order of commits was:
+
+1. Local `setDraftDate(28)` from tapping a date.
+2. The parent's `selectedDate` update (from `onSelectDate(28)`) commits and
+   re-renders this hook with the new prop — `draftDate` itself hasn't
+   changed, but the diagnostic `console.log` sits in the hook body, so it
+   re-logs the same value.
+3. The close-triggered guard finally fires, calling
+   `setDraftDate(selectedDate)` — but the closure it's using still points at
+   an older render where `selectedDate` was `19`, before step 2 landed. That
+   stomps the just-committed `28` with the stale `19`.
+
+Any close path (Done, Cancel, swipe, backdrop) triggered this same reset,
+which was backwards: the draft should be re-seeded when the sheet *opens*
+(so a fresh session starts from the latest committed value), not when it
+closes (which can race against the very commit Done just made).
+
+**Solution**
+Guard on the open transition instead, using `onAnimate` (fires before the
+open animation starts, avoiding a visible flash of the stale draft) rather
+than `onChange` (fires mid/post-animation):
+
+```ts
+const handleSheetAnimate = (fromIndex: number, toIndex: number) => {
+  if (fromIndex === -1 && toIndex === 0) {
+    setDraftDate(selectedDate);
+    setMonthId(selectedDate);
+  }
+};
+```
+
+```tsx
+<BottomSheetModal ref={mergeRefs(ref, sheetRef)} onAnimate={handleSheetAnimate} ... />
+```
+
+`onAnimate` alone is sufficient — no `onChange` handler is needed alongside
+it; the pre-fix `handleSheetChange` was removed rather than kept as a
+second, redundant reset path.

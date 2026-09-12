@@ -5,86 +5,111 @@ import {
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { Calendar, toDateId } from "@marceloterreiro/flash-calendar";
 import {
   forwardRef,
   ReactElement,
   useCallback,
-  useMemo,
-  useState,
+  useImperativeHandle,
 } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import useAddDateBottomSheet from "../../hooks/useAddDateBottomSheet";
+import DateCalendar from "./DateCalendar";
+import QuickPickPills from "./QuickPickPills";
 
-const today = toDateId(new Date());
+interface AddDateBottomSheetProps {
+  today: string;
+  selectedDate: string;
+  onSelectDate: (dateId: string) => void;
+}
 
-const AddDateBottomSheet = forwardRef<BottomSheetModal>(
-  function AddDateBottomSheet(_props, ref): ReactElement {
-    const [selectedDate, setSelectedDate] = useState(today);
+export interface AddDateBottomSheetHandle {
+  present: () => void;
+  dismiss: () => void;
+}
 
-    const { bottom } = useSafeAreaInsets();
+const AddDateBottomSheet = forwardRef<
+  AddDateBottomSheetHandle,
+  AddDateBottomSheetProps
+>(function AddDateBottomSheet(props, ref): ReactElement {
+  const { today, selectedDate, onSelectDate } = props;
 
-    const renderBackDrop = useCallback(
-      (backdropProps: BottomSheetBackdropProps) => (
-        <BottomSheetBackdrop
-          {...backdropProps}
-          appearsOnIndex={0}
-          disappearsOnIndex={-1}
-          opacity={0.6}
+  const {
+    monthId,
+    setMonthId,
+    sheetRef,
+    contentStyle,
+    pills,
+    handleCancel,
+    handleDone,
+    draftDate,
+    handleSelectDraft,
+    handlePresent,
+    handleDismiss,
+  } = useAddDateBottomSheet({ today, selectedDate, onSelectDate });
+
+  useImperativeHandle(ref, () => ({
+    present: handlePresent,
+    dismiss: handleDismiss,
+  }));
+
+  const renderBackDrop = useCallback(
+    (backdropProps: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...backdropProps}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.6}
+      />
+    ),
+    [],
+  );
+
+  return (
+    <BottomSheetModal
+      ref={sheetRef}
+      backdropComponent={renderBackDrop}
+      backgroundStyle={styles.sheetBackground}
+      handleIndicatorStyle={styles.handleIndicator}
+      enableContentPanningGesture={false}
+      stackBehavior="push"
+    >
+      <BottomSheetView style={contentStyle}>
+        {/* Cancel / EXPENSE DATE / Done */}
+        <View className="flex-row items-center justify-between px-5 pb-3.5">
+          <Pressable onPress={handleCancel}>
+            <Text className="text-grey-100 text-row">Cancel</Text>
+          </Pressable>
+          <Text className="tracking-[0.08em] text-grey-200 text-label">
+            EXPENSE DATE
+          </Text>
+          <Pressable onPress={handleDone}>
+            <Text className="text-orange-400 text-row-medium">Done</Text>
+          </Pressable>
+        </View>
+
+        <QuickPickPills
+          pills={pills}
+          selectedDate={draftDate.current}
+          onSelect={handleSelectDraft}
         />
-      ),
-      [],
-    );
 
-    const contentStyle = useMemo(
-      () => ({ paddingBottom: bottom + 300 }),
-      [bottom],
-    );
-
-    const renderCalendar = () => {
-      return (
-        <View>
-          <Text>Selected date: {selectedDate}</Text>
-          <Calendar
-            calendarActiveDateRanges={[
-              {
-                startId: selectedDate,
-                endId: selectedDate,
-              },
-            ]}
-            calendarMonthId={today}
-            onCalendarDayPress={setSelectedDate}
+        {/* Month grid */}
+        <View className="pt-4.5 px-5">
+          <DateCalendar
+            calendarMonthId={monthId}
+            selectedDateId={draftDate.current}
+            onSelectDate={handleSelectDraft}
+            onMonthChange={setMonthId}
           />
         </View>
-      );
-    };
+      </BottomSheetView>
+    </BottomSheetModal>
+  );
+});
 
-    return (
-      <BottomSheetModal
-        ref={ref}
-        style={styles.sheetStyle}
-        backdropComponent={renderBackDrop}
-        backgroundStyle={styles.sheetBackground}
-        handleIndicatorStyle={styles.handleIndicator}
-        enableContentPanningGesture={false}
-        stackBehavior="push"
-      >
-        <BottomSheetView style={contentStyle}>
-          {renderCalendar()}
-        </BottomSheetView>
-      </BottomSheetModal>
-    );
-  },
-);
 export default AddDateBottomSheet;
 
 const styles = StyleSheet.create({
-  sheetStyle: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -20 }, // negative = upward
-    shadowRadius: 30, // ~half the CSS blur
-    shadowOpacity: 0.45,
-  },
   sheetBackground: { backgroundColor: colors.grey[905] },
   handleIndicator: { backgroundColor: colors.grey[700] },
 });

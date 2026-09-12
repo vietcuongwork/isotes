@@ -1,19 +1,20 @@
 import TabScreenHeader from "@/components/TabScreenHeader";
 import { colors } from "@/themes/color";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useLocalSearchParams } from "expo-router";
 import { Plus } from "lucide-react-native";
-import { useRef } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddExpenseBottomSheet from "../components/AddExpenseBottomSheet";
 import AddDateBottomSheet from "../components/date/AddDateBottomSheet";
+import useExpenseScreen from "../hooks/useExpenseScreen";
 
 export default function ExpenseScreen() {
-  const addExpenseSheetRef = useRef<BottomSheetModal>(null);
-  const addDateSheetRef = useRef<BottomSheetModal>(null);
-
-  const { projectName } = useLocalSearchParams<{ projectName: string }>();
+  const {
+    today,
+    selectedDate,
+    setSelectedDate,
+    addExpenseSheetRef,
+    addDateSheetRef,
+  } = useExpenseScreen();
 
   return (
     <SafeAreaView className="flex-1 bg-grey-975">
@@ -30,10 +31,16 @@ export default function ExpenseScreen() {
         </TouchableOpacity>
 
         <AddExpenseBottomSheet
-          onDatePress={() => addDateSheetRef.current?.present()}
           ref={addExpenseSheetRef}
+          selectedDate={selectedDate}
+          onDateFieldPress={() => addDateSheetRef.current?.present()}
         />
-        <AddDateBottomSheet ref={addDateSheetRef} />
+        <AddDateBottomSheet
+          ref={addDateSheetRef}
+          today={today}
+          selectedDate={selectedDate}
+          onSelectDate={setSelectedDate}
+        />
       </View>
     </SafeAreaView>
   );

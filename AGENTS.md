@@ -26,9 +26,24 @@ to diff against.
 
 When a minor issue gets resolved through discussion (not big enough for its own doc), log it briefly in `documentation/encountered_errors.md` using the existing template — **Problem / Explanation / Solution**, kept short — with a `(YYYY-MM-DD)` timestamp in the heading.
 
+When the current `encountered_errors*.md` file (the one new entries are being appended to) passes 500 lines, start a new one instead of continuing to grow it — same pattern `encountered_errors_ii.md` already follows off `encountered_errors.md`: increment the numeral suffix (`_iii.md`, `_iv.md`, ...), open it with a one-line pointer back to the previous file ("Continuation of [...]. Same Problem / Explanation / Solution format."), and append new entries there going forward.
+
 Scale the entry to the issue:
 - **Syntax/concept-level** (e.g. language or API semantics, not tied to this codebase's specific files): write it generically, without file names, component names, or project-specific types — it should read the same in any codebase.
 - **Codebase-specific/complex** (a real bug, a library quirk, a design decision): keep concrete references — file paths, component/type names, code snippets — since the fix only makes sense in that context.
+
+# Labeling JSX blocks
+
+A render tree of several sibling `<View>`s doesn't always read as sections at
+a glance. Label a block with a one-line `{/* Name */}` comment when it isn't
+already obvious (3+ mixed elements, a distinct visual section) — skip it on
+blocks that are self-evident (a single `<Text>`, a one-line wrapper). When a
+block also carries its own logic or state (a `.map`, local selection state),
+prefer pulling it out into a named sibling component instead of a comment —
+the name shows up in the JSX call site and in React DevTools, and doesn't
+rot the way a comment can. Define such components at module scope, never
+inside another component's render body (that recreates the type every
+render and breaks reconciliation/local state).
 
 # Code comments
 

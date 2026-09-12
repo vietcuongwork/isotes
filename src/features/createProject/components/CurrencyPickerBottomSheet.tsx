@@ -42,7 +42,6 @@ const CurrencyPickerBottomSheet = forwardRef<
   return (
     <BottomSheetModal
       ref={ref}
-      style={styles.sheetStyle}
       backdropComponent={renderBackDrop}
       backgroundStyle={styles.sheetBackground}
       handleIndicatorStyle={styles.handleIndicator}
@@ -69,12 +68,6 @@ const styles = StyleSheet.create({
     color: colors.grey[50],
     fontFamily: fontFamily["outfit-medium"],
     fontSize: 16,
-  },
-  sheetStyle: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -20 }, // negative = upward
-    shadowRadius: 30, // ~half the CSS blur
-    shadowOpacity: 0.45,
   },
   sheetBackground: {
     backgroundColor: colors.grey[900],

@@ -14,6 +14,7 @@ interface ActivityFieldProps {
 export default function ActivityField(props: ActivityFieldProps) {
   const { selected, open = false, onPress } = props;
   const { Icon } = selected;
+
   const Chevron = open ? ChevronUp : ChevronDown;
 
   return (
@@ -31,7 +32,7 @@ export default function ActivityField(props: ActivityFieldProps) {
         <View className="flex-row items-center gap-2">
           <Icon size={18} color={colors.orange[400]} />
           <Text
-            className={cn("text-row text-grey-50", open && "text-orange-400")}
+            className={cn("text-grey-50 text-row", open && "text-orange-400")}
           >
             {selected.label}
           </Text>
