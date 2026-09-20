@@ -10,6 +10,7 @@ import Animated, {
 
 interface FieldShellProps {
   label: string;
+  optionalLabel?: string;
   error?: string;
   //NOTE - bump this (e.g. RHF submitCount) to re-fire the error shake on submit.
   shakeTrigger?: number;
@@ -18,7 +19,8 @@ interface FieldShellProps {
 }
 
 export default function FieldShell(props: FieldShellProps) {
-  const { label, error, shakeTrigger, className, children } = props;
+  const { label, optionalLabel, error, shakeTrigger, className, children } =
+    props;
 
   const translateX = useSharedValue(0);
 
@@ -46,9 +48,14 @@ export default function FieldShell(props: FieldShellProps) {
 
   return (
     <View className={cn("gap-2", className)}>
-      <Text className="text-label text-grey-200">{label}</Text>
+      <View className="flex-row justify-between">
+        <Text className="text-grey-200 text-label">{label}</Text>
+        {optionalLabel && (
+          <Text className="text-grey-500 text-meta">{optionalLabel}</Text>
+        )}
+      </View>
       <Animated.View style={shakeStyle}>{children}</Animated.View>
-      {error && <Text className="text-meta px-2 text-red-400">{error}</Text>}
+      {error && <Text className="px-2 text-red-400 text-meta">{error}</Text>}
     </View>
   );
 }

@@ -1,70 +1,53 @@
-import TextField from "@/components/formfield/TextField";
+import BottomSheet, {
+  type BottomSheetMethods,
+} from "@/components/bottomsheet/BottomSheet";
+import Button from "@/components/Button";
 import { colors } from "@/themes/color";
-import {
-  BottomSheetBackdrop,
-  BottomSheetBackdropProps,
-  BottomSheetModal,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
 import { X } from "lucide-react-native";
-import {
-  forwardRef,
-  ReactElement,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ACTIVITIES, Activity } from "../constants";
-import ActivityField from "./activity/ActivityField";
-import ActivityPicker from "./activity/ActivityPicker";
+import { forwardRef, ReactElement } from "react";
+import { Keyboard, Pressable, Text, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import useAddExpenseBottomSheet from "../hooks/useAddExpenseBottomSheet";
+import ActivityAndDateSection from "./ActivityAndDateSection";
 import AmountField from "./amount/AmountField";
-import DateField from "./date/DateField";
+import AddDateBottomSheet from "./date/AddDateBottomSheet";
+import DescriptionField from "./description/DescriptionField";
+import PaidAndSplitSection from "./paidbyandsplit/PaidAndSplitSection";
 
 interface AddExpenseBottomSheetProps {
-  selectedDate: string;
-  onDateFieldPress: () => void;
+  onClose?: () => void;
 }
+
 const AddExpenseBottomSheet = forwardRef<
-  BottomSheetModal,
+  BottomSheetMethods,
   AddExpenseBottomSheetProps
 >(function AddExpenseBottomSheet(props, ref): ReactElement {
-  const { selectedDate, onDateFieldPress } = props;
+  const { onClose } = props;
 
-  const [activityOpen, setActivityOpen] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState<Activity>(
-    ACTIVITIES[0],
-  );
+  const {
+    today,
+    isActivityPickerOpen,
+    setActivityPickerOpen,
+    safeBottomStyle,
+    pushSheet,
+    popSheet,
+  } = useAddExpenseBottomSheet();
 
-  const { bottom } = useSafeAreaInsets();
-
-  const renderBackDrop = useCallback(
-    (backdropProps: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...backdropProps}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        opacity={0.6}
-      />
-    ),
-    [],
-  );
-
-  const contentStyle = useMemo(
-    () => ({ paddingBottom: bottom + 300 }),
-    [bottom],
-  );
+  const handleDateFieldPress = () => {
+    Keyboard.dismiss();
+    setActivityPickerOpen(false);
+    pushSheet({
+      component: <AddDateBottomSheet onClose={popSheet} today={today} />,
+    });
+  };
 
   return (
-    <BottomSheetModal
-      ref={ref}
-      backdropComponent={renderBackDrop}
-      backgroundStyle={styles.sheetBackground}
-      handleIndicatorStyle={styles.handleIndicator}
-      enableContentPanningGesture={false}
-    >
-      <BottomSheetView style={contentStyle}>
+    <BottomSheet ref={ref} onClose={onClose} snapPoints={["80%"]}>
+      <KeyboardAwareScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={safeBottomStyle}
+        bottomOffset={50}
+      >
         {/*NOTE - position:relative → stacking parent for the picker scrim.
              The scrim + the Activity/Date row are direct siblings here; their
              zIndex is what floats the row (and its popover) above the dim. */}
@@ -74,50 +57,40 @@ const AddExpenseBottomSheet = forwardRef<
             <X size={24} color={colors.grey[200]} />
           </View>
 
-          <AmountField />
+          {/* Amount Field */}
+          <AmountField error={true} />
 
+          {/* Description Field */}
           <View className="px-5 pt-4">
-            <TextField label="Description" placeholder="What was it for?" />
+            <DescriptionField error="Description is required" />
           </View>
 
-          {/* Activity Field */}
-          <View className="z-20 flex-row gap-2.5 px-5 pt-3.5">
-            <ActivityField
-              selected={selectedActivity}
-              open={activityOpen}
-              onPress={() => setActivityOpen((v) => !v)}
-            />
-            <DateField onPress={onDateFieldPress} selected={selectedDate} />
-            {activityOpen && (
-              // NOTE - top-full = parent's content-box bottom, which is paddingTop
-              //  short of the real edge → mt = 14 (parent pt-3.5) + 8 gap.
-              //  why: encountered_errors_ii.md (2026-09-10)
-              <View className="absolute left-5 right-5 top-full z-20 mt-[22px]">
-                <ActivityPicker
-                  selected={selectedActivity}
-                  onSelect={(a) => {
-                    setSelectedActivity(a);
-                  }}
-                />
-              </View>
-            )}
+          <ActivityAndDateSection
+            isActivityPickerOpen={isActivityPickerOpen}
+            onToggleActivityPicker={() => {
+              Keyboard.dismiss();
+              setActivityPickerOpen((v) => !v);
+            }}
+            onDateFieldPress={handleDateFieldPress}
+          />
+
+          {/* Paid by Field */}
+          <View className="p-5">
+            <PaidAndSplitSection />
           </View>
 
-          {/* ...Paid by / Split / Save go here — dimmed by the scrim... */}
+          <View className="px-5">
+            <Button buttonText="Save expense" onPress={() => {}} />
+          </View>
         </View>
-        {activityOpen && (
+        {isActivityPickerOpen && (
           <Pressable
-            onPress={() => setActivityOpen(false)}
+            onPress={() => setActivityPickerOpen(false)}
             className="absolute inset-0 z-10"
           />
         )}
-      </BottomSheetView>
-    </BottomSheetModal>
+      </KeyboardAwareScrollView>
+    </BottomSheet>
   );
 });
 export default AddExpenseBottomSheet;
-
-const styles = StyleSheet.create({
-  sheetBackground: { backgroundColor: colors.grey[905] },
-  handleIndicator: { backgroundColor: colors.grey[700] },
-});

@@ -7,6 +7,7 @@ const DEFAULT_BOX = "bg-grey-925 p-4";
 
 interface PickerFieldProps {
   label: string;
+  optionalLabel?: string;
   error?: string;
   shakeTrigger?: number;
   /** is the picker's sheet/dropdown open — drives the FieldBox accent look */
@@ -25,6 +26,7 @@ interface PickerFieldProps {
 export default function PickerField(props: PickerFieldProps) {
   const {
     label,
+    optionalLabel,
     error,
     shakeTrigger,
     open = false,
@@ -38,6 +40,7 @@ export default function PickerField(props: PickerFieldProps) {
   return (
     <FieldShell
       label={label}
+      {...(optionalLabel && { optionalLabel: optionalLabel })}
       error={error}
       shakeTrigger={shakeTrigger}
       className={className}

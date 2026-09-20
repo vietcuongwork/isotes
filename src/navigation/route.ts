@@ -1,8 +1,8 @@
 export const EXPO_ROUTER = {
   ONBOARDING: "/(screens)/onboarding",
-  CREATE_PROJECT: "/(screens)/create-project",
-  EXPENSE: (projectId: string) => ({
-    pathname: "/(screens)/[projectId]/(tabs)/expense" as const,
-    params: { projectId },
+  CREATE_TRIP: "/(screens)/create-trip",
+  EXPENSE: (tripId: string) => ({
+    pathname: "/(screens)/[tripId]/(tabs)/expense" as const,
+    params: { tripId },
   }),
 } as const;

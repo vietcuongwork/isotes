@@ -1,3 +1,4 @@
+import { BottomSheetStackProvider } from "@/components/bottomsheet/BottomSheetStack";
 import { useDatabaseMigrations, useStudio } from "@/db/client";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFonts } from "expo-font";
@@ -38,14 +39,16 @@ export default function RootLayout() {
     <GestureHandlerRootView style={styles.gestureHandleRootView}>
       <KeyboardProvider>
         <BottomSheetModalProvider>
-          <ThemeProvider value={AppTheme}>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: "#0a0a0a" },
-              }}
-            />
-          </ThemeProvider>
+          <BottomSheetStackProvider>
+            <ThemeProvider value={AppTheme}>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: "#0a0a0a" },
+                }}
+              />
+            </ThemeProvider>
+          </BottomSheetStackProvider>
         </BottomSheetModalProvider>
       </KeyboardProvider>
     </GestureHandlerRootView>
@@ -57,3 +60,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+// if (__DEV__) {
+//   enableLogging(["layout"]); // exclude layout spam, keep effect/callback logs
+// }

@@ -7,3 +7,7 @@ export function mergeRefs<T>(...refs: (React.Ref<T> | undefined)[]) {
     });
   };
 }
+
+export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+export const getInitial = (s: string) => capitalize(s).charAt(0);

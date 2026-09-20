@@ -14,13 +14,23 @@ Default to one file per answer. For small, low-risk tasks (e.g. extracting a com
 
 # Highlighting diffs
 
-When showing a proposed change to an *existing* file in the conversation,
-lead with a unified diff (fenced ` ```diff ` block, `-`/`+` lines) of just the
-changed hunks — that's what actually makes the change scannable, since it's
-color-highlighted and skips the unchanged lines. Follow it with the full file
-content as usual (still required by "Smallest steps" above) so it's ready to
-apply as-is. Full-file-only is fine for brand-new files, where there's nothing
-to diff against.
+For a short file, show the full proposed content in a plain fenced block
+(language-highlighted, not `diff`) — easy to review and to copy as-is.
+
+For a long file, don't paste the whole file — show only the changed
+snippet (a few lines of real surrounding context, not the whole
+function/component), in a ```diff fenced block using +/- so the actually-
+changed line(s) get highlighted, and state which file and which existing
+line(s) it replaces. The +/- highlight coloring only renders inside a
+`diff` fence — a plain fence has no equivalent, and a trailing `// changed`
+comment is too easy to miss scanning a snippet. This is a deliberate
+exception to "don't use diff format": nobody hand-copies these snippets
+(the actual write happens via the edit tool after confirmation), so the
+copy-paste-friction reason for avoiding +/- doesn't apply here. Don't paste
+the full file "for reference" next to the snippet — a wall of unchanged
+text hides the one line that matters, and only being able to see the real
+diff after the file is written defeats the point of showing it beforehand
+for confirmation.
 
 # Logging minor issues
 
@@ -31,6 +41,10 @@ When the current `encountered_errors*.md` file (the one new entries are being ap
 Scale the entry to the issue:
 - **Syntax/concept-level** (e.g. language or API semantics, not tied to this codebase's specific files): write it generically, without file names, component names, or project-specific types — it should read the same in any codebase.
 - **Codebase-specific/complex** (a real bug, a library quirk, a design decision): keep concrete references — file paths, component/type names, code snippets — since the fix only makes sense in that context.
+
+# Reference links in logged discussions
+
+When a discussion that gets logged (per "Logging minor issues" above) involved links the user shared — docs, a GitHub PR/issue, an external article — include them in the log entry as a **References** list at the end, so the source stays attached to the reasoning.
 
 # Labeling JSX blocks
 
@@ -60,3 +74,35 @@ When asked to walk through or explain a function (or a small group of related fu
 - For pipelines (map/filter/reduce, `Object.entries`/`fromEntries`, chained transforms): show the intermediate value between every step.
 - Close with a flow diagram tying the functions together: source data → each transform → final consumer.
 - Use real values and names from the code, not `foo`/`bar`.
+
+# BottomSheet issues — check lift-fe-mobile first
+
+Our `src/components/bottomsheet/BottomSheet.tsx` is a from-scratch recreation
+modeled on `@lift-ui-kit/react-native`'s `BottomSheet`, used throughout
+`/Users/admin/repository/lift-fe-mobile`. Before diagnosing or fixing any
+BottomSheet-related bug here (sizing/height, sticky headers, keyboard
+avoidance, drag/snap behavior, stale props on a pushed sheet, etc.), check
+whether the original already solved the same problem:
+- Library source: `lift-fe-mobile/node_modules/@lift-ui-kit/react-native/src/components/molecules/BottomSheet/BottomSheet.tsx`
+  and `BottomSheetStack.tsx` in the same folder.
+- Real usages worth cross-referencing: `src/journeys/booking/screens/GuestDetails/components/GuestDetailsPassengerSheet.tsx`,
+  `GuestDetailsForm.tsx`, `GuestDetailsPassportSheet.tsx`, `modals/BaseModal.tsx`.
+
+Their solution is frequently more precise than an obvious first fix (e.g. a
+content wrapper's height is driven by an explicit `useAnimatedStyle`
+computed off the same shared values as the drag/snap animation, not a static
+`flex-1`) — read their approach before reinventing one from scratch.
+
+# No-token styles
+
+When implementing UI, if a style value has no matching design token (color,
+spacing, text style, etc.) and you have to fall back to a raw/adjacent value,
+flag it with a one-line comment right above the line, so it's greppable
+(`no token`) and easy to swap once a token exists:
+
+```tsx
+{/* //NOTE - no token, falling back to text-grey-400 */}
+<Text className="text-grey-400 text-seg-idle">$</Text>
+```
+
+State what's missing and what you fell back to — not just "no token" alone.

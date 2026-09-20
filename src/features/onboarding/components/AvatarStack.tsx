@@ -1,5 +1,7 @@
+import Avatar from "@/components/Avatar";
+import { MemberColor } from "@/types/TExpense";
 import { useEffect } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -10,24 +12,22 @@ import Animated, {
 type AvatarData = {
   index: number;
   label: string;
-  bg: string;
+  color: MemberColor;
 };
 
 const avatars: AvatarData[] = [
-  { index: 0, label: "J", bg: "bg-orange-400" },
-  { index: 1, label: "M", bg: "bg-green-400" },
-  { index: 2, label: "T", bg: "bg-red-400" },
-  { index: 3, label: "S", bg: "bg-orange-200" },
+  { index: 0, label: "J", color: "honey" },
+  { index: 1, label: "M", color: "olive" },
+  { index: 2, label: "T", color: "coral" },
+  { index: 3, label: "S", color: "sand" },
 ];
 
-const AVATAR_STAGGER = 100;
+const AVATAR_STAGGER = 120;
 const ANIMATION_DURATION = 400;
 const CAPTION_DELAY =
   (avatars.length - 1) * AVATAR_STAGGER + ANIMATION_DURATION + 100;
 
-function AnimatedAvatar(props: AvatarData) {
-  const { index, label, bg } = props;
-
+const AnimatedStackAvatar = ({ index, label, color }: AvatarData) => {
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
 
@@ -37,32 +37,24 @@ function AnimatedAvatar(props: AvatarData) {
   }));
 
   useEffect(() => {
+    const delay = index * AVATAR_STAGGER;
+
     scale.value = withDelay(
-      index * AVATAR_STAGGER,
+      delay,
       withTiming(1, { duration: ANIMATION_DURATION }),
     );
     opacity.value = withDelay(
-      index * AVATAR_STAGGER,
+      delay,
       withTiming(1, { duration: ANIMATION_DURATION }),
     );
   }, []);
 
   return (
-    // ring wrapper (static)
-    <View
-      className={`rounded-full bg-grey-900 p-0.5 ${index === 0 ? "" : "-ml-2"}`}
-    >
-      <Animated.View
-        style={animatedStyle}
-        className={`h-7 w-7 items-center justify-center overflow-hidden rounded-pill ${bg}`}
-      >
-        <Text className="text-initial-loose text-center text-grey-900">
-          {label}
-        </Text>
-      </Animated.View>
-    </View>
+    <Animated.View style={animatedStyle} className={index === 0 ? "" : "-ml-2"}>
+      <Avatar label={label} color={color} />
+    </Animated.View>
   );
-}
+};
 
 export default function AvatarStack() {
   // const captionOpacity = useSharedValue(0);
@@ -86,8 +78,8 @@ export default function AvatarStack() {
 
   return (
     <View className="flex-row items-center bg-grey-900">
-      {avatars.map((a, i) => (
-        <AnimatedAvatar key={`${i}-${a.label}`} {...a} />
+      {avatars.map((avatar) => (
+        <AnimatedStackAvatar key={avatar.label} {...avatar} />
       ))}
       {/* <Animated.Text
         style={captionStyle}

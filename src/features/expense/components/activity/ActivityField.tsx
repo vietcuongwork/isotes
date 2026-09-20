@@ -1,9 +1,9 @@
 import PickerField from "@/components/formfield/PickerField";
 import { colors } from "@/themes/color";
+import { Activity } from "@/types/TExpense";
 import { cn } from "@/utils/cn";
 import { ChevronDown, ChevronUp } from "lucide-react-native";
 import { Text, View } from "react-native";
-import { Activity } from "../../constants";
 
 interface ActivityFieldProps {
   selected: Activity;
@@ -12,9 +12,9 @@ interface ActivityFieldProps {
 }
 
 export default function ActivityField(props: ActivityFieldProps) {
-  const { selected, open = false, onPress } = props;
-  const { Icon } = selected;
+  const { selected, open, onPress } = props;
 
+  const { Icon } = selected;
   const Chevron = open ? ChevronUp : ChevronDown;
 
   return (
@@ -31,16 +31,11 @@ export default function ActivityField(props: ActivityFieldProps) {
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Icon size={18} color={colors.orange[400]} />
-          <Text
-            className={cn("text-grey-50 text-row", open && "text-orange-400")}
-          >
+          <Text className={cn("text-grey-50 text-row", open && "text-orange-400")}>
             {selected.label}
           </Text>
         </View>
-        <Chevron
-          size={18}
-          color={open ? colors.orange[400] : colors.grey[500]}
-        />
+        <Chevron size={18} color={colors.orange[400]} />
       </View>
     </PickerField>
   );

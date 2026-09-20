@@ -19,7 +19,7 @@ export default function Button(props: ButtonProps) {
         className="items-center rounded-btn bg-grey-50 py-4"
         {...touchableOpacityProps}
       >
-        <Text className="text-button text-grey-975">{buttonText}</Text>
+        <Text className="text-grey-975 text-button">{buttonText}</Text>
       </TouchableOpacity>
     </View>
   );

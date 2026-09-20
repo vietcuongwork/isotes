@@ -3,11 +3,12 @@ import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import { openDatabaseSync } from "expo-sqlite";
 import migrations from "../../drizzle/migrations";
+import * as relations from "./relations";
 import * as schema from "./schema";
 
 export const DATABASE_NAME = "isotes.db";
 const expoDB = openDatabaseSync(DATABASE_NAME);
-export const db = drizzle(expoDB, { schema });
+export const db = drizzle(expoDB, { schema: { ...schema, ...relations } });
 
 export function useDatabaseMigrations() {
   return useMigrations(db, migrations);

@@ -1,8 +1,9 @@
 import { colors } from "@/themes/color";
+import { Activity } from "@/types/TExpense";
 import { cn } from "@/utils/cn";
 import { Check } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
-import { ACTIVITIES, Activity } from "../../constants";
+import { ACTIVITIES } from "../../constants";
 
 interface ActivityPickerProps {
   selected: Activity;
@@ -13,7 +14,7 @@ export default function ActivityPicker(props: ActivityPickerProps) {
   const { selected, onSelect } = props;
 
   return (
-    <View className="shadow-popover rounded-card border border-grey-800 bg-grey-900 p-2.5">
+    <View className="rounded-card border border-grey-800 bg-grey-900 p-2.5 shadow-popover">
       <View className="flex-row flex-wrap">
         {ACTIVITIES.map((activity) => {
           const isSelected = activity.id === selected.id;
@@ -25,7 +26,7 @@ export default function ActivityPicker(props: ActivityPickerProps) {
                 className={cn(
                   "flex-row items-center gap-2.5 rounded-row p-3",
                   isSelected
-                    ? "shadow-selected border border-orange-700 bg-orange-800"
+                    ? "border border-orange-700 bg-orange-800 shadow-selected"
                     : "bg-grey-950 shadow-none",
                 )}
               >
@@ -35,9 +36,9 @@ export default function ActivityPicker(props: ActivityPickerProps) {
                 />
                 <Text
                   className={cn(
-                    "text-row flex-1",
+                    "flex-1 text-row",
                     isSelected
-                      ? "text-row-medium text-grey-50"
+                      ? "text-grey-50 text-row-medium"
                       : "text-grey-100",
                   )}
                 >

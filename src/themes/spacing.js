@@ -28,6 +28,7 @@ module.exports = {
     row: "14px",
     seg: "12px",
     chip: "9px",
+    "seg-item": "10px",
     badge: "8px", // currency-symbol badge, small square avatars
     pill: "9999px",
   },

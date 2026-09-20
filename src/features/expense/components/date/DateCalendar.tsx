@@ -114,16 +114,16 @@ export default function DateCalendar(props: DateCalendarProps) {
         <Text className="text-grey-50 text-body-lg-medium">
           {calendarRowMonth}
         </Text>
-        <View className="flex-row">
+        <View className="flex-row gap-4">
           <Pressable
             onPress={() => goToMonth(-1)}
-            className="h-[34px] w-[34px] items-center justify-center"
+            className="h-8 w-8 items-center justify-center"
           >
             <ChevronLeft size={20} color={colors.grey[200]} />
           </Pressable>
           <Pressable
             onPress={() => goToMonth(1)}
-            className="h-[34px] w-[34px] items-center justify-center"
+            className="h-8 w-8 items-center justify-center"
           >
             <ChevronRight size={20} color={colors.grey[100]} />
           </Pressable>

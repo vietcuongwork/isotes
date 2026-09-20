@@ -7,14 +7,8 @@ import {
   ShoppingCart,
   Ticket,
   Utensils,
-  type LucideIcon,
 } from "lucide-react-native";
-
-export interface Activity {
-  id: string;
-  label: string;
-  Icon: LucideIcon;
-}
+import { Activity } from "../../types/TExpense";
 
 //NOTE - order = grid order in ACTIVITYPicker (2 cols, top-to-bottom then wrap)
 export const ACTIVITIES: Activity[] = [
