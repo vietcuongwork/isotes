@@ -1,16 +1,19 @@
 import Avatar from "@/components/Avatar";
+import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { colors } from "@/themes/color";
-import { Member } from "@/types/TExpense";
 import { ChevronRight } from "lucide-react-native";
 import { ReactElement } from "react";
 import { Pressable, Text, View } from "react-native";
 
-export default function PeopleSummaryRow(props: {
-  members: Member[];
+interface PeopleSummaryRowProps {
   maxVisible: number;
   onPress: () => void;
-}): ReactElement {
-  const { members, maxVisible, onPress } = props;
+}
+export default function PeopleSummaryRow(
+  props: PeopleSummaryRowProps,
+): ReactElement {
+  const { maxVisible, onPress } = props;
+  const members = useExpenseSheetStore((s) => s.members);
 
   return (
     <Pressable

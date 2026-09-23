@@ -7,7 +7,7 @@ import * as relations from "./relations";
 import * as schema from "./schema";
 
 export const DATABASE_NAME = "isotes.db";
-const expoDB = openDatabaseSync(DATABASE_NAME);
+const expoDB = openDatabaseSync(DATABASE_NAME, { enableChangeListener: true });
 export const db = drizzle(expoDB, { schema: { ...schema, ...relations } });
 
 export function useDatabaseMigrations() {

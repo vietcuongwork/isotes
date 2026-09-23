@@ -1,15 +1,9 @@
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
-import { Member } from "@/types/TExpense";
+import { formatDisplayAmount, roundToDecimals } from "@/utils/currency";
 import { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-interface UseSplitBottomSheetProps {
-  members: Member[];
-}
-
-export default function useSplitBottomSheet(props: UseSplitBottomSheetProps) {
-  const { members } = props;
-
+export default function useSplitBottomSheet() {
   const [query, setQuery] = useState<string>("");
 
   const equallySelectedMemberIds = useExpenseSheetStore(
@@ -25,6 +19,7 @@ export default function useSplitBottomSheet(props: UseSplitBottomSheetProps) {
   const onChangeShares = useExpenseSheetStore((s) => s.setSplitShares);
   const totalAmount = Number(useExpenseSheetStore((s) => s.amount)) || 0;
   const currency = useExpenseSheetStore((s) => s.currency);
+  const members = useExpenseSheetStore((s) => s.members);
 
   const { symbol, decimalDigits } = currency;
 
@@ -45,10 +40,10 @@ export default function useSplitBottomSheet(props: UseSplitBottomSheetProps) {
   }, [members, query]);
 
   const handleToggleEquallyMember = (memberId: string) =>
-    onChangeEquallySelected(
-      equallySelectedMemberIds.includes(memberId)
-        ? equallySelectedMemberIds.filter((id) => id !== memberId)
-        : [...equallySelectedMemberIds, memberId],
+  onChangeEquallySelected(
+    equallySelectedMemberIds.includes(memberId)
+      ? equallySelectedMemberIds.filter((id) => id !== memberId)
+      : [...equallySelectedMemberIds, memberId],
     );
 
   const effectiveAmounts = useMemo<Record<string, string>>(() => {
@@ -62,6 +57,26 @@ export default function useSplitBottomSheet(props: UseSplitBottomSheetProps) {
       ]),
     );
   }, [members, selectedAmounts, totalAmount]);
+
+  // Mirrors resolveSplitAmounts's "shares" branch (expenseHelpers.ts) — same
+  // round-to-nearest rule, kept in sync manually so the stepper row shows
+  // exactly what submit will persist per member.
+  const effectiveShareAmounts = useMemo<Record<string, string>>(() => {
+    const totalShares = members.reduce(
+      (sum, member) => sum + (selectedShares[member.id] ?? 0),
+      0,
+    );
+    return Object.fromEntries(
+      members.map((member) => {
+        const memberShares = selectedShares[member.id] ?? 0;
+        const amount = roundToDecimals(
+          (totalAmount * memberShares) / (totalShares || 1),
+          decimalDigits,
+        );
+        return [member.id, formatDisplayAmount(amount, symbol, decimalDigits)];
+      }),
+    );
+  }, [members, selectedShares, totalAmount, symbol, decimalDigits]);
 
   const handleChangeAmount = (memberId: string, amount: string) =>
     onChangeAmounts({ ...selectedAmounts, [memberId]: amount });
@@ -78,6 +93,7 @@ export default function useSplitBottomSheet(props: UseSplitBottomSheetProps) {
     filteredMembers,
     flatListContentContainerStyle,
     effectiveAmounts,
+    effectiveShareAmounts,
     handleToggleEquallyMember,
     handleChangeAmount,
     handleChangeShares,
@@ -87,5 +103,6 @@ export default function useSplitBottomSheet(props: UseSplitBottomSheetProps) {
     selectedShares,
     equallySelectedMemberIds,
     totalAmount,
+    members,
   };
 }

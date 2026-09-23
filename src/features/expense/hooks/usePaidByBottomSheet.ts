@@ -1,19 +1,14 @@
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
-import { Member } from "@/types/TExpense";
 import { useMemo, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-interface UsePaidByBottomSheetProps {
-  members: Member[];
-}
-
-export default function usePaidByBottomSheet(props: UsePaidByBottomSheetProps) {
-  const { members } = props;
-
+export default function usePaidByBottomSheet() {
   const [query, setQuery] = useState<string>("");
 
   const selectedPayerId = useExpenseSheetStore((s) => s.paidByMemberId);
   const onSelectPayer = useExpenseSheetStore((s) => s.setPaidByMemberId);
+  const members = useExpenseSheetStore((s) => s.members);
+
   const { bottom } = useSafeAreaInsets();
   const safeBottomStyle = useMemo(
     () => ({ flex: 1, paddingBottom: bottom }),
@@ -37,5 +32,6 @@ export default function usePaidByBottomSheet(props: UsePaidByBottomSheetProps) {
     safeBottomStyle,
     selectedPayerId,
     onSelectPayer,
+    members,
   };
 }

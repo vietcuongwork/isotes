@@ -8,29 +8,9 @@ Do not modify files directly unless the user explicitly asks for the change. Pro
 
 # Smallest steps
 
-Break implementation work into the smallest reviewable increments and show each file's actual proposed content (not just a folder/plan description), waiting for explicit confirmation on that specific content before writing it. Agreement on a general plan or direction ("yes, continue") is not confirmation to write — only a yes on the shown content is. Don't chain file writes or installs off a single approval.
+Break implementation work into the smallest reviewable increments. For each file, describe the change in natural language — what's changing and why — rather than pasting the full proposed code or a diff first; the user reviews the actual diff after it's written (via `git diff` or the editor), so pasting code beforehand just means reviewing the same change twice. Wait for explicit confirmation on that per-file description before writing it. Agreement on a general plan or direction ("yes, continue") is not confirmation to write a specific file — only a yes on that file's described change is. Don't chain file writes or installs off a single approval.
 
-Default to one file per answer. For small, low-risk tasks (e.g. extracting a component, adding a constants file, simple refactors), it's fine to show up to 2 related files in a single answer — but still wait for confirmation before writing any of them.
-
-# Highlighting diffs
-
-For a short file, show the full proposed content in a plain fenced block
-(language-highlighted, not `diff`) — easy to review and to copy as-is.
-
-For a long file, don't paste the whole file — show only the changed
-snippet (a few lines of real surrounding context, not the whole
-function/component), in a ```diff fenced block using +/- so the actually-
-changed line(s) get highlighted, and state which file and which existing
-line(s) it replaces. The +/- highlight coloring only renders inside a
-`diff` fence — a plain fence has no equivalent, and a trailing `// changed`
-comment is too easy to miss scanning a snippet. This is a deliberate
-exception to "don't use diff format": nobody hand-copies these snippets
-(the actual write happens via the edit tool after confirmation), so the
-copy-paste-friction reason for avoiding +/- doesn't apply here. Don't paste
-the full file "for reference" next to the snippet — a wall of unchanged
-text hides the one line that matters, and only being able to see the real
-diff after the file is written defeats the point of showing it beforehand
-for confirmation.
+Default to describing one file per answer. For small, low-risk tasks (e.g. extracting a component, adding a constants file, simple refactors), it's fine to describe up to a few related files in a single answer — but still wait for confirmation before writing any of them.
 
 # Logging minor issues
 
@@ -106,3 +86,12 @@ flag it with a one-line comment right above the line, so it's greppable
 ```
 
 State what's missing and what you fell back to — not just "no token" alone.
+
+# Commit message template
+
+When asked to `git diff` and suggest a commit message, use this template:
+- Header: `<category>: <short summary>`, lowercase first word after the colon.
+- Only use these three categories: `feature`, `refactor`, `bugfix`.
+- Body: one bullet per change, each prefixed with its own category
+  (`feature:`, `refactor:`, or `bugfix:`), lowercase first word, grouped
+  feature bullets first, then refactor, then bugfix.

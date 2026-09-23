@@ -1,27 +1,26 @@
 import { desc, eq } from "drizzle-orm";
 import { randomUUID } from "expo-crypto";
 import { db } from "./client";
-import {
-  expenses,
-  expenseSplits,
-  NewExpense,
-  NewExpenseSplit,
-} from "./schema";
+import { expenses, expenseSplits, NewExpense, NewExpenseSplit } from "./schema";
 
 export async function insertExpenseWithSplits(
   data: Omit<NewExpense, "id">,
   splits: Omit<NewExpenseSplit, "id" | "expenseId">[],
 ) {
-  const id = randomUUID();
+  const expenseId = randomUUID();
 
   await db.transaction(async (tx) => {
-    await tx.insert(expenses).values({ ...data, id });
+    await tx.insert(expenses).values({ ...data, id: expenseId });
     await tx.insert(expenseSplits).values(
-      splits.map((split) => ({ ...split, id: randomUUID(), expenseId: id })),
+      splits.map((split) => ({
+        ...split,
+        id: randomUUID(),
+        expenseId: expenseId,
+      })),
     );
   });
 
-  return id;
+  return expenseId;
 }
 
 export async function getExpensesByTripId(tripId: string) {

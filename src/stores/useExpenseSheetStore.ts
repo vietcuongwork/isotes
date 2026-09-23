@@ -31,7 +31,26 @@ interface ExpenseSheetState {
   setSplitShares: (splitShares: Record<string, number>) => void;
   setCurrency: (currency: Currency) => void;
   reset: () => void;
+  resetDraft: () => void;
 }
+
+// "members"/"currency" are session-scoped — live-synced from the trip by
+// useExpenseScreen's effects, not part of the expense being composed. Kept
+// separate from the draft fields so resetDraft() (submit, "Start over") can
+// clear the draft without wiping data that only a screen unmount/remount
+// re-populates. See design_decisions.md "useExpenseSheetStore is reset on
+// ExpenseScreen unmount..." (2026-09-23).
+export const draftInitialState = {
+  activity: ACTIVITIES[0],
+  amount: "",
+  description: "",
+  date: today,
+  paidByMemberId: "",
+  equallySelectedMemberIds: [] as string[],
+  splitMethod: "equally" as SplitMethod,
+  splitAmounts: {} as Record<string, string>,
+  splitShares: {} as Record<string, number>,
+};
 
 const initialState: Omit<
   ExpenseSheetState,
@@ -47,21 +66,14 @@ const initialState: Omit<
   | "setSplitShares"
   | "setCurrency"
   | "reset"
+  | "resetDraft"
 > = {
-  activity: ACTIVITIES[0],
-  amount: "",
-  description: "",
-  date: today,
+  ...draftInitialState,
   members: [],
-  paidByMemberId: "",
-  equallySelectedMemberIds: [],
-  splitMethod: "equally",
-  splitAmounts: {},
-  splitShares: {},
   currency: CURRENCY_OPTIONS[0],
 };
 
-export const useExpenseSheetStore = create<ExpenseSheetState>((set) => ({
+export const useExpenseSheetStore = create<ExpenseSheetState>((set, get) => ({
   ...initialState,
   setActivity: (activity) => set({ activity }),
   setAmount: (amount) => set({ amount }),
@@ -69,11 +81,13 @@ export const useExpenseSheetStore = create<ExpenseSheetState>((set) => ({
   setDate: (date) => set({ date }),
   setMembers: (members) => set({ members }),
   setPaidByMemberId: (paidByMemberId) => set({ paidByMemberId }),
-  setEquallySelectedMemberIds: (equallySelectedMemberIds) =>
-    set({ equallySelectedMemberIds }),
+  setEquallySelectedMemberIds: (equallySelectedMemberIds) => {
+    set({ equallySelectedMemberIds });
+  },
   setSplitMethod: (splitMethod) => set({ splitMethod }),
   setSplitAmounts: (splitAmounts) => set({ splitAmounts }),
   setSplitShares: (splitShares) => set({ splitShares }),
   setCurrency: (currency) => set({ currency }),
   reset: () => set(initialState),
+  resetDraft: () => set(draftInitialState),
 }));

@@ -6,7 +6,10 @@ import { ChevronsUpDown } from "lucide-react-native";
 import { ReactElement } from "react";
 import { Pressable, Text, View } from "react-native";
 
-export default function PayerRow(props: { onPress: () => void }): ReactElement {
+interface PayerRowProps {
+  onPress: () => void;
+}
+export default function PayerRow(props: PayerRowProps): ReactElement {
   const { onPress } = props;
 
   const members = useExpenseSheetStore((s) => s.members);
@@ -21,10 +24,7 @@ export default function PayerRow(props: { onPress: () => void }): ReactElement {
       className="flex-row items-center justify-between border-b border-b-grey-825 px-3.5 py-3"
     >
       <View className="flex-row items-center gap-2.5">
-        <Avatar
-          label={getInitial(payer.name)}
-          color={payer.memberColor}
-        />
+        <Avatar label={getInitial(payer.name)} color={payer.memberColor} />
         <Text className="font-outfit-medium text-grey-50 text-body-medium-flat">
           {payer.isOwner ? "You paid" : `${payer.name} paid`}
         </Text>

@@ -27,6 +27,7 @@ type MemberListRowProps =
       avatar: AvatarProps;
       state: {
         shares: number;
+        amount: string;
         onIncrement: () => void;
         onDecrement: () => void;
       };
@@ -70,7 +71,14 @@ export default function MemberListRow(props: MemberListRowProps): ReactElement {
     >
       <View className="flex-row items-center gap-3">
         <Avatar label={avatar.label} color={avatar.color} />
-        <Text className="text-grey-50 text-row">{name}</Text>
+        <View>
+          <Text className="text-grey-50 text-row">{name}</Text>
+          {variant === "shares" && (
+            <Text className="text-grey-400 text-micro">
+              {props.state.amount}
+            </Text>
+          )}
+        </View>
       </View>
 
       {/* Equally variant */}

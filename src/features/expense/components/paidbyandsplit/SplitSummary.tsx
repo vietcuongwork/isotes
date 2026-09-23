@@ -1,18 +1,16 @@
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { colors } from "@/themes/color";
-import { Member } from "@/types/TExpense";
-import { formatDisplayAmount, parseAmountInput } from "@/utils/currency";
-import { CheckCircle2 } from "lucide-react-native";
+import {
+  formatDisplayAmount,
+  getAcceptableSplitGap,
+  parseAmountInput,
+  roundToDecimals,
+} from "@/utils/currency";
+import { CheckCircle2, CircleAlert } from "lucide-react-native";
 import { useMemo } from "react";
 import { Text, View } from "react-native";
 
-interface SplitSummaryProps {
-  members: Member[];
-}
-
-export default function SplitSummary(props: SplitSummaryProps) {
-  const { members } = props;
-
+export default function SplitSummary() {
   const splitMethod = useExpenseSheetStore((s) => s.splitMethod);
   const equallySelectedMemberIds = useExpenseSheetStore(
     (s) => s.equallySelectedMemberIds,
@@ -22,6 +20,8 @@ export default function SplitSummary(props: SplitSummaryProps) {
   const totalAmount =
     parseAmountInput(useExpenseSheetStore((s) => s.amount)) || 0;
   const currency = useExpenseSheetStore((s) => s.currency);
+  const members = useExpenseSheetStore((s) => s.members);
+
 
   const { symbol, decimalDigits } = currency;
 
@@ -44,13 +44,16 @@ export default function SplitSummary(props: SplitSummaryProps) {
     (sum, member) => sum + (splitShares[member.id] ?? 0),
     0,
   );
-  const perShareAmount = totalAmount / (totalShares || 1);
+  const perShareAmount = roundToDecimals(
+    totalAmount / (totalShares || 1),
+    decimalDigits,
+  );
 
   if (members.length === 1) {
     return (
-      <View className="flex-row">
+      <View className="flex-row justify-center">
         <Text className="text-grey-200 text-meta">
-          Nobody owes anything yet -
+          Nobody owes anything yet -{" "}
         </Text>
         <Text className="text-orange-400 text-label">
           add people to the trip
@@ -62,7 +65,19 @@ export default function SplitSummary(props: SplitSummaryProps) {
   // Equally variant
   if (splitMethod === "equally") {
     const count = equallySelectedMemberIds.length;
-    const perPerson = totalAmount / (count || 1);
+    const perPerson = roundToDecimals(
+      totalAmount / (count || 1),
+      decimalDigits,
+    );
+
+    if (equallySelectedMemberIds.length === 0) {
+      return (
+        <View className="flex-row items-center justify-center gap-1.5">
+          <CircleAlert size={12} color={colors.red[400]} />
+          <Text className="text-red-400 text-meta">Nobody selected</Text>
+        </View>
+      );
+    }
 
     return (
       <Text className="mt-3 text-center text-grey-200 text-meta">
@@ -80,14 +95,16 @@ export default function SplitSummary(props: SplitSummaryProps) {
       0,
     );
     const remaining = totalAmount - assignedTotal;
-    const remainingCents = Math.round(remaining * 100);
+    const acceptableGap = getAcceptableSplitGap(members.length, decimalDigits);
 
-    if (remainingCents === 0) {
+    if (Math.abs(remaining) <= acceptableGap) {
       return (
         <View className="mt-3 flex-row items-center justify-center gap-1.5">
           <CheckCircle2 size={16} color={colors.green[400]} />
           <Text className="font-outfit-medium text-green-400 text-meta">
             Fully assigned
+            {remaining !== 0 &&
+              ` · ${formatDisplayAmount(Math.abs(remaining), symbol, decimalDigits)} rounding`}
           </Text>
         </View>
       );
@@ -96,7 +113,7 @@ export default function SplitSummary(props: SplitSummaryProps) {
     return (
       <View className="mt-3 flex-row items-center justify-center gap-1.5">
         <Text className="font-outfit-medium text-red-400 text-meta">
-          {remainingCents > 0
+          {remaining > 0
             ? `${formatDisplayAmount(remaining, symbol, decimalDigits)} left to assign`
             : `${formatDisplayAmount(Math.abs(remaining), symbol, decimalDigits)} over`}
         </Text>
@@ -105,6 +122,15 @@ export default function SplitSummary(props: SplitSummaryProps) {
   }
 
   // Shares variant
+  if (totalShares === 0) {
+    return (
+      <View className="flex-row items-center justify-center gap-1.5">
+        <CircleAlert size={12} color={colors.red[400]} />
+        <Text className="text-red-400 text-meta">No shares assigned</Text>
+      </View>
+    );
+  }
+
   return (
     <View className="mt-3 flex-row items-center justify-center gap-1.5">
       <CheckCircle2 size={16} color={colors.green[400]} />

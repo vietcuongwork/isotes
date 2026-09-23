@@ -1,5 +1,4 @@
 import { useBottomSheetStack } from "@/components/bottomsheet/BottomSheetStack";
-import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { ReactElement } from "react";
 import { Keyboard, Text, View } from "react-native";
 import PaidByBottomSheet, { PaidByBottomSheetProps } from "./PaidByBottomSheet";
@@ -11,33 +10,19 @@ import SplitSummary from "./SplitSummary";
 
 export default function PaidAndSplitSection(): ReactElement {
   const { pushSheet, popSheet } = useBottomSheetStack();
-  const members = useExpenseSheetStore((s) => s.members);
 
   const handlePayerRowPress = (props: PaidByBottomSheetProps) => {
-    const { members, onAddPerson, onClose } = props;
+    const { onClose } = props;
     pushSheet({
-      component: (
-        <PaidByBottomSheet
-          members={members}
-          // TODO: wire to the add-person flow once it exists
-          onAddPerson={onAddPerson}
-          onClose={onClose}
-        />
-      ),
+      component: <PaidByBottomSheet onClose={onClose} />,
     });
   };
 
   const handlePeopleSummaryRowPress = (props: SplitBottomSheetProps) => {
-    const {
-      members,
-
-      onAddPerson,
-      onClose,
-    } = props;
+    const { onAddPerson, onClose } = props;
     pushSheet({
       component: (
         <SplitBottomSheet
-          members={members}
           // TODO: wire to the add-person flow once it exists
           onAddPerson={onAddPerson}
           onClose={onClose}
@@ -55,8 +40,6 @@ export default function PaidAndSplitSection(): ReactElement {
           onPress={() => {
             Keyboard.dismiss();
             handlePayerRowPress({
-              members,
-              onAddPerson: () => {},
               onClose: popSheet,
             });
           }}
@@ -67,12 +50,10 @@ export default function PaidAndSplitSection(): ReactElement {
 
           <View className="mt-3">
             <PeopleSummaryRow
-              members={members}
               maxVisible={3}
               onPress={() => {
                 Keyboard.dismiss();
                 handlePeopleSummaryRowPress({
-                  members,
                   onAddPerson: () => {},
                   onClose: popSheet,
                 });
@@ -80,7 +61,7 @@ export default function PaidAndSplitSection(): ReactElement {
             />
           </View>
 
-          <SplitSummary members={members} />
+          <SplitSummary />
         </View>
       </View>
     </View>

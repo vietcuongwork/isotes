@@ -1,23 +1,21 @@
 import Avatar from "@/components/Avatar";
-import { useBottomSheetStack } from "@/components/bottomsheet/BottomSheetStack";
 import BottomSheet, {
   BottomSheetMethods,
 } from "@/components/bottomsheet/BottomSheet";
+import { useBottomSheetStack } from "@/components/bottomsheet/BottomSheetStack";
 import Button from "@/components/Button";
 import TextField from "@/components/formfield/TextField";
 import { insertMember } from "@/db/members";
+import { useAddPersonStore } from "@/stores/useAddPersonStore";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { colors } from "@/themes/color";
-import { MemberColor } from "@/types/TExpense";
-import { getInitial } from "@/utils/utils";
+import { getInitial, sanitizeNameInput } from "@/utils/utils";
 import { X } from "lucide-react-native";
-import { forwardRef, ReactElement, useMemo, useState } from "react";
+import { forwardRef, ReactElement, useMemo } from "react";
 import { Text, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ColorField from "./ColorField";
-
-const MEMBER_COLORS = Object.keys(colors.member) as MemberColor[];
 
 interface AddPersonBottomSheetProps {
   onClose?: () => void;
@@ -29,10 +27,19 @@ const AddPersonBottomSheet = forwardRef<
 >(function AddPersonBottomSheet(props, ref): ReactElement {
   const { onClose } = props;
 
-  const [name, setName] = useState("");
-  const [selectedColor, setSelectedColor] = useState<MemberColor>(
-    MEMBER_COLORS[0],
+  const name = useAddPersonStore((s) => s.name);
+  const setName = useAddPersonStore((s) => s.setName);
+  const selectedColor = useAddPersonStore((s) => s.selectedColor);
+  const setSelectedColor = useAddPersonStore((s) => s.setSelectedColor);
+  const resetAddPerson = useAddPersonStore((s) => s.reset);
+  const equallySelectedMemberIds = useExpenseSheetStore(
+    (s) => s.equallySelectedMemberIds,
   );
+  const splitShares = useExpenseSheetStore((s) => s.splitShares);
+  const setEquallySelectedMemberIds = useExpenseSheetStore(
+    (s) => s.setEquallySelectedMemberIds,
+  );
+  const setSplitShares = useExpenseSheetStore((s) => s.setSplitShares);
 
   const { popSheet } = useBottomSheetStack();
   const tripId = useExpenseSheetStore((s) => s.members[0]?.tripId);
@@ -44,11 +51,20 @@ const AddPersonBottomSheet = forwardRef<
   const handleAddPerson = async () => {
     const trimmedName = name.trim();
     if (!trimmedName || !tripId) return;
-    await insertMember({
+    const newMemberId = await insertMember({
       tripId,
       name: trimmedName,
       memberColor: selectedColor,
     });
+
+    // The expense sheet's seed effect only fires once (paidByMemberId is
+    // already set by now), so a member added mid-session must be resolved
+    // into the split here — otherwise they're silently excluded from
+    // equal split / shares until submit.
+    setEquallySelectedMemberIds([...equallySelectedMemberIds, newMemberId]);
+    setSplitShares({ ...splitShares, [newMemberId]: 1 });
+
+    resetAddPerson();
     popSheet();
   };
 
@@ -80,8 +96,9 @@ const AddPersonBottomSheet = forwardRef<
               placeholder="Enter name"
               className="w-full"
               value={name}
-              textInputProps={{ onChangeText: setName }}
-              inBottomSheet
+              textInputProps={{
+                onChangeText: (text) => setName(sanitizeNameInput(text)),
+              }}
             />
 
             {/* Color Field */}

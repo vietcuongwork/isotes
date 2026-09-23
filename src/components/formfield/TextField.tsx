@@ -1,5 +1,4 @@
 import { colors } from "@/themes/color";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { CircleAlert } from "lucide-react-native";
 import { forwardRef, useState } from "react";
 import { TextInput, TextInputProps } from "react-native";
@@ -15,11 +14,6 @@ interface TextFieldProps {
   shakeTrigger?: number;
   textInputProps?: TextInputProps;
   className?: string;
-  // Renders BottomSheetTextInput instead of TextInput. Required inside a
-  // BottomSheetModal — plain TextInput isn't tracked by the sheet's
-  // internal keyboard-avoidance context, so it won't scroll into view
-  // when focused.
-  inBottomSheet?: boolean;
 }
 
 const TextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
@@ -32,12 +26,8 @@ const TextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
     shakeTrigger,
     textInputProps,
     className,
-    inBottomSheet,
   } = props;
   const [isFocused, setIsFocused] = useState(false);
-  const Input = (
-    inBottomSheet ? BottomSheetTextInput : TextInput
-  ) as typeof TextInput;
 
   return (
     <FieldShell
@@ -50,9 +40,9 @@ const TextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
       <FieldBox
         active={isFocused}
         error={!!error}
-        className="h-14 bg-grey-925 px-4"
+        className="h-14 flex-row items-center bg-grey-925 px-4"
       >
-        <Input
+        <TextInput
           ref={ref}
           value={value}
           placeholder={placeholder}

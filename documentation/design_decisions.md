@@ -100,3 +100,133 @@ actually enforce at the SQL level anyway.
 - Known outstanding cleanup (not yet done): `src/features/expense/constants.ts:25`'s
   duplicate `SplitMethod` should import from `@/types/TExpense` instead of
   re-declaring the literal union.
+
+---
+
+## Equal/shares split rounds down per person; split rows may not sum to the expense total (2026-09-22)
+
+**Decision**
+For the `equally` and `shares` split methods, each member's persisted
+`individualAmount` is rounded down (`floor` to the currency's
+`decimalDigits`) rather than using a largest-remainder distribution to
+force `expenseSplits.individualAmount` rows to sum exactly to
+`expenses.amount`. Any shortfall (up to `memberCount - 1` minor units, e.g.
+1-2 cents) is not assigned to anyone.
+
+**Why**
+Simpler to implement now, and nothing enforces the sum at the DB level —
+`expenseSplits.individualAmount` (`schema.ts:98`) is a plain `real` with no
+`CHECK` tying it back to `expenses.amount`. Reconciliation correctness is
+being deliberately deferred, not solved.
+
+**Alternatives considered**
+- Largest-remainder method: floor every share, then hand the leftover minor
+  units out one at a time (e.g. to members in list order) so persisted
+  splits always sum exactly to the total. Not used yet — more logic for a
+  discrepancy that isn't blocking anything today.
+
+**Revisit when**
+- Any feature sums `expenseSplits.individualAmount` to reconcile against
+  `expenses.amount` (trip balance screen, "settle up" math, export/audit
+  view) — at that point the shortfall stops being cosmetic and starts
+  silently understating what's owed.
+
+**Superseded by**: "Equal/shares split rounds to nearest, tolerated via an
+acceptable rounding gap" (2026-09-23) below — the revisit condition above
+was hit sooner than expected, by expense-submit validation itself.
+
+---
+
+## Equal/shares split rounds to nearest, tolerated via an acceptable rounding gap (2026-09-23)
+
+**Decision**
+Supersedes the 2026-09-22 entry above. For `"equally"` and `"shares"`,
+each member's persisted `individualAmount` is now rounded to the nearest
+minor unit (`roundToDecimals`, half-up) instead of floored. The resulting
+per-member sum can still miss `expenses.amount`, but only by an amount
+bounded by `getAcceptableSplitGap(participantCount, decimalDigits)`
+(`src/utils/currency.ts`) — `⌈participantCount / 2⌉` minor units, the
+mathematical worst case when N independently-rounded shares are summed.
+That bound is treated as acceptable rounding noise, not a real assignment
+gap: `SplitSummary.tsx`'s `"amounts"` variant and
+`validateExpenseSheet`'s equivalent check both compare the actual
+remaining amount against this gap rather than requiring an exact match.
+
+**Why**
+The floor-and-ignore approach's own "Revisit when" condition was hit: expense
+submit now validates the split before allowing insert, which needs a real
+answer for "is this total close enough" rather than deferring it
+indefinitely. Rounding to nearest (instead of always down) also halves the
+expected drift compared to always-floor, and a closed-form acceptable-gap
+bound is simpler to reuse across the UI and the validator than a
+largest-remainder distribution (considered and rejected here too — see
+below).
+
+**Alternatives considered**
+- Largest-remainder / single-absorber: round every share, then force the
+  sum to match exactly by assigning the whole rounding remainder to one
+  member (e.g. first in list order). Rejected: always exact, but
+  concentrates every expense's rounding drift onto the same one person
+  (typically whoever is first in `members` order) rather than treating it
+  as shared, unassigned noise — a fairness tradeoff not worth taking for a
+  discrepancy this small (at most a few minor units).
+
+**Revisit when**
+- Any feature needs `expenseSplits.individualAmount` to sum *exactly* to
+  `expenses.amount` with zero tolerance (e.g. a strict ledger export or an
+  accounting integration) — at that point the acceptable-gap tolerance
+  itself becomes the problem, not just the old floor shortfall.
+
+---
+
+## `useExpenseSheetStore` is reset on `ExpenseScreen` unmount, not on sheet close or expense submit alone (2026-09-23)
+
+**Decision**
+`useExpenseScreen.ts` resets `useExpenseSheetStore` in a `useEffect`
+cleanup (i.e. on unmount), rather than resetting whenever the add-expense
+sheet closes. The draft (amount/description/split selection/etc.) is
+otherwise left to persist across the sheet closing and reopening within
+the same trip — matching the "picked up where you left off" / "Start
+over" resume UI in `screen_ui_drafts/04-add-expense.html`, which expects
+a half-filled expense to survive a sheet dismiss and reopen.
+
+**Why**
+The store is global (module-level Zustand), so it outlives any single
+component's mount. Without an explicit reset somewhere, a leftover draft
+from Trip A (e.g. `equallySelectedMemberIds` holding Trip A's member ids)
+would still be sitting in the store after navigating to Trip B's expense
+screen, since none of Trip B's members match those stale ids — this
+produces the bug "equally split always shows 1 person selected in state,
+but the UI shows nobody checked" once Trip B's member list is compared
+against it. Resetting on `ExpenseScreen` unmount clears the draft exactly
+when leaving a trip, without clearing it on every sheet close, which
+would break the resume feature above.
+
+**This only holds as long as trip-switching always navigates to a new
+`tripId` route via `router.push`/`router.replace` (a real unmount +
+remount of `ExpenseScreen`), rather than `router.setParams` on the same
+route entry.** `push`/`replace` to a different dynamic segment produces a
+new screen instance, so the cleanup fires; `setParams` keeps the same
+instance alive, so it wouldn't. If a future trip-switcher (e.g. the
+planned drawer-based trip switching, or a header dropdown) is ever
+implemented with `setParams` instead — typically done to avoid a jarring
+full remount — this cleanup silently stops firing, and the reset would
+need to move to an effect keyed on `tripId` changing instead.
+
+**Alternatives considered**
+- Reset on successful expense submit only (already done via `reset()` in
+  `useAddExpenseBottomSheet`'s `handleSubmit`), with no unmount-based
+  reset at all. Rejected as the sole mechanism: doesn't address stale
+  cross-trip state left behind by a sheet that was opened, half-filled,
+  and dismissed without submitting.
+- Reset on `AddExpenseBottomSheet` mount. Rejected: this store is a
+  single shared draft, and mount-based reset would wipe it every time the
+  sheet reopens — directly breaking the "picked up where you left off"
+  resume feature this store is meant to support.
+
+**Revisit when**
+- Trip-switching navigation is implemented and it does **not** use
+  `router.push`/`router.replace` to a new `tripId` route (e.g. it uses
+  `router.setParams`, or trip switching becomes an in-place UI change with
+  no navigation at all) — at that point this reset needs to move to an
+  effect keyed on `tripId` changing, not on unmount.

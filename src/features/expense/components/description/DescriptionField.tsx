@@ -1,12 +1,7 @@
 import TextField from "@/components/formfield/TextField";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 
-interface DescriptionFieldProps {
-  error: string;
-}
-export default function DescriptionField(props: DescriptionFieldProps) {
-  const { error } = props;
-
+export default function DescriptionField() {
   const description = useExpenseSheetStore((s) => s.description);
   const setDescription = useExpenseSheetStore((s) => s.setDescription);
 
@@ -15,10 +10,8 @@ export default function DescriptionField(props: DescriptionFieldProps) {
       label="Description"
       optionalLabel="optional"
       placeholder="What was it for?"
-      inBottomSheet={false}
       value={description}
       textInputProps={{ onChangeText: setDescription }}
-      error={error}
     />
   );
 }

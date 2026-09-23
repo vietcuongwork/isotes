@@ -13,6 +13,8 @@ import AmountField from "./amount/AmountField";
 import AddDateBottomSheet from "./date/AddDateBottomSheet";
 import DescriptionField from "./description/DescriptionField";
 import PaidAndSplitSection from "./paidbyandsplit/PaidAndSplitSection";
+import RestoredDraftBanner from "./RestoredDraftBanner";
+import StartOverDialog from "./StartOverDialog";
 
 interface AddExpenseBottomSheetProps {
   onClose?: () => void;
@@ -31,6 +33,13 @@ const AddExpenseBottomSheet = forwardRef<
     safeBottomStyle,
     pushSheet,
     popSheet,
+    handleSubmit,
+    amountError,
+    isDraftRestored,
+    isStartOverDialogOpen,
+    handleStartOver,
+    handleCancelStartOver,
+    handleConfirmStartOver,
   } = useAddExpenseBottomSheet();
 
   const handleDateFieldPress = () => {
@@ -57,12 +66,16 @@ const AddExpenseBottomSheet = forwardRef<
             <X size={24} color={colors.grey[200]} />
           </View>
 
+          {isDraftRestored && (
+            <RestoredDraftBanner onStartOver={handleStartOver} />
+          )}
+
           {/* Amount Field */}
-          <AmountField error={true} />
+          <AmountField error={amountError} />
 
           {/* Description Field */}
           <View className="px-5 pt-4">
-            <DescriptionField error="Description is required" />
+            <DescriptionField />
           </View>
 
           <ActivityAndDateSection
@@ -80,13 +93,19 @@ const AddExpenseBottomSheet = forwardRef<
           </View>
 
           <View className="px-5">
-            <Button buttonText="Save expense" onPress={() => {}} />
+            <Button buttonText="Save expense" onPress={handleSubmit} />
           </View>
         </View>
         {isActivityPickerOpen && (
           <Pressable
             onPress={() => setActivityPickerOpen(false)}
             className="absolute inset-0 z-10"
+          />
+        )}
+        {isStartOverDialogOpen && (
+          <StartOverDialog
+            onCancel={handleCancelStartOver}
+            onConfirm={handleConfirmStartOver}
           />
         )}
       </KeyboardAwareScrollView>

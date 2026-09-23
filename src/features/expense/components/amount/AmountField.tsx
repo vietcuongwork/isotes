@@ -55,7 +55,7 @@ export default function AmountField(props: AmountFieldProps) {
             error && "text-red-400",
           )}
           placeholder={placeholder}
-          placeholderTextColor={error ? colors.red[400] : colors.grey[400]}
+          placeholderTextColor={colors.grey[400]}
           keyboardType="decimal-pad"
           value={amount}
           onChangeText={(text) =>

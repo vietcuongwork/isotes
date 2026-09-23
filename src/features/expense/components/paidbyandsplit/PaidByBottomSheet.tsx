@@ -10,11 +10,8 @@ import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import usePaidByBottomSheet from "../../hooks/usePaidByBottomSheet";
 import AddPerson from "../addperson/AddPerson";
 import MemberListRow from "./MemberListRow";
-import { Member } from "@/types/TExpense";
 
 export interface PaidByBottomSheetProps {
-  members: Member[];
-  onAddPerson: () => void;
   onClose?: () => void;
 }
 
@@ -22,7 +19,7 @@ const PaidByBottomSheet = forwardRef<
   BottomSheetMethods,
   PaidByBottomSheetProps
 >(function PaidByBottomSheet(props, ref): ReactElement {
-  const { members, onAddPerson, onClose } = props;
+  const { onClose } = props;
 
   const {
     query,
@@ -32,7 +29,8 @@ const PaidByBottomSheet = forwardRef<
     safeBottomStyle,
     selectedPayerId,
     onSelectPayer,
-  } = usePaidByBottomSheet({ members });
+    members,
+  } = usePaidByBottomSheet();
 
   return (
     <BottomSheet ref={ref} snapPoints={["80%"]} onClose={onClose}>

@@ -3,7 +3,7 @@ import BottomSheet, {
 } from "@/components/bottomsheet/BottomSheet";
 import { colors } from "@/themes/color";
 import { fontFamily } from "@/themes/typography";
-import { Member, SplitMethod } from "@/types/TExpense";
+import { SplitMethod } from "@/types/TExpense";
 import { getInitial } from "@/utils/utils";
 import { Search } from "lucide-react-native";
 import { forwardRef, ReactElement } from "react";
@@ -15,7 +15,6 @@ import MemberListRow from "./MemberListRow";
 import SplitSummary from "./SplitSummary";
 
 export interface SplitBottomSheetProps {
-  members: Member[];
   onAddPerson: () => void;
   onClose?: () => void;
 }
@@ -28,7 +27,7 @@ const HEADER_TITLE_BY_SPLIT_METHOD: Record<SplitMethod, string> = {
 
 const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
   function SplitBottomSheet(props, ref): ReactElement {
-    const { members, onAddPerson, onClose } = props;
+    const { onAddPerson, onClose } = props;
 
     const {
       query,
@@ -36,6 +35,7 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
       filteredMembers,
       flatListContentContainerStyle,
       effectiveAmounts,
+      effectiveShareAmounts,
       handleToggleEquallyMember,
       handleChangeAmount,
       handleChangeShares,
@@ -44,9 +44,8 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
       currency,
       selectedShares,
       equallySelectedMemberIds,
-    } = useSplitBottomSheet({
       members,
-    });
+    } = useSplitBottomSheet();
 
     return (
       <BottomSheet ref={ref} snapPoints={["80%"]} onClose={onClose}>
@@ -123,6 +122,7 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
                     }}
                     state={{
                       shares: selectedShares[member.id] ?? 0,
+                      amount: effectiveShareAmounts[member.id],
                       onIncrement: () => handleChangeShares(member.id, 1),
                       onDecrement: () => handleChangeShares(member.id, -1),
                     }}
@@ -142,7 +142,10 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
                   }}
                   state={{
                     checked: isSelected,
-                    onPress: () => handleToggleEquallyMember(member.id),
+                    onPress: () => {
+                      console.log("members", members);
+                      handleToggleEquallyMember(member.id);
+                    },
                   }}
                 />
               );
@@ -154,7 +157,7 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
           </View>
 
           <View className="mt-8 border-t border-grey-825 px-5">
-            <SplitSummary members={members} />
+            <SplitSummary />
           </View>
         </View>
       </BottomSheet>

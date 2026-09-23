@@ -36,3 +36,15 @@ export interface Expense {
   splitMethod: SplitMethod;
   createdAt: number;
 }
+
+export interface ExpenseSheetErrors {
+  amount: boolean;
+  paidByMemberId: boolean;
+  split: boolean;
+}
+
+export interface SplitSelection {
+  equallySelectedMemberIds: string[];
+  splitAmounts: Record<string, string>;
+  splitShares: Record<string, number>;
+}
