@@ -25,6 +25,14 @@ export interface Member {
   createdAt: number;
 }
 
+export interface Split {
+  id: string;
+  expenseId: string;
+  memberId: string;
+  individualAmount: number;
+  shares: number | null;
+}
+
 export interface Expense {
   id: string;
   tripId: string;
@@ -35,6 +43,7 @@ export interface Expense {
   date: string;
   splitMethod: SplitMethod;
   createdAt: number;
+  splits: Split[];
 }
 
 export interface ExpenseSheetErrors {
@@ -44,7 +53,20 @@ export interface ExpenseSheetErrors {
 }
 
 export interface SplitSelection {
-  equallySelectedMemberIds: string[];
+  selectedMemberIds: string[];
   splitAmounts: Record<string, string>;
   splitShares: Record<string, number>;
+}
+
+// The add-expense sheet's full draft shape (useExpenseSheetStore's editable
+// fields). Single source of truth so getIsDraftRestored/validateExpenseSheet
+// don't each hand-declare their own overlapping params object — pick the
+// subset a given function needs off this instead of redeclaring fields.
+export interface ExpenseDraft extends SplitSelection {
+  amount: string;
+  description: string;
+  date: string;
+  activity: Activity;
+  splitMethod: SplitMethod;
+  paidByMemberId: string;
 }

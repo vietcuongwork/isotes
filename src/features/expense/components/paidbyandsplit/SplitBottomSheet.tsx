@@ -6,16 +6,18 @@ import { fontFamily } from "@/themes/typography";
 import { SplitMethod } from "@/types/TExpense";
 import { getInitial } from "@/utils/utils";
 import { Search } from "lucide-react-native";
-import { forwardRef, ReactElement } from "react";
+import { forwardRef, ReactElement, useRef } from "react";
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import useScrollFieldAboveSheet from "../../hooks/useScrollFieldAboveSheet";
 import useSplitBottomSheet from "../../hooks/useSplitBottomSheet";
+import useSplitNumberPad from "../../hooks/useSplitNumberPad";
 import AddPerson from "../addperson/AddPerson";
 import MemberListRow from "./MemberListRow";
+import SelectionSummaryBar from "./SelectionSummaryBar";
+import SplitMethodControl from "./SplitMethodControl";
 import SplitSummary from "./SplitSummary";
 
 export interface SplitBottomSheetProps {
-  onAddPerson: () => void;
   onClose?: () => void;
 }
 
@@ -27,7 +29,7 @@ const HEADER_TITLE_BY_SPLIT_METHOD: Record<SplitMethod, string> = {
 
 const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
   function SplitBottomSheet(props, ref): ReactElement {
-    const { onAddPerson, onClose } = props;
+    const { onClose } = props;
 
     const {
       query,
@@ -35,17 +37,42 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
       filteredMembers,
       flatListContentContainerStyle,
       effectiveAmounts,
+      effectiveEquallyAmounts,
       effectiveShareAmounts,
-      handleToggleEquallyMember,
+      handleToggleMember,
       handleChangeAmount,
       handleChangeShares,
       safeBottomStyle,
       splitMethod,
       currency,
-      selectedShares,
-      equallySelectedMemberIds,
+      effectiveShares,
+      selectedMemberIds,
       members,
     } = useSplitBottomSheet();
+
+    // FlatList's renderScrollComponent clones its returned element with its
+    // OWN ref (_captureScrollRef in VirtualizedList.js), silently replacing
+    // any ref set here — so scrolling has to go through FlatList's own
+    // scrollToOffset, not a ref on the inner KeyboardAwareScrollView.
+    // why: chat discussion (2026-09-28).
+    const flatListRef = useRef<FlatList>(null);
+    const {
+      handleScroll,
+      scrollFieldIntoView,
+      extraBottomSpace,
+      resetExtraBottomSpace,
+    } = useScrollFieldAboveSheet(
+      (y) => flatListRef.current?.scrollToOffset({ offset: y, animated: true }),
+      (callback) =>
+        // cast: the native scroll ref is a host component at runtime, but its TS union omits measureInWindow
+        (
+          flatListRef.current?.getNativeScrollRef() as View | null
+        )?.measureInWindow((_x, y, _w, h) => callback(y + h)),
+    );
+    const { activeSplitMemberId, openFor, registerField } = useSplitNumberPad({
+      scrollFieldIntoView,
+      resetExtraBottomSpace,
+    });
 
     return (
       <BottomSheet ref={ref} snapPoints={["80%"]} onClose={onClose}>
@@ -55,6 +82,14 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
               <Text className="text-grey-200 text-micro">
                 {HEADER_TITLE_BY_SPLIT_METHOD[splitMethod]}
               </Text>
+            </View>
+
+            <View className="pb-3">
+              <SplitMethodControl />
+            </View>
+
+            <View className="pb-3">
+              <SplitSummary variant="sheet" />
             </View>
 
             {/* Search */}
@@ -74,23 +109,31 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
               </View>
             </View>
 
-            <Text className="pb-2.5 text-grey-200 text-meta">
-              {members.length} people on this trip
-            </Text>
+            <SelectionSummaryBar context="split" />
           </View>
 
           <FlatList
+            ref={flatListRef}
             className="flex-1"
             data={filteredMembers}
             keyExtractor={(member) => member.id}
-            contentContainerStyle={flatListContentContainerStyle}
-            renderScrollComponent={(props) => (
-              <KeyboardAwareScrollView
-                {...props}
-                bottomOffset={50}
-                keyboardShouldPersistTaps="handled"
-              />
-            )}
+            contentContainerStyle={{
+              ...flatListContentContainerStyle,
+              paddingBottom:
+                (flatListContentContainerStyle.paddingBottom ?? 0) +
+                extraBottomSpace,
+            }}
+            onScroll={handleScroll}
+            // TEMP T1 — when does native scroll take over the touch?
+            onScrollBeginDrag={() =>
+              console.log(`[T1] ${performance.now().toFixed(1)} list scrollBeginDrag`)
+            }
+            onMomentumScrollBegin={() =>
+              console.log(`[T1] ${performance.now().toFixed(1)} list momentumBegin`)
+            }
+            onMomentumScrollEnd={() =>
+              console.log(`[T1] ${performance.now().toFixed(1)} list momentumEnd`)
+            }
             renderItem={({ item: member }) => {
               if (splitMethod === "amounts") {
                 return (
@@ -102,10 +145,18 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
                       color: member.memberColor,
                     }}
                     currency={currency}
+                    memberId={member.id}
+                    numberPad={{
+                      isActive: activeSplitMemberId === member.id,
+                      onRequest: openFor,
+                      registerField,
+                    }}
                     state={{
                       amount: effectiveAmounts[member.id],
+                      selected: selectedMemberIds.includes(member.id),
                       onChangeAmount: (amount) =>
                         handleChangeAmount(member.id, amount),
+                      onPress: () => handleToggleMember(member.id),
                     }}
                   />
                 );
@@ -121,16 +172,16 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
                       color: member.memberColor,
                     }}
                     state={{
-                      shares: selectedShares[member.id] ?? 0,
+                      shares: effectiveShares[member.id],
                       amount: effectiveShareAmounts[member.id],
+                      selected: selectedMemberIds.includes(member.id),
                       onIncrement: () => handleChangeShares(member.id, 1),
                       onDecrement: () => handleChangeShares(member.id, -1),
+                      onPress: () => handleToggleMember(member.id),
                     }}
                   />
                 );
               }
-
-              const isSelected = equallySelectedMemberIds.includes(member.id);
 
               return (
                 <MemberListRow
@@ -141,10 +192,10 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
                     color: member.memberColor,
                   }}
                   state={{
-                    checked: isSelected,
+                    selected: selectedMemberIds.includes(member.id),
+                    amount: effectiveEquallyAmounts[member.id],
                     onPress: () => {
-                      console.log("members", members);
-                      handleToggleEquallyMember(member.id);
+                      handleToggleMember(member.id);
                     },
                   }}
                 />
@@ -154,10 +205,6 @@ const SplitBottomSheet = forwardRef<BottomSheetMethods, SplitBottomSheetProps>(
 
           <View className="px-5">
             <AddPerson />
-          </View>
-
-          <View className="mt-8 border-t border-grey-825 px-5">
-            <SplitSummary />
           </View>
         </View>
       </BottomSheet>

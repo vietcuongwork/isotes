@@ -3,10 +3,10 @@ import { TouchableOpacity } from "react-native";
 import FieldBox from "./FieldBox";
 import FieldShell from "./FieldShell";
 
-const DEFAULT_BOX = "bg-grey-925 p-4";
+const DEFAULT_PICKER_BOX = "bg-grey-925 p-4";
 
 interface PickerFieldProps {
-  label: string;
+  label?: string;
   optionalLabel?: string;
   error?: string;
   shakeTrigger?: number;
@@ -50,7 +50,7 @@ export default function PickerField(props: PickerFieldProps) {
           active={open}
           error={!!error}
           activeClassName={activeClassName}
-          className={cn(DEFAULT_BOX, boxClassName)}
+          className={cn(DEFAULT_PICKER_BOX, boxClassName)}
         >
           {children}
         </FieldBox>

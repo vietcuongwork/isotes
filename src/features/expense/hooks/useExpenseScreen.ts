@@ -1,3 +1,4 @@
+import { getExpensesWithSplitsByTripId } from "@/db/expenses";
 import { getMembersByTripId } from "@/db/members";
 import { getTripById } from "@/db/trips";
 import { CURRENCY_OPTIONS } from "@/features/createTrip/constants";
@@ -7,6 +8,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo } from "react";
 import {
   getDefaultExpenseSplit,
+  transformExpenseRow,
   transformMemberRow,
   transformTripRow,
 } from "../helpers/expenseHelpers";
@@ -16,12 +18,15 @@ export default function useExpenseScreen() {
 
   const { data: trip, error } = useLiveQuery(getTripById(tripId));
   const { data: memberRows } = useLiveQuery(getMembersByTripId(tripId));
+  const { data: expenseRows } = useLiveQuery(
+    getExpensesWithSplitsByTripId(tripId),
+  );
   const setCurrency = useExpenseSheetStore((s) => s.setCurrency);
   const setMembers = useExpenseSheetStore((s) => s.setMembers);
   const paidByMemberId = useExpenseSheetStore((s) => s.paidByMemberId);
   const setPaidByMemberId = useExpenseSheetStore((s) => s.setPaidByMemberId);
-  const setEquallySelectedMemberIds = useExpenseSheetStore(
-    (s) => s.setEquallySelectedMemberIds,
+  const setSelectedMemberIds = useExpenseSheetStore(
+    (s) => s.setSelectedMemberIds,
   );
   const setSplitShares = useExpenseSheetStore((s) => s.setSplitShares);
   const reset = useExpenseSheetStore((s) => s.reset);
@@ -30,6 +35,18 @@ export default function useExpenseScreen() {
     () => (trip ? transformTripRow(trip) : undefined),
     [trip],
   );
+
+  const transformedExpenses = useMemo(
+    () => (expenseRows ?? []).map(transformExpenseRow),
+    [expenseRows],
+  );
+
+  const transformedMembers = useMemo(
+    () => (memberRows ?? []).map(transformMemberRow),
+    [memberRows],
+  );
+
+  const viewerMemberId = transformedMembers.find((m) => m.isOwner)?.id;
 
   if (__DEV__ && error) {
     console.error("[useExpenseScreen] Trip query failed", error);
@@ -45,10 +62,9 @@ export default function useExpenseScreen() {
   }, [trip, setCurrency]);
 
   useEffect(() => {
-    if (!memberRows) return;
+    if (transformedMembers.length === 0) return;
 
-    const members = memberRows.map(transformMemberRow);
-    setMembers(members);
+    setMembers(transformedMembers);
 
     // Seed the draft's paid-by/split defaults as soon as members are known
     // (moved here 2026-09-23, from useAddExpenseBottomSheet), so
@@ -57,18 +73,18 @@ export default function useExpenseScreen() {
     // render. Guarded on paidByMemberId, not a ref: it must re-seed after
     // resetDraft()/reset() clears it back to "", not only when the member
     // list itself changes.
-    if (paidByMemberId || members.length === 0) return;
+    if (paidByMemberId) return;
 
-    const defaults = getDefaultExpenseSplit(members);
+    const defaults = getDefaultExpenseSplit(transformedMembers);
     setPaidByMemberId(defaults.paidByMemberId);
-    setEquallySelectedMemberIds(defaults.equallySelectedMemberIds);
+    setSelectedMemberIds(defaults.selectedMemberIds);
     setSplitShares(defaults.splitShares);
   }, [
-    memberRows,
+    transformedMembers,
     paidByMemberId,
     setMembers,
     setPaidByMemberId,
-    setEquallySelectedMemberIds,
+    setSelectedMemberIds,
     setSplitShares,
   ]);
 
@@ -86,5 +102,10 @@ export default function useExpenseScreen() {
     return () => reset();
   }, [reset]);
 
-  return { transformedTrip };
+  return {
+    transformedTrip,
+    transformedExpenses,
+    transformedMembers,
+    viewerMemberId,
+  };
 }

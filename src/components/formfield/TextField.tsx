@@ -13,7 +13,7 @@ interface TextFieldProps {
   error?: string;
   shakeTrigger?: number;
   textInputProps?: TextInputProps;
-  className?: string;
+  shellClassName?: string;
 }
 
 const TextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
@@ -25,7 +25,7 @@ const TextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
     error,
     shakeTrigger,
     textInputProps,
-    className,
+    shellClassName,
   } = props;
   const [isFocused, setIsFocused] = useState(false);
 
@@ -35,7 +35,7 @@ const TextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
       {...(optionalLabel && { optionalLabel: optionalLabel })}
       error={error}
       shakeTrigger={shakeTrigger}
-      className={className}
+      className={shellClassName}
     >
       <FieldBox
         active={isFocused}

@@ -32,12 +32,12 @@ const AddPersonBottomSheet = forwardRef<
   const selectedColor = useAddPersonStore((s) => s.selectedColor);
   const setSelectedColor = useAddPersonStore((s) => s.setSelectedColor);
   const resetAddPerson = useAddPersonStore((s) => s.reset);
-  const equallySelectedMemberIds = useExpenseSheetStore(
-    (s) => s.equallySelectedMemberIds,
+  const selectedMemberIds = useExpenseSheetStore(
+    (s) => s.selectedMemberIds,
   );
   const splitShares = useExpenseSheetStore((s) => s.splitShares);
-  const setEquallySelectedMemberIds = useExpenseSheetStore(
-    (s) => s.setEquallySelectedMemberIds,
+  const setSelectedMemberIds = useExpenseSheetStore(
+    (s) => s.setSelectedMemberIds,
   );
   const setSplitShares = useExpenseSheetStore((s) => s.setSplitShares);
 
@@ -61,7 +61,7 @@ const AddPersonBottomSheet = forwardRef<
     // already set by now), so a member added mid-session must be resolved
     // into the split here — otherwise they're silently excluded from
     // equal split / shares until submit.
-    setEquallySelectedMemberIds([...equallySelectedMemberIds, newMemberId]);
+    setSelectedMemberIds([...selectedMemberIds, newMemberId]);
     setSplitShares({ ...splitShares, [newMemberId]: 1 });
 
     resetAddPerson();
@@ -94,7 +94,7 @@ const AddPersonBottomSheet = forwardRef<
             <TextField
               label="Name"
               placeholder="Enter name"
-              className="w-full"
+              shellClassName="self-stretch"
               value={name}
               textInputProps={{
                 onChangeText: (text) => setName(sanitizeNameInput(text)),

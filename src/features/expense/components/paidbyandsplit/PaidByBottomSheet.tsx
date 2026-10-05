@@ -10,6 +10,7 @@ import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import usePaidByBottomSheet from "../../hooks/usePaidByBottomSheet";
 import AddPerson from "../addperson/AddPerson";
 import MemberListRow from "./MemberListRow";
+import SelectionSummaryBar from "./SelectionSummaryBar";
 
 export interface PaidByBottomSheetProps {
   onClose?: () => void;
@@ -29,7 +30,6 @@ const PaidByBottomSheet = forwardRef<
     safeBottomStyle,
     selectedPayerId,
     onSelectPayer,
-    members,
   } = usePaidByBottomSheet();
 
   return (
@@ -57,9 +57,7 @@ const PaidByBottomSheet = forwardRef<
             </View>
           </View>
 
-          <Text className="pb-2.5 text-grey-200 text-meta">
-            {members.length} people on this trip
-          </Text>
+          <SelectionSummaryBar context="paidBy" />
         </View>
 
         <FlatList
@@ -76,7 +74,7 @@ const PaidByBottomSheet = forwardRef<
                 color: member.memberColor,
               }}
               state={{
-                isSelected: member.id === selectedPayerId,
+                selected: member.id === selectedPayerId,
                 onPress: () => onSelectPayer(member.id),
               }}
             />

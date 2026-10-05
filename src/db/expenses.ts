@@ -23,17 +23,10 @@ export async function insertExpenseWithSplits(
   return expenseId;
 }
 
-export async function getExpensesByTripId(tripId: string) {
-  return db
-    .select()
-    .from(expenses)
-    .where(eq(expenses.tripId, tripId))
-    .orderBy(desc(expenses.date), desc(expenses.createdAt));
-}
-
-export function getExpenseById(expenseId: string) {
-  return db.query.expenses.findFirst({
-    where: eq(expenses.id, expenseId),
+export function getExpensesWithSplitsByTripId(tripId: string) {
+  return db.query.expenses.findMany({
+    where: eq(expenses.tripId, tripId),
     with: { splits: true },
+    orderBy: [desc(expenses.date), desc(expenses.createdAt)],
   });
 }

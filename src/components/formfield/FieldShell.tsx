@@ -9,7 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 interface FieldShellProps {
-  label: string;
+  label?: string;
   optionalLabel?: string;
   error?: string;
   //NOTE - bump this (e.g. RHF submitCount) to re-fire the error shake on submit.

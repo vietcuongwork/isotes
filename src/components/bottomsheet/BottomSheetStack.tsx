@@ -5,27 +5,44 @@ import {
   memo,
   useCallback,
   useContext,
+  useEffect, // TEMP T22
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type ReactElement,
   type ReactNode,
 } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, type GestureResponderEvent } from "react-native";
 import BottomSheet, {
   BottomSheetMethods,
   BottomSheetProps,
 } from "./BottomSheet";
+import { SheetCoverContext } from "./SheetCoverContext";
+import { SheetLifecycleContext } from "./SheetLifecycleContext";
+import useTapOutsideTopSheet from "./useTapOutsideTopSheet";
+
+interface IPassThroughOptions {
+  /** Return true for a tap outside the sheet that should NOT close it —
+   * e.g. a tap on another field that retargets the sheet instead. */
+  readonly isTapIgnored?: (e: GestureResponderEvent) => boolean;
+}
 
 interface IBottomSheetOptions {
   readonly onDismiss?: () => void;
+  /** Top sheet lets touches reach the sheet below it; a tap outside
+   * this sheet closes it. */
+  readonly passThrough?: IPassThroughOptions;
 }
 
 interface IStackedSheet {
   id: string;
   component: ReactElement<BottomSheetProps, typeof BottomSheet>;
   ref: React.RefObject<BottomSheetMethods | null>;
+  // Set when its close starts; it stays mounted until the animation ends
+  closing: boolean;
   readonly onDismiss?: () => void;
+  readonly passThrough?: IPassThroughOptions;
 }
 
 interface PushSheetResult {
@@ -35,7 +52,7 @@ interface PushSheetResult {
 
 interface IBottomSheetStackContextValue {
   pushSheet: (
-    sheet: Omit<IStackedSheet, "id" | "ref"> & IBottomSheetOptions,
+    sheet: Omit<IStackedSheet, "id" | "ref" | "closing"> & IBottomSheetOptions,
   ) => PushSheetResult;
   popSheet: (id?: string) => void;
   popToRoot: () => void;
@@ -60,7 +77,35 @@ export const useBottomSheetStack = (): IBottomSheetStackContextValue => {
 interface StackedSheetWrapperProps {
   sheet: IStackedSheet;
   isTopSheet: boolean;
+  isCoveredByPassThrough: boolean;
+  onTouchStartInSheet?: () => void;
+  onCloseStart: () => void;
   onClose: () => void;
+}
+
+// A pass-through top sheet's full-screen wrapper mustn't block what's below
+// it, and the one sheet directly under it becomes touchable again.
+function getWrapperPointerEvents(
+  sheet: IStackedSheet,
+  isTopSheet: boolean,
+  isCoveredByPassThrough: boolean,
+): "auto" | "box-none" | "none" {
+  if (isTopSheet) return sheet.passThrough ? "box-none" : "auto";
+  if (!isCoveredByPassThrough) return "none";
+  // A covered pass-through sheet (e.g. a leftover numpad) keeps its keys but
+  // its empty full-screen area mustn't swallow taps meant for the sheet below
+  return sheet.passThrough ? "box-none" : "auto";
+}
+
+// The sheet a pass-through top sheet lets touches through to: the nearest one
+// below it that isn't closing (a closing numpad mustn't take that role while
+// a reopened one sits on top). why: [[Investigate_numpad-reopen-while-closing]]
+function getCoveredIndex(sheets: IStackedSheet[]): number {
+  if (!sheets[sheets.length - 1]?.passThrough) return -1;
+  for (let i = sheets.length - 2; i >= 0; i--) {
+    if (!sheets[i].closing) return i;
+  }
+  return -1;
 }
 
 // Stage 9 of documentation/bottom-sheet-recreation-guide.md. Skips the real
@@ -70,11 +115,15 @@ interface StackedSheetWrapperProps {
 const StackedSheetWrapper = memo(function StackedSheetWrapper({
   sheet,
   isTopSheet,
+  isCoveredByPassThrough,
+  onTouchStartInSheet,
+  onCloseStart,
   onClose,
 }: StackedSheetWrapperProps) {
   // Only the top sheet should receive touches — sheets underneath are
   // still mounted (e.g. mid-close-animation, or simply stacked below) but
   // shouldn't intercept drags/taps meant for the one on top.
+  // …except the sheet directly under a pass-through top sheet.
   // sheet.ref comes from createRef (not a hook), so it's assigned directly
   // here instead of via useImperativeHandle inside this component.
   const mergedRef = (node: BottomSheetMethods | null) => {
@@ -88,6 +137,7 @@ const StackedSheetWrapper = memo(function StackedSheetWrapper({
     {
       ref: mergedRef,
       onClose: () => {
+        console.log(`[T22] ${performance.now().toFixed(1)} ${sheet.id} closed → onDismiss + remove`); // TEMP T22
         sheet.onDismiss?.();
         onClose();
       },
@@ -97,9 +147,22 @@ const StackedSheetWrapper = memo(function StackedSheetWrapper({
   return (
     <View
       style={StyleSheet.absoluteFill}
-      pointerEvents={isTopSheet ? "auto" : "none"}
+      pointerEvents={getWrapperPointerEvents(
+        sheet,
+        isTopSheet,
+        isCoveredByPassThrough,
+      )}
+      onTouchStart={() => {
+        // TEMP T1 — does a touch start inside the sheet bubble up through its wrapper?
+        console.log(`[T1] ${performance.now().toFixed(1)} wrapper ${sheet.id} touchStart`);
+        onTouchStartInSheet?.();
+      }}
     >
-      {element}
+      <SheetLifecycleContext value={onCloseStart}>
+        <SheetCoverContext value={isCoveredByPassThrough}>
+          {element}
+        </SheetCoverContext>
+      </SheetLifecycleContext>
     </View>
   );
 });
@@ -113,6 +176,12 @@ export function BottomSheetStackProvider({
 }: BottomSheetStackProviderProps) {
   const [sheets, setSheets] = useState<IStackedSheet[]>([]);
   const idCounter = useRef(0);
+  // Committed stack, readable from the open() frame below without a setSheets
+  // updater (side effects there can run during render)
+  const sheetsRef = useRef(sheets);
+  useLayoutEffect(() => {
+    sheetsRef.current = sheets;
+  }, [sheets]);
 
   const pushSheet = useCallback<IBottomSheetStackContextValue["pushSheet"]>(
     (sheet) => {
@@ -121,13 +190,30 @@ export function BottomSheetStackProvider({
 
       setSheets((prev) => [
         ...prev,
-        { id, ref, component: sheet.component, onDismiss: sheet.onDismiss },
+        {
+          id,
+          ref,
+          component: sheet.component,
+          closing: false,
+          onDismiss: sheet.onDismiss,
+          passThrough: sheet.passThrough,
+        },
       ]);
 
       // The sheet doesn't exist in the tree yet this tick — wait a frame so
       // its ref is actually attached before calling open() on it.
       requestAnimationFrame(() => {
         ref.current?.open();
+        if (!sheet.passThrough) return;
+        // Only one live pass-through sheet: a newer one retires any below it,
+        // so none is left stranded. why: [[Investigate_numpad-focus-switching]]
+        const stack = sheetsRef.current;
+        const index = stack.findIndex((s) => s.id === id);
+        if (index < 0) return;
+        stack
+          .slice(0, index)
+          .filter((s) => s.passThrough && !s.closing)
+          .forEach((s) => s.ref.current?.close());
       });
 
       return { id, ref };
@@ -137,6 +223,12 @@ export function BottomSheetStackProvider({
 
   const removeSheet = useCallback((id: string) => {
     setSheets((prev) => prev.filter((s) => s.id !== id));
+  }, []);
+
+  const markClosing = useCallback((id: string) => {
+    setSheets((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, closing: true } : s)),
+    );
   }, []);
 
   const popSheet = useCallback<IBottomSheetStackContextValue["popSheet"]>(
@@ -176,17 +268,79 @@ export function BottomSheetStackProvider({
     [pushSheet, popSheet, popToRoot, clearAll, getStackDepth],
   );
 
+  // Only a pass-through top sheet closes on an outside tap — every other
+  // sheet is closed by its own backdrop, as before.
+  const {
+    onStartShouldSetResponderCapture,
+    onTouchEndCapture,
+    markTouchInTopSheet,
+  } = useTapOutsideTopSheet({
+    onTapOutside: (e) => {
+      // A closing sheet is already on its way out — a second close() on it
+      // re-ran its dismiss. why: [[Investigate_numpad-focus-switching]]
+      const topSheet = sheets.findLast((s) => !s.closing);
+      if (!topSheet?.passThrough) return;
+      if (topSheet.passThrough.isTapIgnored?.(e)) {
+        console.log(`[T22] ${performance.now().toFixed(1)} tapOutside ignored ${topSheet.id}`); // TEMP T22
+        return;
+      }
+      console.log(`[T22] ${performance.now().toFixed(1)} tapOutside close ${topSheet.id}`); // TEMP T22
+      // Not popSheet(): it calls close() inside a setSheets updater, which can
+      // run during render — close() then sets the caller's state mid-render
+      topSheet.ref.current?.close();
+    },
+  });
+
+  // TEMP T22 — stack contents and which sheet is "covered" after each change
+  useEffect(() => {
+    console.log(
+      `[T22] ${performance.now().toFixed(1)} stack [${sheets.map((s) => s.id).join(", ")}]`,
+      "closing:", sheets.filter((s) => s.closing).map((s) => s.id).join(", ") || "-",
+      "covered:", sheets[getCoveredIndex(sheets)]?.id ?? "-",
+    );
+  }, [sheets]);
+
+  const coveredIndex = getCoveredIndex(sheets);
+
+  // TEMP T1 — root touch order: capture phase sees every touch first
+  const logRootTouch = (phase: string) => (e: GestureResponderEvent) =>
+    console.log(
+      `[T1] ${performance.now().toFixed(1)} root ${phase}`,
+      "target:", e.nativeEvent.target,
+      "page:", Math.round(e.nativeEvent.pageX), Math.round(e.nativeEvent.pageY),
+    );
+
   return (
     <BottomSheetStackContext value={contextValue}>
-      {children}
-      {sheets.map((sheet, index) => (
-        <StackedSheetWrapper
-          key={sheet.id}
-          sheet={sheet}
-          isTopSheet={index === sheets.length - 1}
-          onClose={() => removeSheet(sheet.id)}
-        />
-      ))}
+      {/* Root for tap-outside detection: its capture handlers see every touch
+          before any child does (useTapOutsideTopSheet) */}
+      <View
+        style={{ flex: 1 }}
+        onStartShouldSetResponderCapture={(e) => {
+          logRootTouch("startCapture")(e); // TEMP T1
+          return onStartShouldSetResponderCapture(e);
+        }}
+        onTouchEndCapture={(e) => {
+          logRootTouch("endCapture")(e); // TEMP T1
+          onTouchEndCapture(e);
+        }}
+        onTouchCancel={logRootTouch("cancel")} // TEMP T1
+      >
+        {children}
+        {sheets.map((sheet, index) => (
+          <StackedSheetWrapper
+            key={sheet.id}
+            sheet={sheet}
+            isTopSheet={index === sheets.length - 1}
+            isCoveredByPassThrough={index === coveredIndex}
+            onTouchStartInSheet={
+              index === sheets.length - 1 ? markTouchInTopSheet : undefined
+            }
+            onCloseStart={() => markClosing(sheet.id)}
+            onClose={() => removeSheet(sheet.id)}
+          />
+        ))}
+      </View>
     </BottomSheetStackContext>
   );
 }

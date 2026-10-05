@@ -1,68 +1,66 @@
-import { getAllTrips } from "@/db/trips";
-import { transformTripRow } from "@/features/expense/helpers/expenseHelpers";
-import { EXPO_ROUTER } from "@/navigation/route";
-import { colors } from "@/themes/color";
-import { Trip } from "@/types/TCreateTrip";
-import { useFocusEffect, useRouter } from "expo-router";
-import { ChevronRight } from "lucide-react-native";
-import { useCallback, useState } from "react";
+import { getAllTripsWithMembersAndExpenses } from "@/db/trips";
 import {
-  Text,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-} from "react-native";
-import AvatarStack from "./AvatarStack";
+  transformExpenseRow,
+  transformMemberRow,
+  transformTripRow,
+} from "@/features/expense/helpers/expenseHelpers";
+import { computeTripBalance } from "@/features/onboarding/helpers/onboardingHelpers";
+import { EXPO_ROUTER } from "@/navigation/route";
+import { Trip } from "@/types/TCreateTrip";
+import { Member } from "@/types/TExpense";
+import { TripSummary } from "@/types/TOnboarding";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { View } from "react-native";
+import TripItem from "./TripItem";
 
-interface TripItemProps {
-  trip: Trip;
-  touchableOpacityProps?: TouchableOpacityProps;
-}
-
-const TripItem = (props: TripItemProps) => {
-  const { trip, touchableOpacityProps } = props;
-
-  const createdAt = new Date(trip.createdAt * 1000).toLocaleDateString();
-
-  return (
-    <TouchableOpacity
-      className="gap-1 rounded-card bg-grey-900 p-4"
-      {...touchableOpacityProps}
-    >
-      {/* Header */}
-      <View className="flex-row justify-between">
-        <Text className="text-grey-50 text-title">{trip.name}</Text>
-        {/* //TODO - Mock data */}
-        <Text className="text-green-400 text-title">+$274.68</Text>
-      </View>
-
-      {/* Summary */}
-      <View className="flex-row justify-between">
-        {/* //TODO - Mock data */}
-        <Text className="text-grey-200 text-meta">5 expenses · $630.90</Text>
-        {/* //TODO - Mock data */}
-        <Text className="text-grey-200 text-meta">you're owed</Text>
-      </View>
-
-      {/* Footer */}
-      <View className="flex-row items-center justify-between pt-3">
-        <AvatarStack />
-        <ChevronRight size={18} color={colors.grey[400]} />
-      </View>
-    </TouchableOpacity>
-  );
+const EMPTY_SUMMARY: TripSummary = {
+  balance: 0,
+  expenseCount: 0,
+  totalAmount: 0,
 };
 
 export default function TripList() {
   const [trips, setTrips] = useState<Trip[]>([]);
+  const [tripSummaries, setTripSummaries] = useState<
+    Record<string, TripSummary>
+  >({});
+  const [tripMembers, setTripMembers] = useState<Record<string, Member[]>>(
+    {},
+  );
   const [isGettingTrips, setIsGettingTrips] = useState<boolean>(true);
   const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
       setIsGettingTrips(true);
-      getAllTrips()
-        .then((rows) => setTrips(rows.map(transformTripRow)))
+      getAllTripsWithMembersAndExpenses()
+        .then((rows) => {
+          const summaries: Record<string, TripSummary> = {};
+          const members: Record<string, Member[]> = {};
+
+          for (const row of rows) {
+            const transformedMembers = row.members.map(transformMemberRow);
+            const transformedExpenses = row.expenses.map(transformExpenseRow);
+            const owner = transformedMembers.find((member) => member.isOwner);
+
+            summaries[row.id] = {
+              balance: owner
+                ? computeTripBalance(transformedExpenses, owner.id)
+                : 0,
+              expenseCount: transformedExpenses.length,
+              totalAmount: transformedExpenses.reduce(
+                (sum, expense) => sum + expense.amount,
+                0,
+              ),
+            };
+            members[row.id] = transformedMembers;
+          }
+
+          setTrips(rows.map(transformTripRow));
+          setTripSummaries(summaries);
+          setTripMembers(members);
+        })
         .finally(() => setIsGettingTrips(false));
     }, []),
   );
@@ -74,6 +72,8 @@ export default function TripList() {
         <TripItem
           key={trip.id}
           trip={trip}
+          summary={tripSummaries[trip.id] ?? EMPTY_SUMMARY}
+          members={tripMembers[trip.id] ?? []}
           touchableOpacityProps={{
             onPress: () => {
               router.push(EXPO_ROUTER.EXPENSE(trip.id));

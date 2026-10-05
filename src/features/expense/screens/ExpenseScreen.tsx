@@ -11,7 +11,11 @@ import useExpenseScreen from "../hooks/useExpenseScreen";
 
 export default function ExpenseScreen() {
   const { pushSheet, popSheet } = useBottomSheetStack();
-  const { transformedTrip: trip } = useExpenseScreen();
+  const {
+    transformedTrip: trip,
+    transformedExpenses,
+    transformedMembers,
+  } = useExpenseScreen();
 
   const openAddExpense = () =>
     pushSheet({
@@ -24,21 +28,26 @@ export default function ExpenseScreen() {
 
       {trip && <TripSummary trip={trip} />}
 
-      {/* Empty state */}
-      <View className="flex-1 items-center justify-center gap-[18px] px-10">
-        {/* //NOTE - no token, 60px circle falls back to arbitrary size */}
-        <View className="h-[60px] w-[60px] items-center justify-center rounded-pill border border-grey-815 bg-grey-925">
-          <ReceiptText size={28} color={colors.grey[500]} />
+      {!trip || transformedExpenses.length === 0 ? (
+        <View className="flex-1 items-center justify-center gap-[18px] px-10">
+          {/* //NOTE - no token, 60px circle falls back to arbitrary size */}
+          <View className="h-[60px] w-[60px] items-center justify-center rounded-pill border border-grey-815 bg-grey-925">
+            <ReceiptText size={28} color={colors.grey[500]} />
+          </View>
+          <View className="items-center gap-2">
+            <Text className="text-grey-50 text-title">No expenses yet</Text>
+            <Text className="text-center text-grey-200 text-row">
+              Log the first one and we&apos;ll work out who owes what.
+            </Text>
+          </View>
         </View>
-        <View className="items-center gap-2">
-          <Text className="text-grey-50 text-title">No expenses yet</Text>
-          <Text className="text-center text-grey-200 text-row">
-            Log the first one and we&apos;ll work out who owes what.
-          </Text>
-        </View>
-      </View>
-
-      <ExpenseList />
+      ) : (
+        <ExpenseList
+          expenses={transformedExpenses}
+          members={transformedMembers}
+          currency={trip.currency}
+        />
+      )}
 
       {/* Entry point */}
       <TouchableOpacity

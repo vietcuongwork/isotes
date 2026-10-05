@@ -14,8 +14,10 @@ import {
 const today = toDateId(new Date());
 
 export default function useAddExpenseBottomSheet() {
-  const [isActivityPickerOpen, setActivityPickerOpen] = useState(false);
-  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  const [isActivityPickerOpen, setActivityPickerOpen] =
+    useState<boolean>(false);
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState<boolean>(false);
+  const [isNumberPadOpen, setNumberPadOpen] = useState<boolean>(false);
 
   const { bottom } = useSafeAreaInsets();
   const safeBottomStyle = useMemo(() => ({ paddingBottom: bottom }), [bottom]);
@@ -29,9 +31,7 @@ export default function useAddExpenseBottomSheet() {
   const date = useExpenseSheetStore((s) => s.date);
   const activity = useExpenseSheetStore((s) => s.activity);
   const splitMethod = useExpenseSheetStore((s) => s.splitMethod);
-  const equallySelectedMemberIds = useExpenseSheetStore(
-    (s) => s.equallySelectedMemberIds,
-  );
+  const selectedMemberIds = useExpenseSheetStore((s) => s.selectedMemberIds);
   const splitAmounts = useExpenseSheetStore((s) => s.splitAmounts);
   const splitShares = useExpenseSheetStore((s) => s.splitShares);
   const currency = useExpenseSheetStore((s) => s.currency);
@@ -42,7 +42,7 @@ export default function useAddExpenseBottomSheet() {
   // the CURRENT session, showing "picked up where you left off" on a
   // session that never left anything. See getIsDraftRestored for why the
   // comparison itself isn't a simple blank check.
-  const [isDraftRestored] = useState(() =>
+  const [isDraftRestored, setIsDraftRestore] = useState<boolean>(() =>
     getIsDraftRestored({
       amount,
       description,
@@ -51,7 +51,7 @@ export default function useAddExpenseBottomSheet() {
       splitMethod,
       splitAmounts,
       paidByMemberId,
-      equallySelectedMemberIds,
+      selectedMemberIds,
       splitShares,
       members,
     }),
@@ -63,7 +63,7 @@ export default function useAddExpenseBottomSheet() {
     paidByMemberId,
     splitMethod,
     members,
-    equallySelectedMemberIds,
+    selectedMemberIds,
     splitAmounts,
     splitShares,
     decimalDigits: currency.decimalDigits,
@@ -82,7 +82,8 @@ export default function useAddExpenseBottomSheet() {
       splitMethod,
       totalAmount,
       currency.decimalDigits,
-      { equallySelectedMemberIds, splitAmounts, splitShares },
+      { selectedMemberIds, splitAmounts, splitShares },
+      paidByMemberId,
     );
 
     await insertExpenseWithSplits(
@@ -97,21 +98,26 @@ export default function useAddExpenseBottomSheet() {
       },
       splits,
     );
-    resetDraft();
     popSheet();
+    resetDraft();
+    setHasAttemptedSubmit(false);
   };
 
   const handleStartOver = () => setStartOverDialogOpen(true);
   const handleCancelStartOver = () => setStartOverDialogOpen(false);
   const handleConfirmStartOver = () => {
     resetDraft();
+    setIsDraftRestore(false);
     setStartOverDialogOpen(false);
+    setHasAttemptedSubmit(false);
   };
 
   return {
     today,
     isActivityPickerOpen,
     setActivityPickerOpen,
+    isNumberPadOpen,
+    setNumberPadOpen,
     safeBottomStyle,
     pushSheet,
     popSheet,

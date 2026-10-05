@@ -19,15 +19,9 @@ export default function PaidAndSplitSection(): ReactElement {
   };
 
   const handlePeopleSummaryRowPress = (props: SplitBottomSheetProps) => {
-    const { onAddPerson, onClose } = props;
+    const { onClose } = props;
     pushSheet({
-      component: (
-        <SplitBottomSheet
-          // TODO: wire to the add-person flow once it exists
-          onAddPerson={onAddPerson}
-          onClose={onClose}
-        />
-      ),
+      component: <SplitBottomSheet onClose={onClose} />,
     });
   };
 
@@ -50,18 +44,16 @@ export default function PaidAndSplitSection(): ReactElement {
 
           <View className="mt-3">
             <PeopleSummaryRow
-              maxVisible={3}
               onPress={() => {
                 Keyboard.dismiss();
                 handlePeopleSummaryRowPress({
-                  onAddPerson: () => {},
                   onClose: popSheet,
                 });
               }}
             />
           </View>
 
-          <SplitSummary />
+          <SplitSummary variant="section" />
         </View>
       </View>
     </View>

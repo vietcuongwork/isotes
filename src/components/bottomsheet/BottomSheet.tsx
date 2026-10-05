@@ -1,4 +1,10 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import {
   BackHandler,
   Dimensions,
@@ -16,6 +22,8 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { runOnJS } from "react-native-worklets";
+import { useIsCoveredByPassThrough } from "./SheetCoverContext";
+import { useSheetCloseStart } from "./SheetLifecycleContext";
 
 export type BottomSheetMethods = {
   open: () => void;
@@ -25,8 +33,28 @@ export type BottomSheetMethods = {
 
 export interface BottomSheetProps {
   onClose?: () => void;
+  /** Fires synchronously the instant close() is called — before the slide-
+   * down animation starts, unlike onClose which only fires once it
+   * finishes. Covers every dismiss path (backdrop tap, drag-to-dismiss,
+   * Android back button, or an external close()/popSheet() call), since
+   * they all funnel through this same close(). Use it for anything that
+   * should react the moment dismissal begins rather than ~300-400ms later
+   * when the animation settles. why: chat discussion (2026-09-28). */
+  onDismissStart?: () => void;
+  /** Fires with the sheet's total measured height (content + handle)
+   * whenever it's (re)measured. Dynamic-sizing sheets only — a fixed
+   * snapPoints sheet's height is known upfront by the caller already. */
+  onContentHeightChange?: (height: number) => void;
   /** Tap on backdrop to dismiss. Default: true */
   dismissOnBackdropPress?: boolean;
+  /** Drag the handle/top strip to dismiss (or resnap, for a fixed-snapPoint
+   * sheet). Default: true — set false so backdrop tap is the only way to
+   * close. */
+  dragToDismissEnabled?: boolean;
+  /** Dim whatever's behind the sheet. Default: true — set false for a sheet
+   * meant to be read alongside what's behind it (e.g. a numpad companion to
+   * a field still visible above it), so that content doesn't fade out. */
+  showBackdrop?: boolean;
   /** Max height in pixels for auto-sized sheets. Only applies when snapPoints is omitted. Default: 90% of screen height */
   maxDynamicContentSize?: number;
   /** Snap point heights e.g. ['35%', '75%']. When omitted, the sheet auto-sizes to content. */
@@ -54,7 +82,11 @@ const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
   function BottomSheet(
     {
       onClose,
+      onDismissStart,
+      onContentHeightChange,
       dismissOnBackdropPress = true,
+      dragToDismissEnabled = true,
+      showBackdrop = true,
       maxDynamicContentSize,
       snapPoints,
       showHandle = true,
@@ -64,6 +96,8 @@ const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
     ref,
   ) {
     const isDynamicSizing = snapPoints === undefined;
+    const isCoveredByPassThrough = useIsCoveredByPassThrough();
+    const onCloseStart = useSheetCloseStart();
 
     // Sorted ascending regardless of prop order — index i here always means
     // "the i-th smallest snap height," not the position in the snapPoints array.
@@ -81,13 +115,18 @@ const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
     const translateY = useSharedValue(SCREEN_HEIGHT);
     const isOpen = useSharedValue(false);
     const currentSnapIndex = useSharedValue(0);
+    // A second close() (tap-outside twice, Description focus after tap-outside)
+    // must not re-fire the dismiss callbacks. why: [[Investigate_numpad-focus-switching]]
+    const isClosingRef = useRef(false);
 
     const handleContentLayout = useCallback(
       (event: LayoutChangeEvent) => {
         if (!isDynamicSizing) return;
-        measuredContentHeight.value = event.nativeEvent.layout.height;
+        const contentHeight = event.nativeEvent.layout.height;
+        measuredContentHeight.value = contentHeight;
+        onContentHeightChange?.(contentHeight + measuredHandleHeight.value);
       },
-      [isDynamicSizing, measuredContentHeight],
+      [isDynamicSizing, measuredContentHeight, measuredHandleHeight, onContentHeightChange],
     );
 
     const handleHandleLayout = useCallback(
@@ -122,6 +161,7 @@ const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
     );
 
     const open = () => {
+      isClosingRef.current = false;
       isOpen.value = true;
       currentSnapIndex.value = 0;
       translateY.value = withSpring(
@@ -131,6 +171,11 @@ const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
     };
 
     const close = () => {
+      if (!isClosingRef.current) {
+        isClosingRef.current = true;
+        onDismissStart?.();
+        onCloseStart();
+      }
       isOpen.value = false;
       currentSnapIndex.value = 0;
       // onClose fires only after the close animation actually finishes, not on
@@ -153,6 +198,7 @@ const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
         Math.min(index, snapTranslations.length - 1),
       );
       currentSnapIndex.value = clampedIndex;
+      isClosingRef.current = false;
       isOpen.value = true;
       translateY.value = withSpring(
         snapTranslations[clampedIndex],
@@ -287,26 +333,39 @@ const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
 
     const backdropStyle = useAnimatedStyle(() => {
       const canShow = isOpen.value && sheetHeight.value > 0;
+      // Invisible and non-dismissing → let touches reach what's behind
+      const capturesTouches =
+        canShow && (showBackdrop || dismissOnBackdropPress);
 
       return {
         opacity: canShow
           ? interpolate(translateY.value, [0, sheetHeight.value], [1, 0])
           : 0,
-        pointerEvents: canShow ? ("auto" as const) : ("none" as const),
+        pointerEvents: capturesTouches ? ("auto" as const) : ("none" as const),
       };
     });
 
     return (
       <View className="absolute inset-0" pointerEvents="box-none">
         <Animated.View
-          className="absolute inset-0 bg-grey-scrimSheet"
+          className={
+            showBackdrop ? "absolute inset-0 bg-grey-scrimSheet" : "absolute inset-0"
+          }
           style={backdropStyle}
         >
           <Pressable
             className="absolute inset-0"
-            onPress={dismissOnBackdropPress ? close : undefined}
+            // Covered by a pass-through sheet: swallow the tap without closing
+            // — the stack root closes the top sheet instead
+            onPress={
+              dismissOnBackdropPress && !isCoveredByPassThrough
+                ? close
+                : undefined
+            }
             accessibilityRole="button"
-            accessibilityLabel="Close bottom sheet"
+            accessibilityLabel={
+              isCoveredByPassThrough ? "Close number pad" : "Close bottom sheet"
+            }
           />
         </Animated.View>
         <Animated.View
@@ -331,12 +390,19 @@ const BottomSheet = forwardRef<BottomSheetMethods, BottomSheetProps>(
           {/* Scoped to just this top strip, not the whole content, so
               dragging lower down (a ScrollView, a TextInput) scrolls/types
               instead of being captured as a sheet drag. */}
-          <GestureDetector gesture={panGesture}>
+          {dragToDismissEnabled ? (
+            <GestureDetector gesture={panGesture}>
+              <View
+                className="absolute left-0 right-0 top-0 z-10"
+                style={{ height: draggableAreaHeight }}
+              />
+            </GestureDetector>
+          ) : (
             <View
               className="absolute left-0 right-0 top-0 z-10"
               style={{ height: draggableAreaHeight }}
             />
-          </GestureDetector>
+          )}
           {isDynamicSizing ? (
             <View onLayout={handleContentLayout}>{children}</View>
           ) : (

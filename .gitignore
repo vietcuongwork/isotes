@@ -41,3 +41,12 @@ example
 # generated native folders
 /ios
 /android
+
+# claude code (local paths / personal permissions)
+.mcp.json
+.claude/settings.local.json
+.claude/agents/
+.claude/rules/
+
+# maestro run output (throwaway; findings go to the vault)
+.maestro/output/

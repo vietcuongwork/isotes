@@ -2,14 +2,23 @@ import BottomSheet, {
   type BottomSheetMethods,
 } from "@/components/bottomsheet/BottomSheet";
 import Button from "@/components/Button";
+import PickerField from "@/components/formfield/PickerField";
 import { colors } from "@/themes/color";
-import { X } from "lucide-react-native";
-import { forwardRef, ReactElement } from "react";
-import { Keyboard, Pressable, Text, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { Camera, X } from "lucide-react-native";
+import { forwardRef, ReactElement, useRef, useState } from "react";
+import {
+  Keyboard,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import useAddExpenseBottomSheet from "../hooks/useAddExpenseBottomSheet";
+import useScrollFieldAboveSheet from "../hooks/useScrollFieldAboveSheet";
 import ActivityAndDateSection from "./ActivityAndDateSection";
 import AmountField from "./amount/AmountField";
+import NumberPadBottomSheet from "./amount/NumberPadBottomSheet";
 import AddDateBottomSheet from "./date/AddDateBottomSheet";
 import DescriptionField from "./description/DescriptionField";
 import PaidAndSplitSection from "./paidbyandsplit/PaidAndSplitSection";
@@ -30,6 +39,8 @@ const AddExpenseBottomSheet = forwardRef<
     today,
     isActivityPickerOpen,
     setActivityPickerOpen,
+    isNumberPadOpen,
+    setNumberPadOpen,
     safeBottomStyle,
     pushSheet,
     popSheet,
@@ -42,6 +53,22 @@ const AddExpenseBottomSheet = forwardRef<
     handleConfirmStartOver,
   } = useAddExpenseBottomSheet();
 
+  const [caretHidden, setCaretHidden] = useState<boolean>(true);
+  const isIntentionalDismiss = useRef<boolean>(false);
+  // The numpad currently serving the field — a closing one's late callbacks
+  // must not touch the field's state. why: [[Investigate_numpad-reopen-while-closing]]
+  const activeNumpadIdRef = useRef<string | null>(null);
+  const amountFieldRef = useRef<TextInput>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const {
+    handleScroll,
+    scrollFieldIntoView,
+    extraBottomSpace,
+    resetExtraBottomSpace,
+  } = useScrollFieldAboveSheet((y) =>
+    scrollViewRef.current?.scrollTo({ y, animated: true }),
+  );
+
   const handleDateFieldPress = () => {
     Keyboard.dismiss();
     setActivityPickerOpen(false);
@@ -50,12 +77,73 @@ const AddExpenseBottomSheet = forwardRef<
     });
   };
 
+  const handleAmountFieldPress = () => {
+    // No Keyboard.dismiss() here — this fires from the TextInput's own
+    // onFocus, so the field is already focused; dismissing would blur it
+    // right back off and drop the caret it just gained.
+    setActivityPickerOpen(false);
+    console.log(
+      `[T22] ${performance.now().toFixed(1)} amountPress padOpen:`,
+      isNumberPadOpen,
+    ); // TEMP T22
+    if (isNumberPadOpen) return;
+
+    setNumberPadOpen(true);
+    // Covered sheets stay touchable now, so the spurious blur that used to
+    // reveal the caret (AmountField onBlur) no longer fires — show it here
+    setCaretHidden(false);
+    // The previous numpad may still be closing with this set — don't inherit it
+    isIntentionalDismiss.current = false;
+    const { id: numpadId } = pushSheet({
+      // NumberPadBottomSheet's own onClose is overwritten internally by
+      // StackedSheetWrapper; onDismiss below is the real hook.
+      // why: encountered_errors_iv.md (2026-09-28)
+      component: (
+        <NumberPadBottomSheet
+          target="expenseAmount"
+          onClose={popSheet}
+          onDismissStart={() => {
+            console.log(`[T22] ${performance.now().toFixed(1)} numpad ${numpadId} dismissStart`); // TEMP T22
+            isIntentionalDismiss.current = true;
+            setNumberPadOpen(false);
+            amountFieldRef.current?.blur();
+            // Start scrolling back alongside the sheet's close, not after it settles
+            resetExtraBottomSpace();
+          }}
+          onHeightChange={(height) =>
+            scrollFieldIntoView(amountFieldRef, height)
+          }
+        />
+      ),
+      // Tapping the amount field itself (e.g. to move the caret) keeps the numpad open
+      passThrough: {
+        isTapIgnored: (e) => e.target === amountFieldRef.current,
+      },
+      onDismiss: () => {
+        console.log(`[T22] ${performance.now().toFixed(1)} numpad ${numpadId} onDismiss`); // TEMP T22
+        // A reopen during the close already replaced this numpad
+        if (activeNumpadIdRef.current !== numpadId) {
+          console.log(`[T22] ${performance.now().toFixed(1)} numpad ${numpadId} onDismiss skipped (active: ${activeNumpadIdRef.current})`); // TEMP T22
+          return;
+        }
+        activeNumpadIdRef.current = null;
+        isIntentionalDismiss.current = false;
+        setCaretHidden(true);
+      },
+    });
+    activeNumpadIdRef.current = numpadId;
+    console.log(`[T22] ${performance.now().toFixed(1)} numpad ${numpadId} pushed`); // TEMP T22
+  };
+
   return (
     <BottomSheet ref={ref} onClose={onClose} snapPoints={["80%"]}>
-      <KeyboardAwareScrollView
+      <ScrollView
+        ref={scrollViewRef}
+        onScroll={handleScroll}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={safeBottomStyle}
-        bottomOffset={50}
+        contentContainerStyle={{
+          paddingBottom: safeBottomStyle.paddingBottom + extraBottomSpace,
+        }}
       >
         {/*NOTE - position:relative → stacking parent for the picker scrim.
              The scrim + the Activity/Date row are direct siblings here; their
@@ -71,11 +159,22 @@ const AddExpenseBottomSheet = forwardRef<
           )}
 
           {/* Amount Field */}
-          <AmountField error={amountError} />
+          <AmountField
+            ref={amountFieldRef}  
+            error={amountError}
+            onFocus={handleAmountFieldPress}
+            isNumberPadOpen={isNumberPadOpen}
+            caretHidden={caretHidden}
+            onSetCarretState={setCaretHidden}
+            isIntentionalDismiss={isIntentionalDismiss}
+          />
 
           {/* Description Field */}
-          <View className="px-5 pt-4">
+          <View className="flex-row gap-2.5 px-5 pt-4">
             <DescriptionField />
+            <PickerField onPress={() => {}}>
+              <Camera size={20} color={colors.grey[200]} />
+            </PickerField>
           </View>
 
           <ActivityAndDateSection
@@ -108,7 +207,7 @@ const AddExpenseBottomSheet = forwardRef<
             onConfirm={handleConfirmStartOver}
           />
         )}
-      </KeyboardAwareScrollView>
+      </ScrollView>
     </BottomSheet>
   );
 });

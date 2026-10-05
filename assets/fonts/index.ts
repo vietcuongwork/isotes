@@ -5,6 +5,7 @@ import OutfitLight from "./Outfit-Light.ttf";
 import OutfitMedium from "./Outfit-Medium.ttf";
 import OutfitRegular from "./Outfit-Regular.ttf";
 import OutfitSemiBold from "./Outfit-SemiBold.ttf";
+import SanFranciscoRegular from "./SFPro-Regular.otf";
 
 export const fonts: Record<string, FontSource> = {
   "fraunces-bold": FrauncesBold,
@@ -13,4 +14,5 @@ export const fonts: Record<string, FontSource> = {
   "outfit-medium": OutfitMedium,
   "outfit-semibold": OutfitSemiBold,
   "outfit-bold": OutfitBold,
+  "sf-regular": SanFranciscoRegular,
 };

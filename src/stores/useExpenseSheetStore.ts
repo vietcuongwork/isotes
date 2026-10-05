@@ -14,10 +14,12 @@ interface ExpenseSheetState {
   date: string;
   members: Member[];
   paidByMemberId: string;
-  equallySelectedMemberIds: string[];
+  selectedMemberIds: string[];
   splitMethod: SplitMethod;
   splitAmounts: Record<string, string>;
   splitShares: Record<string, number>;
+  // Which member's split amount the shared numpad is editing (Split → Amounts)
+  activeSplitMemberId: string | null;
   currency: Currency;
   setActivity: (activity: Activity) => void;
   setAmount: (amount: string) => void;
@@ -25,10 +27,12 @@ interface ExpenseSheetState {
   setDate: (date: string) => void;
   setMembers: (members: Member[]) => void;
   setPaidByMemberId: (memberId: string) => void;
-  setEquallySelectedMemberIds: (memberIds: string[]) => void;
+  setSelectedMemberIds: (memberIds: string[]) => void;
+  selectMembers: (memberIds: string[]) => void;
   setSplitMethod: (splitMethod: SplitMethod) => void;
   setSplitAmounts: (splitAmounts: Record<string, string>) => void;
   setSplitShares: (splitShares: Record<string, number>) => void;
+  setActiveSplitMemberId: (memberId: string | null) => void;
   setCurrency: (currency: Currency) => void;
   reset: () => void;
   resetDraft: () => void;
@@ -46,10 +50,11 @@ export const draftInitialState = {
   description: "",
   date: today,
   paidByMemberId: "",
-  equallySelectedMemberIds: [] as string[],
+  selectedMemberIds: [] as string[],
   splitMethod: "equally" as SplitMethod,
   splitAmounts: {} as Record<string, string>,
   splitShares: {} as Record<string, number>,
+  activeSplitMemberId: null as string | null,
 };
 
 const initialState: Omit<
@@ -60,10 +65,12 @@ const initialState: Omit<
   | "setDate"
   | "setMembers"
   | "setPaidByMemberId"
-  | "setEquallySelectedMemberIds"
+  | "setSelectedMemberIds"
+  | "selectMembers"
   | "setSplitMethod"
   | "setSplitAmounts"
   | "setSplitShares"
+  | "setActiveSplitMemberId"
   | "setCurrency"
   | "reset"
   | "resetDraft"
@@ -81,12 +88,32 @@ export const useExpenseSheetStore = create<ExpenseSheetState>((set, get) => ({
   setDate: (date) => set({ date }),
   setMembers: (members) => set({ members }),
   setPaidByMemberId: (paidByMemberId) => set({ paidByMemberId }),
-  setEquallySelectedMemberIds: (equallySelectedMemberIds) => {
-    set({ equallySelectedMemberIds });
+  setSelectedMemberIds: (selectedMemberIds) => {
+    set({ selectedMemberIds });
   },
+  // Newly selected members reset to defaults (amount back to auto, 1 share)
+  // so re-selecting never pins someone to a stale amount/share count.
+  selectMembers: (memberIds) =>
+    set((state) => {
+      const added = memberIds.filter(
+        (id) => !state.selectedMemberIds.includes(id),
+      );
+      if (added.length === 0) return {};
+      const splitAmounts = { ...state.splitAmounts };
+      added.forEach((id) => delete splitAmounts[id]);
+      return {
+        selectedMemberIds: [...state.selectedMemberIds, ...added],
+        splitAmounts,
+        splitShares: {
+          ...state.splitShares,
+          ...Object.fromEntries(added.map((id) => [id, 1])),
+        },
+      };
+    }),
   setSplitMethod: (splitMethod) => set({ splitMethod }),
   setSplitAmounts: (splitAmounts) => set({ splitAmounts }),
   setSplitShares: (splitShares) => set({ splitShares }),
+  setActiveSplitMemberId: (activeSplitMemberId) => set({ activeSplitMemberId }),
   setCurrency: (currency) => set({ currency }),
   reset: () => set(initialState),
   resetDraft: () => set(draftInitialState),
