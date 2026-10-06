@@ -46,6 +46,12 @@ example
 .mcp.json
 .claude/*
 !.claude/skills/
+/AGENTS.md
+/CLAUDE.md
+/SETUP_INSTRUCTION.md
 
-# simulator debug output: metro.log, cu.sh log helper (throwaway; findings go to the vault)
+# simulator debug output: metro.log, cu.sh log helper (private; findings go to the vault)
 .sim/
+
+.vscode/*
+/documentation/
