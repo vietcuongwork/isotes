@@ -1,3 +1,4 @@
+import { FormTextInput } from "@/components/sheet-keyboard";
 import { colors } from "@/themes/color";
 import { CircleAlert } from "lucide-react-native";
 import { forwardRef, useState } from "react";
@@ -42,7 +43,9 @@ const TextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
         error={!!error}
         className="h-14 flex-row items-center bg-grey-925 px-4"
       >
-        <TextInput
+        {/* FormTextInput: waits for the number pad to leave before raising the
+            system keyboard; behaves like a plain TextInput outside a sheet */}
+        <FormTextInput
           ref={ref}
           value={value}
           placeholder={placeholder}

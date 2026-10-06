@@ -1,6 +1,5 @@
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { useMemo, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function usePaidByBottomSheet() {
   const [query, setQuery] = useState<string>("");
@@ -9,15 +8,6 @@ export default function usePaidByBottomSheet() {
   const onSelectPayer = useExpenseSheetStore((s) => s.setPaidByMemberId);
   const members = useExpenseSheetStore((s) => s.members);
 
-  const { bottom } = useSafeAreaInsets();
-  const safeBottomStyle = useMemo(
-    () => ({ flex: 1, paddingBottom: bottom }),
-    [bottom],
-  );
-  const flatListContentContainerStyle = useMemo(
-    () => ({ paddingHorizontal: 20, paddingBottom: bottom + 12, gap: 7 }),
-    [bottom],
-  );
   const filteredMembers = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return members;
@@ -28,8 +18,6 @@ export default function usePaidByBottomSheet() {
     query,
     setQuery,
     filteredMembers,
-    flatListContentContainerStyle,
-    safeBottomStyle,
     selectedPayerId,
     onSelectPayer,
     members,

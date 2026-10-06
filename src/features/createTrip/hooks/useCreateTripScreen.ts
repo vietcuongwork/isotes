@@ -1,6 +1,5 @@
 import { insertTrip } from "@/db/trips";
 import { EXPO_ROUTER } from "@/navigation/route";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useMemo, useRef } from "react";
@@ -15,7 +14,6 @@ import {
 } from "../validation/createTripFormSchema";
 
 export function useCreateTripScreen() {
-  const currencyPickerRef = useRef<BottomSheetModal>(null);
   const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null);
   const formRef = useRef<CreateTripFormHandle>(null);
 
@@ -58,7 +56,6 @@ export function useCreateTripScreen() {
   };
 
   return {
-    currencyPickerRef,
     handleCurrencyChange,
     form,
     onFormSubmit,

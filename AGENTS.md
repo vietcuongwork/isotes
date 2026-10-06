@@ -8,6 +8,11 @@ Break implementation work into the smallest reviewable increments. Wait for expl
 
 Default to proposing one file per answer. For small, low-risk tasks (e.g. extracting a component, adding a constants file, simple refactors), it's fine to propose up to a few related files in a single answer — but still wait for confirmation before writing any of them.
 
+**Exception — `/autopilot <phase>`.** When the user invokes it, that phase's
+tasks run without per-file approval, limited to the files those tasks name,
+and stop at the phase's Demo with uncommitted changes. Nothing else lifts
+this rule.
+
 # Debugging — confirm with logs before fixing
 
 When diagnosing a bug (especially anything involving native/library
@@ -31,6 +36,9 @@ worked example: two theories (`showSoftInputOnFocus` fighting
 `panGesture` in `BottomSheet.tsx`) were each implemented before being
 disproven by the next log capture, and the second had to be reverted out of
 a shared component.
+
+The step-by-step procedure for this is the `diagnosing-bugs` skill
+(`.claude/skills/diagnosing-bugs/`).
 
 # Logging minor issues
 

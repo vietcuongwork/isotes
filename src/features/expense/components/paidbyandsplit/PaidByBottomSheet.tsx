@@ -1,51 +1,64 @@
-import BottomSheet, {
-  BottomSheetMethods,
-} from "@/components/bottomsheet/BottomSheet";
+import {
+  BottomSheet,
+  FormTextInput,
+  KeyboardAwareScrollView,
+} from "@/components/sheet-keyboard";
 import { colors } from "@/themes/color";
 import { fontFamily } from "@/themes/typography";
 import { getInitial } from "@/utils/utils";
 import { Search } from "lucide-react-native";
-import { forwardRef, ReactElement } from "react";
-import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import { ReactElement } from "react";
+import { StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import usePaidByBottomSheet from "../../hooks/usePaidByBottomSheet";
 import AddPerson from "../addperson/AddPerson";
 import MemberListRow from "./MemberListRow";
 import SelectionSummaryBar from "./SelectionSummaryBar";
 
 export interface PaidByBottomSheetProps {
-  onClose?: () => void;
+  visible: boolean;
+  onClose: () => void;
 }
 
-const PaidByBottomSheet = forwardRef<
-  BottomSheetMethods,
-  PaidByBottomSheetProps
->(function PaidByBottomSheet(props, ref): ReactElement {
-  const { onClose } = props;
+export default function PaidByBottomSheet(
+  props: PaidByBottomSheetProps,
+): ReactElement {
+  const { visible, onClose } = props;
 
-  const {
-    query,
-    setQuery,
-    filteredMembers,
-    flatListContentContainerStyle,
-    safeBottomStyle,
-    selectedPayerId,
-    onSelectPayer,
-  } = usePaidByBottomSheet();
+  const safeAreaInsets = useSafeAreaInsets();
 
   return (
-    <BottomSheet ref={ref} snapPoints={["80%"]} onClose={onClose}>
-      <View style={safeBottomStyle}>
-        <View className="px-5">
-          <View className="items-center pb-3.5">
-            <Text className="text-grey-200 text-micro">PAID BY</Text>
-          </View>
+    <BottomSheet
+      visible={visible}
+      onClose={onClose}
+      title="Paid by"
+      showCloseButton
+      snapPoints={["80%"]}
+      safeAreaInsets={safeAreaInsets}
+    >
+      <PaidByContent />
+    </BottomSheet>
+  );
+}
 
-          {/* Search */}
+// Its own component so the search resets on every open: the sheet unmounts
+// its children while hidden, but PaidByBottomSheet itself stays mounted
+function PaidByContent(): ReactElement {
+  const { query, setQuery, filteredMembers, selectedPayerId, onSelectPayer } =
+    usePaidByBottomSheet();
+
+  return (
+    <>
+      {/* One scroll view for the whole sheet (rebuild rule); the search block
+          (child 0) stays pinned while the rows scroll */}
+      <KeyboardAwareScrollView stickyHeaderIndices={[0]}>
+        {/* Search — opaque so rows don't show through while pinned */}
+        <View className="bg-grey-905 px-5">
           <View className="pb-3">
             {/* //NOTE - no token for input chrome, falling back to rounded-row/grey-965/grey-825 */}
             <View className="flex-row items-center gap-2.5 rounded-row border border-grey-825 bg-grey-965 px-3.5 py-2.5">
               <Search size={18} color={colors.grey[200]} />
-              <TextInput
+              <FormTextInput
                 value={query}
                 onChangeText={setQuery}
                 placeholder="Search people"
@@ -60,13 +73,12 @@ const PaidByBottomSheet = forwardRef<
           <SelectionSummaryBar context="paidBy" />
         </View>
 
-        <FlatList
-          className="flex-1"
-          data={filteredMembers}
-          keyExtractor={(member) => member.id}
-          contentContainerStyle={flatListContentContainerStyle}
-          renderItem={({ item: member }) => (
+        {/* Rows — a .map, not a FlatList: one scroll view per sheet, and a
+            trip's member list is short */}
+        <View className="gap-[7px] px-5 pb-3">
+          {filteredMembers.map((member) => (
             <MemberListRow
+              key={member.id}
               variant="paidBy"
               name={member.name}
               avatar={{
@@ -78,18 +90,16 @@ const PaidByBottomSheet = forwardRef<
                 onPress: () => onSelectPayer(member.id),
               }}
             />
-          )}
-        />
+          ))}
+        </View>
 
         <View className="px-5">
           <AddPerson />
         </View>
-      </View>
-    </BottomSheet>
+      </KeyboardAwareScrollView>
+    </>
   );
-});
-
-export default PaidByBottomSheet;
+}
 
 const styles = StyleSheet.create({
   searchInput: {

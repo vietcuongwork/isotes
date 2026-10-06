@@ -18,8 +18,6 @@ interface ExpenseSheetState {
   splitMethod: SplitMethod;
   splitAmounts: Record<string, string>;
   splitShares: Record<string, number>;
-  // Which member's split amount the shared numpad is editing (Split → Amounts)
-  activeSplitMemberId: string | null;
   currency: Currency;
   setActivity: (activity: Activity) => void;
   setAmount: (amount: string) => void;
@@ -32,7 +30,6 @@ interface ExpenseSheetState {
   setSplitMethod: (splitMethod: SplitMethod) => void;
   setSplitAmounts: (splitAmounts: Record<string, string>) => void;
   setSplitShares: (splitShares: Record<string, number>) => void;
-  setActiveSplitMemberId: (memberId: string | null) => void;
   setCurrency: (currency: Currency) => void;
   reset: () => void;
   resetDraft: () => void;
@@ -54,7 +51,6 @@ export const draftInitialState = {
   splitMethod: "equally" as SplitMethod,
   splitAmounts: {} as Record<string, string>,
   splitShares: {} as Record<string, number>,
-  activeSplitMemberId: null as string | null,
 };
 
 const initialState: Omit<
@@ -70,7 +66,6 @@ const initialState: Omit<
   | "setSplitMethod"
   | "setSplitAmounts"
   | "setSplitShares"
-  | "setActiveSplitMemberId"
   | "setCurrency"
   | "reset"
   | "resetDraft"
@@ -113,7 +108,6 @@ export const useExpenseSheetStore = create<ExpenseSheetState>((set, get) => ({
   setSplitMethod: (splitMethod) => set({ splitMethod }),
   setSplitAmounts: (splitAmounts) => set({ splitAmounts }),
   setSplitShares: (splitShares) => set({ splitShares }),
-  setActiveSplitMemberId: (activeSplitMemberId) => set({ activeSplitMemberId }),
   setCurrency: (currency) => set({ currency }),
   reset: () => set(initialState),
   resetDraft: () => set(draftInitialState),

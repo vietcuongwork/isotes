@@ -10,7 +10,6 @@ import { useCreateTripScreen } from "../hooks/useCreateTripScreen";
 export default function CreateTripScreen() {
   const {
     form,
-    currencyPickerRef,
     handleCurrencyChange,
     onFormSubmit,
     scrollViewRef,
@@ -55,7 +54,6 @@ export default function CreateTripScreen() {
               ref={formRef}
               form={form}
               control={control}
-              currencyPickerRef={currencyPickerRef}
               handleCurrencyChange={handleCurrencyChange}
               scrollViewRef={scrollViewRef}
             />

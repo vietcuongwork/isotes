@@ -1,5 +1,11 @@
 # Scrolling a field above the NumberPad sheet
 
+> **Superseded (2026-10-05):** the number pad is no longer a sheet. Fields now
+> scroll above either keyboard through `KeyboardAwareScrollView` from
+> `src/components/sheet-keyboard/`; see `design_decisions.md` ("Sheets and the
+> number pad come from a port of sheet-keyboard-rebuild"). The files this doc
+> describes were deleted.
+
 How `AmountField` / `MemberListRow`'s amount field stay visible above
 `NumberPadBottomSheet`, and how that compares to
 `react-native-keyboard-controller`'s `KeyboardAwareScrollView` (KASV).

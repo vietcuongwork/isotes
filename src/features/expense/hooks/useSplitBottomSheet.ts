@@ -2,7 +2,6 @@ import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { Member, SplitSelection } from "@/types/TExpense";
 import { formatDisplayAmount, parseAmountInput } from "@/utils/currency";
 import { useMemo, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   getEffectiveSplitAmounts,
   getRoundingRemainder,
@@ -35,7 +34,10 @@ function toDisplayAmounts(
 ): Record<string, string> {
   return Object.fromEntries(
     members.map((member) => {
-      if (member.id === remainderInfo.absorberId && remainderInfo.remainder > 0) {
+      if (
+        member.id === remainderInfo.absorberId &&
+        remainderInfo.remainder > 0
+      ) {
         return [
           member.id,
           formatWithRemainder(
@@ -104,16 +106,6 @@ export default function useSplitBottomSheet() {
 
   const { symbol, decimalDigits } = currency;
 
-  const { bottom } = useSafeAreaInsets();
-
-  const flatListContentContainerStyle = useMemo(
-    () => ({ paddingHorizontal: 20, paddingBottom: bottom, gap: 8 }),
-    [bottom],
-  );
-  const safeBottomStyle = useMemo(
-    () => ({ flex: 1, paddingBottom: bottom }),
-    [bottom],
-  );
   const filteredMembers = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return members;
@@ -222,14 +214,15 @@ export default function useSplitBottomSheet() {
     query,
     setQuery,
     filteredMembers,
-    flatListContentContainerStyle,
+    // What each member actually typed (absent = auto-split); a number-pad
+    // field's value, so typing never edits the auto figure
+    typedAmounts: selectedAmounts,
     effectiveAmounts,
     effectiveEquallyAmounts,
     effectiveShareAmounts,
     handleToggleMember,
     handleChangeAmount,
     handleChangeShares,
-    safeBottomStyle,
     splitMethod,
     currency,
     effectiveShares,

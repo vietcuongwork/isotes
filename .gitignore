@@ -42,11 +42,10 @@ example
 /ios
 /android
 
-# claude code (local paths / personal permissions)
+# claude code (local paths / personal permissions); skills are shared, so tracked
 .mcp.json
-.claude/settings.local.json
-.claude/agents/
-.claude/rules/
+.claude/*
+!.claude/skills/
 
-# maestro run output (throwaway; findings go to the vault)
-.maestro/output/
+# simulator debug output: metro.log, cu.sh log helper (throwaway; findings go to the vault)
+.sim/

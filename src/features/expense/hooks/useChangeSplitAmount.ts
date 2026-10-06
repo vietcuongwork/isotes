@@ -1,9 +1,8 @@
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 
-// Shared by useSplitBottomSheet (native keyboard path) and
-// useNumberPadBottomSheet (custom numpad path) so both agree on the same
-// select/deselect side effects — clearing the field deselects the member,
-// typing into a deselected member's field selects them again.
+// Split → Amounts rows' change handler (via useSplitBottomSheet): clearing a
+// field deselects the member, typing into a deselected member's field
+// selects them again.
 export default function useChangeSplitAmount() {
   const selectedMemberIds = useExpenseSheetStore((s) => s.selectedMemberIds);
   const setSelectedMemberIds = useExpenseSheetStore(

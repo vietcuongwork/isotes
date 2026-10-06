@@ -1,52 +1,44 @@
 import Avatar from "@/components/Avatar";
-import BottomSheet, {
-  BottomSheetMethods,
-} from "@/components/bottomsheet/BottomSheet";
-import { useBottomSheetStack } from "@/components/bottomsheet/BottomSheetStack";
 import Button from "@/components/Button";
 import TextField from "@/components/formfield/TextField";
+import {
+  BottomSheet,
+  KeyboardAwareScrollView,
+} from "@/components/sheet-keyboard";
 import { insertMember } from "@/db/members";
 import { useAddPersonStore } from "@/stores/useAddPersonStore";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
-import { colors } from "@/themes/color";
 import { getInitial, sanitizeNameInput } from "@/utils/utils";
-import { X } from "lucide-react-native";
-import { forwardRef, ReactElement, useMemo } from "react";
-import { Text, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { ReactElement } from "react";
+import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ColorField from "./ColorField";
 
 interface AddPersonBottomSheetProps {
-  onClose?: () => void;
+  visible: boolean;
+  onClose: () => void;
 }
 
-const AddPersonBottomSheet = forwardRef<
-  BottomSheetMethods,
-  AddPersonBottomSheetProps
->(function AddPersonBottomSheet(props, ref): ReactElement {
-  const { onClose } = props;
+export default function AddPersonBottomSheet(
+  props: AddPersonBottomSheetProps,
+): ReactElement {
+  const { visible, onClose } = props;
 
   const name = useAddPersonStore((s) => s.name);
   const setName = useAddPersonStore((s) => s.setName);
   const selectedColor = useAddPersonStore((s) => s.selectedColor);
   const setSelectedColor = useAddPersonStore((s) => s.setSelectedColor);
   const resetAddPerson = useAddPersonStore((s) => s.reset);
-  const selectedMemberIds = useExpenseSheetStore(
-    (s) => s.selectedMemberIds,
-  );
+  const selectedMemberIds = useExpenseSheetStore((s) => s.selectedMemberIds);
   const splitShares = useExpenseSheetStore((s) => s.splitShares);
   const setSelectedMemberIds = useExpenseSheetStore(
     (s) => s.setSelectedMemberIds,
   );
   const setSplitShares = useExpenseSheetStore((s) => s.setSplitShares);
 
-  const { popSheet } = useBottomSheetStack();
   const tripId = useExpenseSheetStore((s) => s.members[0]?.tripId);
 
-  const { bottom } = useSafeAreaInsets();
-
-  const safeBottomStyle = useMemo(() => ({ paddingBottom: bottom }), [bottom]);
+  const safeAreaInsets = useSafeAreaInsets();
 
   const handleAddPerson = async () => {
     const trimmedName = name.trim();
@@ -65,23 +57,21 @@ const AddPersonBottomSheet = forwardRef<
     setSplitShares({ ...splitShares, [newMemberId]: 1 });
 
     resetAddPerson();
-    popSheet();
+    onClose();
   };
 
   return (
-    <BottomSheet ref={ref} onClose={onClose} snapPoints={["60%"]}>
-      <KeyboardAwareScrollView
-        contentContainerStyle={safeBottomStyle}
-        bottomOffset={50}
-        keyboardShouldPersistTaps="handled"
-      >
+    <BottomSheet
+      visible={visible}
+      onClose={onClose}
+      title="Add person"
+      showCloseButton
+      snapPoints={["60%"]}
+      safeAreaInsets={safeAreaInsets}
+    >
+      {/* revealMargin 50 = keyboard-controller's old bottomOffset */}
+      <KeyboardAwareScrollView revealMargin={50}>
         <View>
-          {/* Header */}
-          <View className="flex-row justify-between px-5 pb-4">
-            <Text className="text-grey-50 text-label">Add person</Text>
-            <X size={24} color={colors.grey[200]} />
-          </View>
-
           <View className="items-center gap-3.5 px-5 pb-6 pt-4">
             <Avatar
               label={getInitial(name)}
@@ -119,6 +109,4 @@ const AddPersonBottomSheet = forwardRef<
       </KeyboardAwareScrollView>
     </BottomSheet>
   );
-});
-
-export default AddPersonBottomSheet;
+}

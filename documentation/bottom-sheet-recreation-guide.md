@@ -1,5 +1,10 @@
 # Rebuilding BottomSheet From Scratch — Learning Guide
 
+> **Superseded (2026-10-05):** isotes no longer uses this `BottomSheet` /
+> `BottomSheetStack`. Sheets come from `src/components/sheet-keyboard/` (a port
+> of `~/repository/sheet-keyboard-rebuild`); see `design_decisions.md`
+> (2026-10-05 entries). Kept as a learning note only.
+
 This is a self-study guide for rebuilding an equivalent of this repo's `BottomSheet`
 component (`@lift-ui-kit/react-native`'s `BottomSheet.tsx` + `BottomSheetStack.tsx`)
 from first principles, as a learning exercise. It is **not** a proposal to change the

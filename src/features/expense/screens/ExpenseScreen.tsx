@@ -1,7 +1,7 @@
-import { useBottomSheetStack } from "@/components/bottomsheet/BottomSheetStack";
 import TabScreenHeader from "@/components/header/TabScreenHeader";
 import { colors } from "@/themes/color";
 import { Plus, ReceiptText } from "lucide-react-native";
+import { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddExpenseBottomSheet from "../components/AddExpenseBottomSheet";
@@ -10,17 +10,12 @@ import TripSummary from "../components/TripSummary";
 import useExpenseScreen from "../hooks/useExpenseScreen";
 
 export default function ExpenseScreen() {
-  const { pushSheet, popSheet } = useBottomSheetStack();
+  const [isAddExpenseOpen, setAddExpenseOpen] = useState(false);
   const {
     transformedTrip: trip,
     transformedExpenses,
     transformedMembers,
   } = useExpenseScreen();
-
-  const openAddExpense = () =>
-    pushSheet({
-      component: <AddExpenseBottomSheet onClose={popSheet} />,
-    });
 
   return (
     <SafeAreaView className="flex-1 bg-grey-975">
@@ -52,10 +47,15 @@ export default function ExpenseScreen() {
       {/* Entry point */}
       <TouchableOpacity
         className="mb-4 items-center self-center rounded-pill bg-grey-50 p-4 shadow-fab"
-        onPress={openAddExpense}
+        onPress={() => setAddExpenseOpen(true)}
       >
         <Plus size={20} color={colors.grey[975]} />
       </TouchableOpacity>
+      {/* Modal sheet: renders above everything, wherever it sits in the tree */}
+      <AddExpenseBottomSheet
+        visible={isAddExpenseOpen}
+        onClose={() => setAddExpenseOpen(false)}
+      />
     </SafeAreaView>
   );
 }

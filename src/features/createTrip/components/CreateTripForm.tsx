@@ -1,8 +1,12 @@
-import { useBottomSheet } from "@/components/bottomsheet/BottomSheetStack";
 import TextField from "@/components/formfield/TextField";
 import { mergeRefs } from "@/utils/utils";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { forwardRef, RefObject, useImperativeHandle, useRef } from "react";
+import {
+  forwardRef,
+  RefObject,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import {
   Control,
   Controller,
@@ -10,19 +14,16 @@ import {
   UseFormReturn,
   useFormState,
 } from "react-hook-form";
-import { Keyboard, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 import { CreateTripFormData } from "../validation/createTripFormSchema";
 import CurrencyField from "./CurrencyField";
-import CurrencyPickerBottomSheet, {
-  CurrencyPickerBottomSheetProps,
-} from "./CurrencyPickerBottomSheet";
+import CurrencyPickerBottomSheet from "./CurrencyPickerBottomSheet";
 import { PickerOption } from "./Picker";
 
 interface CreateTripFormProps {
   form: UseFormReturn<CreateTripFormData>;
   control: Control<CreateTripFormData>;
-  currencyPickerRef: RefObject<BottomSheetModal | null>;
   handleCurrencyChange: (option: PickerOption<string>) => void;
   scrollViewRef: RefObject<KeyboardAwareScrollViewRef | null>;
 }
@@ -40,13 +41,7 @@ const FIELD_ORDER: FocusableField[] = ["tripName", "description"];
 
 const CreateTripForm = forwardRef<CreateTripFormHandle, CreateTripFormProps>(
   (props, ref) => {
-    const {
-      form,
-      control,
-      currencyPickerRef,
-      handleCurrencyChange,
-      scrollViewRef,
-    } = props;
+    const { form, control, handleCurrencyChange, scrollViewRef } = props;
     const { submitCount } = useFormState({ control });
 
     const tripNameRef = useRef<TextInput>(null);
@@ -55,7 +50,7 @@ const CreateTripForm = forwardRef<CreateTripFormHandle, CreateTripFormProps>(
       tripName: tripNameRef,
       description: descriptionRef,
     };
-    const { present, dismiss } = useBottomSheet();
+    const [isCurrencyPickerOpen, setCurrencyPickerOpen] = useState(false);
 
     useImperativeHandle(ref, () => ({
       focusFirstErrorField: (errors: FieldErrors<CreateTripFormData>) => {
@@ -77,19 +72,6 @@ const CreateTripForm = forwardRef<CreateTripFormHandle, CreateTripFormProps>(
       },
     }));
 
-    const handleCurrencyFieldPress = (
-      sheetProps: CurrencyPickerBottomSheetProps,
-    ) => {
-      const { selectedCurrency, onCurrencyChange } = sheetProps;
-      present(
-        <CurrencyPickerBottomSheet
-          onClose={dismiss}
-          selectedCurrency={selectedCurrency}
-          onCurrencyChange={onCurrencyChange}
-        ></CurrencyPickerBottomSheet>,
-      );
-    };
-
     return (
       <View className="gap-6 px-5 pt-8">
         <Controller
@@ -110,7 +92,6 @@ const CreateTripForm = forwardRef<CreateTripFormHandle, CreateTripFormProps>(
                 returnKeyType: "next",
                 submitBehavior: "submit",
                 onSubmitEditing: () => {
-                  console.log("obSubmitEditing");
                   form.setFocus("description");
                 },
               }}
@@ -136,8 +117,7 @@ const CreateTripForm = forwardRef<CreateTripFormHandle, CreateTripFormProps>(
                 returnKeyType: "next",
                 submitBehavior: "submit",
                 onSubmitEditing: () => {
-                  Keyboard.dismiss();
-                  currencyPickerRef.current?.present();
+                  setCurrencyPickerOpen(true);
                 },
               }}
             />
@@ -149,16 +129,16 @@ const CreateTripForm = forwardRef<CreateTripFormHandle, CreateTripFormProps>(
           name="currency"
           render={({ field: { value } }) => (
             <>
+              {/* Opening the sheet blurs the focused field itself (no Keyboard.dismiss) */}
               <CurrencyField
                 value={value}
-                onPress={() => {
-                  Keyboard.dismiss();
-                  handleCurrencyFieldPress({
-                    selectedCurrency: value,
-                    onCurrencyChange: handleCurrencyChange,
-                    onClose: dismiss,
-                  });
-                }}
+                onPress={() => setCurrencyPickerOpen(true)}
+              />
+              <CurrencyPickerBottomSheet
+                visible={isCurrencyPickerOpen}
+                onClose={() => setCurrencyPickerOpen(false)}
+                selectedCurrency={value}
+                onCurrencyChange={handleCurrencyChange}
               />
             </>
           )}

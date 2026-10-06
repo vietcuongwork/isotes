@@ -1,11 +1,8 @@
-import { BottomSheetStackProvider } from "@/components/bottomsheet/BottomSheetStack";
 import { useDatabaseMigrations, useStudio } from "@/db/client";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFonts } from "expo-font";
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 import * as SystemUI from "expo-system-ui";
-import { StyleSheet } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { StyleSheet, View } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { fonts } from "../../assets/fonts";
 import "../../global.css";
@@ -36,27 +33,23 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <GestureHandlerRootView style={styles.gestureHandleRootView}>
+    <View style={styles.root}>
       <KeyboardProvider>
-        <BottomSheetModalProvider>
-          <BottomSheetStackProvider>
-            <ThemeProvider value={AppTheme}>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  contentStyle: { backgroundColor: "#0a0a0a" },
-                }}
-              />
-            </ThemeProvider>
-          </BottomSheetStackProvider>
-        </BottomSheetModalProvider>
+        <ThemeProvider value={AppTheme}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: "#0a0a0a" },
+            }}
+          />
+        </ThemeProvider>
       </KeyboardProvider>
-    </GestureHandlerRootView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gestureHandleRootView: {
+  root: {
     flex: 1,
   },
 });

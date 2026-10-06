@@ -1,6 +1,6 @@
 // Number can only represent integers exactly up to 2^53-1 (16 digits) —
 // beyond that, Number(...) rounds and toLocaleString displays garbage.
-const MAX_INTEGER_DIGITS = 15;
+export const MAX_INTEGER_DIGITS = 15;
 
 // Read-only display formatting, e.g. "$1,234.50" — same en-US grouping as
 // formatAmountInput, so editable and read-only amounts always match.
@@ -42,14 +42,19 @@ export function formatAmountInput(
     ? cleaned.slice(0, dotIndex).slice(0, MAX_INTEGER_DIGITS)
     : cleaned.replace(/\./g, "").slice(0, MAX_INTEGER_DIGITS);
   const typedDecimalDigits = hasDecimal
-    ? cleaned.slice(dotIndex + 1).replace(/\./g, "").slice(0, decimalDigits)
+    ? cleaned
+        .slice(dotIndex + 1)
+        .replace(/\./g, "")
+        .slice(0, decimalDigits)
     : "";
 
   const groupedInteger = integerDigits
     ? Number(integerDigits).toLocaleString("en-US")
     : "";
 
-  return hasDecimal ? `${groupedInteger}.${typedDecimalDigits}` : groupedInteger;
+  return hasDecimal
+    ? `${groupedInteger}.${typedDecimalDigits}`
+    : groupedInteger;
 }
 
 // Reverses formatAmountInput's display grouping back to a plain number
@@ -73,4 +78,3 @@ export function floorToDecimals(amount: number, decimalDigits: number): number {
   const scale = 10 ** decimalDigits;
   return Math.floor(amount * scale) / scale;
 }
-

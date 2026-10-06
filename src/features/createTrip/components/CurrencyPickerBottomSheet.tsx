@@ -1,48 +1,49 @@
-import BottomSheet, {
-  BottomSheetMethods,
-} from "@/components/bottomsheet/BottomSheet";
+import {
+  BottomSheet,
+  KeyboardAwareScrollView,
+} from "@/components/sheet-keyboard";
 import { colors } from "@/themes/color";
 import { fontFamily } from "@/themes/typography";
 import { Currency } from "@/types/TCreateTrip";
-import { forwardRef } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Picker, { PickerOption } from "./Picker";
 import { useCreateTrip } from "../hooks/useCurrencyPicker";
+import Picker, { PickerOption } from "./Picker";
+
 export interface CurrencyPickerBottomSheetProps {
+  visible: boolean;
   selectedCurrency: Currency;
   onCurrencyChange: (option: PickerOption<string>) => void;
   onClose: () => void;
 }
 
-const CurrencyPickerBottomSheet = forwardRef<
-  BottomSheetMethods,
-  CurrencyPickerBottomSheetProps
->((props, ref) => {
-  const { selectedCurrency, onCurrencyChange, onClose } = props;
+export default function CurrencyPickerBottomSheet(
+  props: CurrencyPickerBottomSheetProps,
+) {
+  const { visible, selectedCurrency, onCurrencyChange, onClose } = props;
 
   const { currencyOptions } = useCreateTrip();
-  const { bottom } = useSafeAreaInsets();
-
-  const safeBottomStyle = { paddingBottom: bottom };
+  const safeAreaInsets = useSafeAreaInsets();
 
   return (
-    <BottomSheet ref={ref} onClose={onClose}>
-      <View style={safeBottomStyle}>
+    <BottomSheet
+      visible={visible}
+      onClose={onClose}
+      safeAreaInsets={safeAreaInsets}
+    >
+      {/* Dynamic mode measures its content through this scroll view; scrolling
+          is off so it never competes with the wheel's own drag */}
+      <KeyboardAwareScrollView scrollEnabled={false}>
         <Picker
           intialValue={selectedCurrency.code}
           options={currencyOptions}
           onSelectionChange={onCurrencyChange}
           itemStyle={styles.pickerText}
         />
-      </View>
+      </KeyboardAwareScrollView>
     </BottomSheet>
   );
-});
-
-CurrencyPickerBottomSheet.displayName = "CurrencyPickerBottomSheet";
-
-export default CurrencyPickerBottomSheet;
+}
 
 const styles = StyleSheet.create({
   pickerText: {

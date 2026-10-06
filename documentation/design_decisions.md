@@ -669,6 +669,11 @@ missing or arrive after the touch ends.
 - `popSheet`'s side effect inside its state updater is fixed — the tap
   handler could then go back through `popSheet`.
 
+**Superseded by**: "Sheets and the number pad come from a port of
+sheet-keyboard-rebuild" (2026-10-05) below — the number pad is no longer a
+sheet, so the pass-through stack, `SheetCoverContext` and
+`useTapOutsideTopSheet` were deleted with `src/components/bottomsheet/`.
+
 ---
 
 ## The Split numpad target lives in the store (`activeSplitMemberId`), not local state (2026-09-30)
@@ -703,3 +708,129 @@ which dropped Split to `pointerEvents="none"` and blurred the focused field.
   because a tap on the tab already closes it).
 - A second screen needs a retargetable numpad — generalise the target
   beyond Split.
+
+**Superseded by**: "Sheets and the number pad come from a port of
+sheet-keyboard-rebuild" (2026-10-05) below — each Split row is its own
+`NumberPadInput`, and native focus picks the target, so
+`activeSplitMemberId` and `useSplitNumberPad` were removed.
+
+---
+
+## Sheets and the number pad come from a port of sheet-keyboard-rebuild (2026-10-05)
+
+**Decision**
+`src/components/sheet-keyboard/` is a copy of `~/repository/sheet-keyboard-rebuild`'s
+`src/sheet/` and `src/keyboard/` (TECH_SPEC path A: port, don't
+reimplement). The number pad is a *keyboard* owned by a `KeyboardHost`
+inside each `BottomSheet`, and every number field is a real `TextInput`
+(`NumberPadInput`). The only adaptations are `@/` imports, Prettier, isotes'
+dark tokens in `StyleSheet` objects, `keyboardAppearance="dark"` defaults,
+the grouping extension and `showCloseButton` (entries below). The reference's
+tests came along (194 with the isotes ones).
+
+**Why**
+The old model pushed the numpad as a separate sheet on top of the stack.
+The shared root stack, the pass-through wrapper, the Fabric blur/refocus
+workarounds and tap-outside fought over focus
+([[Investigate_numpad-focus-switching]], [[Investigate_numpad-reopen-while-closing]]).
+In the rebuild, focus is native and the pad follows it, so that machinery
+has nothing left to do. The reference was already verified against
+TECH_SPEC B1–B17 on the simulator; reimplementing it would mean re-earning
+that verification.
+
+**Alternatives considered**
+- Keep fixing the push stack (Solution_numpad-focus-switching A/B/C).
+  Rejected: each fix closed one window and the next log found another.
+- Reimplement the rebuild's model in isotes' own style (TECH_SPEC path B).
+  Rejected: path B is for targets that can't take the code; isotes can.
+
+**Revisit when**
+- Android becomes a target — the sheets may work there, but keyboard sync
+  (`HANDOFF_PT`, `PAD_RELEASE_AT`, `RENDER_LATENCY_MS`) is iOS-only tuning.
+- The reference repo fixes a bug — port the fix by diffing
+  `integration.test.tsx` and the shared files, which were kept diffable.
+- RN is bumped — re-check TECH_SPEC §2.3's RN internals (0.86.3 changes a
+  Modal-boundary event path in `NativeDOM.cpp`).
+
+---
+
+## Sheets nest declaratively, not through a push stack (2026-10-05)
+
+**Decision**
+Each opener owns a `visible` boolean (`ExpenseScreen: isAddExpenseOpen`,
+`AddExpenseBottomSheet: isDateOpen`, …), and a child sheet is rendered
+inside its parent sheet. `BottomSheetStack`, `pushSheet` and
+`useBottomSheet` are gone. Per-open state lives in a module-scope content
+component (e.g. `AddExpenseContent`), because the outer `BottomSheet` stays
+mounted while hidden.
+
+**Why**
+The rebuild's ordering, tap-outside and keyboard hand-off are verified for
+nested Modals (host depth). A pushed sheet rendered under a root provider,
+outside its opener's tree, so its props froze at push time — the reason
+`activeSplitMemberId` had to live in the store.
+
+**Alternatives considered**
+- Keep `pushSheet` on top of the new `BottomSheet`. Rejected: sibling Modals
+  and host-depth ranking don't match the rebuild's verified model.
+
+**Revisit when**
+- A sheet must be opened from somewhere that isn't its parent's subtree
+  (e.g. a deep link or a global command) — nesting then needs lifting
+  state up or a small open-sheet store.
+
+---
+
+## Amount fields group live in `numberPadLogic` (2026-10-05)
+
+**Decision**
+`numberPadLogic.ts` gains `grouping` and `maxIntegerDigits`. With
+`grouping`, each key is applied to the raw text (commas stripped): display
+caret → raw caret, `applyNumberPadKey`, regroup, raw caret → display caret.
+`MAX_INTEGER_DIGITS = 15`. The output matches `formatAmountInput` for every
+canonical input. Amount and Split → Amounts rows pass `grouping`.
+
+**Why**
+Chosen in the spec (user, 2026-10-05): "1,234.5" while typing. Matching
+`formatAmountInput` exactly matters because `NumberPadInput`'s in-flight
+queue compares strings — a parent echo formatted differently would reset
+the caret.
+
+**Alternatives considered**
+- Group only in read-only displays. Rejected by the user: live grouping is
+  the expected feel.
+- Group in the field's `onChangeText` (outside the pad logic). Rejected:
+  the caret would be computed on the wrong string and jump when a comma
+  appears.
+
+**Revisit when**
+- A locale with a different group/decimal separator is supported — `,`/`.`
+  are hard-coded in the grouping path.
+- `formatAmountInput` changes — the two must stay identical (there's a test
+  over canonical inputs).
+
+---
+
+## `showCloseButton` lives in the ported sheet header, laid over it (2026-10-05)
+
+**Decision**
+The ported `BottomSheet` takes `showCloseButton` (needs a `title`). The X
+is a sibling laid over the header, not a child of it, and calls
+`onRequestClose` — the same path as a backdrop tap. The title gets
+`paddingRight: 36` (24 icon + 12 gap).
+
+**Why**
+The rebuild's header claims the responder on touch start, assuming nothing
+inside it is tappable. Overlaying the X as a sibling keeps that assumption
+true instead of negotiating responders, and keeps the X its own VoiceOver
+element (the header is `accessible`, which would group a child into it).
+
+**Alternatives considered**
+- X as a child of the header. Rejected: it would fight the header's
+  claim-on-start, and VoiceOver would merge it into the header.
+- Keep each sheet's own in-content X row. Rejected: duplicated per sheet,
+  and AddExpense's was dead after the switch.
+
+**Revisit when**
+- The header gains another control (e.g. a "Done" action) — at that point
+  a header-actions slot is worth more than a single boolean.

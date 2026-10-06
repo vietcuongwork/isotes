@@ -1,7 +1,0 @@
-[mcp_servers.obsidian]
-command = "npx"
-args = [
-    "-y",
-    "@mauricio.wolff/mcp-obsidian",
-    "/Users/admin/repository/vault/isotes",
-]

@@ -1,10 +1,8 @@
-import { useBottomSheetStack } from "@/components/bottomsheet/BottomSheetStack";
 import { insertExpenseWithSplits } from "@/db/expenses";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { parseAmountInput } from "@/utils/currency";
 import { toDateId } from "@marceloterreiro/flash-calendar";
-import { useMemo, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useState } from "react";
 import {
   getIsDraftRestored,
   resolveSplitAmounts,
@@ -13,15 +11,18 @@ import {
 
 const today = toDateId(new Date());
 
-export default function useAddExpenseBottomSheet() {
+interface UseAddExpenseBottomSheetProps {
+  // Closes the sheet (the opener's visible state) after a successful save
+  onClose: () => void;
+}
+
+export default function useAddExpenseBottomSheet(
+  props: UseAddExpenseBottomSheetProps,
+) {
+  const { onClose } = props;
   const [isActivityPickerOpen, setActivityPickerOpen] =
     useState<boolean>(false);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState<boolean>(false);
-  const [isNumberPadOpen, setNumberPadOpen] = useState<boolean>(false);
-
-  const { bottom } = useSafeAreaInsets();
-  const safeBottomStyle = useMemo(() => ({ paddingBottom: bottom }), [bottom]);
-  const { pushSheet, popSheet } = useBottomSheetStack();
 
   const members = useExpenseSheetStore((s) => s.members);
   const paidByMemberId = useExpenseSheetStore((s) => s.paidByMemberId);
@@ -98,7 +99,7 @@ export default function useAddExpenseBottomSheet() {
       },
       splits,
     );
-    popSheet();
+    onClose();
     resetDraft();
     setHasAttemptedSubmit(false);
   };
@@ -116,11 +117,6 @@ export default function useAddExpenseBottomSheet() {
     today,
     isActivityPickerOpen,
     setActivityPickerOpen,
-    isNumberPadOpen,
-    setNumberPadOpen,
-    safeBottomStyle,
-    pushSheet,
-    popSheet,
     handleSubmit,
     amountError: hasAttemptedSubmit && errors.amount,
     isDraftRestored,

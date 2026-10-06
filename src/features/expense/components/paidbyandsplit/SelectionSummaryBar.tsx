@@ -11,9 +11,7 @@ export default function SelectionSummaryBar(props: SelectionSummaryBarProps) {
 
   const members = useExpenseSheetStore((s) => s.members);
   const splitMethod = useExpenseSheetStore((s) => s.splitMethod);
-  const selectedMemberIds = useExpenseSheetStore(
-    (s) => s.selectedMemberIds,
-  );
+  const selectedMemberIds = useExpenseSheetStore((s) => s.selectedMemberIds);
   const setSelectedMemberIds = useExpenseSheetStore(
     (s) => s.setSelectedMemberIds,
   );

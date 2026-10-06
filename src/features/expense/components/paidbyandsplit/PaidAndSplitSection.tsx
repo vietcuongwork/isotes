@@ -1,29 +1,15 @@
-import { useBottomSheetStack } from "@/components/bottomsheet/BottomSheetStack";
-import { ReactElement } from "react";
-import { Keyboard, Text, View } from "react-native";
-import PaidByBottomSheet, { PaidByBottomSheetProps } from "./PaidByBottomSheet";
+import { ReactElement, useState } from "react";
+import { Text, View } from "react-native";
+import PaidByBottomSheet from "./PaidByBottomSheet";
 import PayerRow from "./PayerRow";
 import PeopleSummaryRow from "./PeopleSummaryRow";
-import SplitBottomSheet, { SplitBottomSheetProps } from "./SplitBottomSheet";
+import SplitBottomSheet from "./SplitBottomSheet";
 import SplitMethodControl from "./SplitMethodControl";
 import SplitSummary from "./SplitSummary";
 
 export default function PaidAndSplitSection(): ReactElement {
-  const { pushSheet, popSheet } = useBottomSheetStack();
-
-  const handlePayerRowPress = (props: PaidByBottomSheetProps) => {
-    const { onClose } = props;
-    pushSheet({
-      component: <PaidByBottomSheet onClose={onClose} />,
-    });
-  };
-
-  const handlePeopleSummaryRowPress = (props: SplitBottomSheetProps) => {
-    const { onClose } = props;
-    pushSheet({
-      component: <SplitBottomSheet onClose={onClose} />,
-    });
-  };
+  const [isPaidByOpen, setPaidByOpen] = useState(false);
+  const [isSplitOpen, setSplitOpen] = useState(false);
 
   return (
     <View>
@@ -32,11 +18,13 @@ export default function PaidAndSplitSection(): ReactElement {
       <View className="rounded-card border border-grey-825 bg-grey-960">
         <PayerRow
           onPress={() => {
-            Keyboard.dismiss();
-            handlePayerRowPress({
-              onClose: popSheet,
-            });
+            setPaidByOpen(true);
           }}
+        />
+        {/* Modal sheet: renders above everything, wherever it sits in the tree */}
+        <PaidByBottomSheet
+          visible={isPaidByOpen}
+          onClose={() => setPaidByOpen(false)}
         />
 
         <View className="p-3 pb-3.5">
@@ -45,11 +33,12 @@ export default function PaidAndSplitSection(): ReactElement {
           <View className="mt-3">
             <PeopleSummaryRow
               onPress={() => {
-                Keyboard.dismiss();
-                handlePeopleSummaryRowPress({
-                  onClose: popSheet,
-                });
+                setSplitOpen(true);
               }}
+            />
+            <SplitBottomSheet
+              visible={isSplitOpen}
+              onClose={() => setSplitOpen(false)}
             />
           </View>
 

@@ -1,21 +1,12 @@
 import Avatar, { AvatarProps } from "@/components/Avatar";
+import { NumberPadInput } from "@/components/sheet-keyboard";
 import { colors } from "@/themes/color";
 import { Currency } from "@/types/TCreateTrip";
 import { cn } from "@/utils/cn";
-import { formatAmountInput } from "@/utils/currency";
+import { formatAmountInput, MAX_INTEGER_DIGITS } from "@/utils/currency";
 import { CheckCircle2, Circle, Minus, Plus } from "lucide-react-native";
-import { ReactElement, RefObject, useEffect, useRef } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
-
-// The shared Split numpad (useSplitNumberPad), as seen by one amount row
-type AmountsNumberPad = {
-  isActive: boolean;
-  onRequest: (memberId: string) => void;
-  registerField: (
-    memberId: string,
-    fieldRef: RefObject<TextInput | null>,
-  ) => () => void;
-};
+import { ReactElement } from "react";
+import { Pressable, Text, View } from "react-native";
 
 type MemberListRowProps =
   | {
@@ -29,10 +20,11 @@ type MemberListRowProps =
       name: string;
       avatar: AvatarProps;
       currency: Currency;
-      memberId: string;
-      numberPad: AmountsNumberPad;
       state: {
+        // What the member typed ("" = auto-split); autoAmount is the figure
+        // the split gives them, shown as the placeholder
         amount: string;
+        autoAmount: string;
         selected: boolean;
         onChangeAmount: (amount: string) => void;
         onPress: () => void;
@@ -68,55 +60,29 @@ function SelectionIndicator(props: { selected: boolean }) {
 
 function AmountsInput(props: {
   amount: string;
+  autoAmount: string;
   onChangeAmount: (amount: string) => void;
   currency: Currency;
-  memberId: string;
-  numberPad: AmountsNumberPad;
 }) {
-  const { amount, onChangeAmount, currency, memberId, numberPad } = props;
-  const { isActive, onRequest, registerField } = numberPad;
-  const inputRef = useRef<TextInput>(null);
-
-  // Lets the shared numpad find this field (tap-target check, blur on close)
-  useEffect(
-    () => registerField(memberId, inputRef),
-    [registerField, memberId],
-  );
-
-  const handleFocus = () => {
-    console.log(`[T1] ${performance.now().toFixed(1)} field ${memberId} focus`); // TEMP T1
-    onRequest(memberId);
-  };
+  const { amount, autoAmount, onChangeAmount, currency } = props;
+  const { decimalDigits } = currency;
 
   return (
-    <View
-      className="w-[40%] flex-row items-center justify-end gap-1 rounded-seg-item border border-grey-815 bg-grey-965 px-3 py-2"
-      // TEMP T1 — on Fabric, is e.target the same instance as the TextInput ref?
-      onTouchEndCapture={(e) =>
-        console.log(
-          `[T1] ${performance.now().toFixed(1)} field ${memberId} touchEnd`,
-          "target===inputRef:", e.target === inputRef.current,
-          "nativeEvent.target:", e.nativeEvent.target,
-        )
-      }
-    >
-      {/* <Text className="text-grey-400 text-body-tight-flat">
-        {currency.symbol}
-      </Text> */}
-      <TextInput
-        ref={inputRef}
-        value={formatAmountInput(amount, currency.decimalDigits)}
-        onChangeText={(text) =>
-          onChangeAmount(formatAmountInput(text, currency.decimalDigits))
+    <View className="w-[40%] flex-row items-center justify-end gap-1 rounded-seg-item border border-grey-815 bg-grey-965 px-3 py-2">
+      {/* Number pad from the sheet's KeyboardHost; groups "1,234.5" as you type */}
+      <NumberPadInput
+        value={amount}
+        onChangeText={onChangeAmount}
+        grouping
+        maxDecimals={decimalDigits}
+        maxIntegerDigits={MAX_INTEGER_DIGITS}
+        placeholder={
+          autoAmount
+            ? formatAmountInput(autoAmount, decimalDigits)
+            : decimalDigits === 0
+              ? "0"
+              : "0.00"
         }
-        showSoftInputOnFocus={false}
-        caretHidden={!isActive}
-        onFocus={handleFocus}
-        // TEMP T1 — watch for a spurious blur now that the refocus workaround is gone
-        onBlur={() =>
-          console.log(`[T1] ${performance.now().toFixed(1)} field ${memberId} blur`)
-        }
-        placeholder={currency.decimalDigits === 0 ? "0" : "0.00"}
         placeholderTextColor={colors.grey[400]}
         cursorColor={colors.orange[400]}
         selectionColor={colors.orange[400]}
@@ -184,10 +150,9 @@ export default function MemberListRow(props: MemberListRowProps): ReactElement {
       {variant === "amounts" && (
         <AmountsInput
           amount={state.amount}
+          autoAmount={state.autoAmount}
           onChangeAmount={state.onChangeAmount}
           currency={props.currency}
-          memberId={props.memberId}
-          numberPad={props.numberPad}
         />
       )}
 
