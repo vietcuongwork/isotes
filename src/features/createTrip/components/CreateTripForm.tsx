@@ -40,7 +40,7 @@ const SCROLL_TOP_PADDING = 40;
 const FIELD_ORDER: FocusableField[] = ["tripName", "description"];
 
 const CreateTripForm = forwardRef<CreateTripFormHandle, CreateTripFormProps>(
-  (props, ref) => {
+  function CreateTripForm(props, ref) {
     const { form, control, handleCurrencyChange, scrollViewRef } = props;
     const { submitCount } = useFormState({ control });
 

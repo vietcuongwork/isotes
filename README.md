@@ -1,58 +1,53 @@
 # isotes
 
-# Welcome to your Expo app 👋
+Local-first trip expense splitter for iOS: create a trip, add the people and their expenses, split each expense, and see who owes whom. All data stays on the device (expo-sqlite + drizzle); there is no backend.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Built with Expo SDK 57, React Native 0.86, expo-router, NativeWind, Zustand, and react-hook-form + zod.
 
-## Get started
+## Setup
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Needs Node, pnpm and Xcode (an iOS simulator or a device).
 
 ```bash
-npm run reset-project
+pnpm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Run
 
-### Other setup steps
+```bash
+pnpm ios
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Builds the native app (`expo run:ios`) and starts Metro. `ios/` and `android/` are generated and git-ignored. After the first build, start only Metro:
 
-## Learn more
+```bash
+pnpm start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Rebuild with `pnpm ios` after adding or upgrading a package with native code, or after changing the plugins in `app.json`. If the native project gets stale, regenerate it:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npx expo prebuild --clean
+```
 
-## Join the community
+Android (`pnpm android`) builds but isn't tuned yet.
 
-Join our community of developers creating universal apps.
+## Verify
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+pnpm check
+```
+
+Runs `tsc --noEmit`, lint (no errors, at most the known warnings) and Jest.
+
+## Database
+
+The schema is `src/db/schema.ts`. After changing it, generate a migration; migrations run on app launch.
+
+```bash
+npx drizzle-kit generate
+```
+
+## Layout
+
+Routes in `src/app/`, feature folders in `src/features/`, shared UI in `src/components/`, data access in `src/db/`.

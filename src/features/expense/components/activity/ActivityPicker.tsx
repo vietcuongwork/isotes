@@ -3,7 +3,7 @@ import { Activity } from "@/types/TExpense";
 import { cn } from "@/utils/cn";
 import { Check } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
-import { ACTIVITIES } from "../../constants";
+import { ACTIVITIES } from "@/features/expense/constants";
 
 interface ActivityPickerProps {
   selected: Activity;

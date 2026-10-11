@@ -4,8 +4,7 @@ import { useState } from "react";
 import { Pressable, Text } from "react-native";
 import AddPersonBottomSheet from "./AddPersonBottomSheet";
 
-interface AddPersonProps {}
-export default function AddPerson(props: AddPersonProps) {
+export default function AddPerson() {
   const [isOpen, setOpen] = useState(false);
 
   return (

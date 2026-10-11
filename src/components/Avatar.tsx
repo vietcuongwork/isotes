@@ -39,7 +39,6 @@ function Avatar(props: AvatarProps) {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
 namespace Avatar {
   export function Stack(props: AvatarStackProps) {
     const { members, maxVisible = members.length } = props;

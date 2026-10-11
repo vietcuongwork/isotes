@@ -64,7 +64,7 @@ export const expenses = sqliteTable("expenses", {
   paidByMemberId: text("paid_by_member_id")
     .notNull()
     .references(() => members.id),
-  // dollars, not cents — matches parseAmountInput/formatAmountInput 
+  // dollars, not cents — matches parseAmountInput/formatAmountInput
   // (src/utils/currency.ts), which already work in float dollars throughout the app
   amount: real("amount").notNull(),
   description: text("description"),

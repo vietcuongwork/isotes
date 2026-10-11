@@ -1,5 +1,5 @@
 import { cn } from "@/utils/cn";
-import { useEffect, useRef } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -24,13 +24,10 @@ export default function FieldShell(props: FieldShellProps) {
 
   const translateX = useSharedValue(0);
 
-  //NOTE - Read the error via ref (not a dep) so a submit re-fires the shake,
-  // but revalidation-on-change while typing (RHF's reValidateMode) doesn't.
-  const errorRef = useRef<string | undefined>(error);
-  errorRef.current = error;
-
-  useEffect(() => {
-    if (!errorRef.current) return;
+  //NOTE - An effect event reads the latest error without making it a dep, so a
+  // submit re-fires the shake but revalidation while typing (reValidateMode) doesn't.
+  const shakeIfError = useEffectEvent(() => {
+    if (!error) return;
     translateX.value = withSequence(
       withTiming(-10, { duration: 50 }),
       withTiming(10, { duration: 50 }),
@@ -40,6 +37,10 @@ export default function FieldShell(props: FieldShellProps) {
       withTiming(4, { duration: 50 }),
       withTiming(0, { duration: 50 }),
     );
+  });
+
+  useEffect(() => {
+    shakeIfError();
   }, [shakeTrigger]);
 
   const shakeStyle = useAnimatedStyle(() => ({

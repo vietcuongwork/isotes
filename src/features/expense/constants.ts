@@ -8,7 +8,7 @@ import {
   Ticket,
   Utensils,
 } from "lucide-react-native";
-import { Activity } from "../../types/TExpense";
+import { Activity } from "@/types/TExpense";
 
 //NOTE - order = grid order in ACTIVITYPicker (2 cols, top-to-bottom then wrap)
 export const ACTIVITIES: Activity[] = [

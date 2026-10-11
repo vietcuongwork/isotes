@@ -31,7 +31,9 @@ export default function ActivityField(props: ActivityFieldProps) {
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Icon size={18} color={colors.orange[400]} />
-          <Text className={cn("text-grey-50 text-row", open && "text-orange-400")}>
+          <Text
+            className={cn("text-grey-50 text-row", open && "text-orange-400")}
+          >
             {selected.label}
           </Text>
         </View>

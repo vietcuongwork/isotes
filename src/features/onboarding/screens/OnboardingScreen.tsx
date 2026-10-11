@@ -55,8 +55,8 @@ export default function OnboardingScreen() {
 
             <View className="max-w-[80%]">
               <Text className="text-grey-200 text-body">
-                Start a trip, add expenses as they happen, and we'll work out
-                who owes what.
+                Start a trip, add expenses as they happen, and we&apos;ll work
+                out who owes what.
               </Text>
             </View>
           </View>

@@ -24,7 +24,7 @@ This command is _informed_ by the project's domain model and built on a shared d
 
 Read the project's domain glossary (`GLOSSARY.md`) and the `design_decisions.md` entries in the area you're touching first.
 
-Then spawn a sub-agent to walk the codebase, passing it `documentation/project_structure.md` so it starts oriented. Don't follow rigid heuristics; explore organically and note where you experience friction:
+Then spawn a sub-agent to walk the codebase, passing it the project's structure map (the note named in `CLAUDE.md` under "Check structure docs before traversing") so it starts oriented. Don't follow rigid heuristics; explore organically and note where you experience friction:
 
 - Where does understanding one concept require bouncing between many small modules?
 - Where are modules **shallow**, with an interface nearly as complex as the implementation?

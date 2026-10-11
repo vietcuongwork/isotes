@@ -2,7 +2,7 @@ import PickerField from "@/components/formfield/PickerField";
 import { colors } from "@/themes/color";
 import { ChevronsUpDown } from "lucide-react-native";
 import { Text, View } from "react-native";
-import { Currency } from "../../../types/TCreateTrip";
+import { Currency } from "@/types/TCreateTrip";
 
 interface CurrencyFieldProps {
   value: Currency;

@@ -17,56 +17,58 @@ interface TextFieldProps {
   shellClassName?: string;
 }
 
-const TextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
-  const {
-    label,
-    optionalLabel,
-    placeholder,
-    value,
-    error,
-    shakeTrigger,
-    textInputProps,
-    shellClassName,
-  } = props;
-  const [isFocused, setIsFocused] = useState(false);
+const TextField = forwardRef<TextInput, TextFieldProps>(
+  function TextField(props, ref) {
+    const {
+      label,
+      optionalLabel,
+      placeholder,
+      value,
+      error,
+      shakeTrigger,
+      textInputProps,
+      shellClassName,
+    } = props;
+    const [isFocused, setIsFocused] = useState(false);
 
-  return (
-    <FieldShell
-      label={label}
-      {...(optionalLabel && { optionalLabel: optionalLabel })}
-      error={error}
-      shakeTrigger={shakeTrigger}
-      className={shellClassName}
-    >
-      <FieldBox
-        active={isFocused}
-        error={!!error}
-        className="h-14 flex-row items-center bg-grey-925 px-4"
+    return (
+      <FieldShell
+        label={label}
+        {...(optionalLabel && { optionalLabel: optionalLabel })}
+        error={error}
+        shakeTrigger={shakeTrigger}
+        className={shellClassName}
       >
-        {/* FormTextInput: waits for the number pad to leave before raising the
+        <FieldBox
+          active={isFocused}
+          error={!!error}
+          className="h-14 flex-row items-center bg-grey-925 px-4"
+        >
+          {/* FormTextInput: waits for the number pad to leave before raising the
             system keyboard; behaves like a plain TextInput outside a sheet */}
-        <FormTextInput
-          ref={ref}
-          value={value}
-          placeholder={placeholder}
-          placeholderTextColor={colors.grey[500]}
-          className="h-full flex-1 py-4 text-grey-50 text-body-tight-flat"
-          cursorColor={colors.orange[400]}
-          selectionColor={colors.orange[400]}
-          {...textInputProps}
-          onFocus={(e) => {
-            setIsFocused(true);
-            textInputProps?.onFocus?.(e);
-          }}
-          onBlur={(e) => {
-            setIsFocused(false);
-            textInputProps?.onBlur?.(e);
-          }}
-        />
-        {error && <CircleAlert color={colors.red[400]} />}
-      </FieldBox>
-    </FieldShell>
-  );
-});
+          <FormTextInput
+            ref={ref}
+            value={value}
+            placeholder={placeholder}
+            placeholderTextColor={colors.grey[500]}
+            className="h-full flex-1 py-4 text-grey-50 text-body-tight-flat"
+            cursorColor={colors.orange[400]}
+            selectionColor={colors.orange[400]}
+            {...textInputProps}
+            onFocus={(e) => {
+              setIsFocused(true);
+              textInputProps?.onFocus?.(e);
+            }}
+            onBlur={(e) => {
+              setIsFocused(false);
+              textInputProps?.onBlur?.(e);
+            }}
+          />
+          {error && <CircleAlert color={colors.red[400]} />}
+        </FieldBox>
+      </FieldShell>
+    );
+  },
+);
 
 export default TextField;

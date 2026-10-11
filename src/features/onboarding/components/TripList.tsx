@@ -25,43 +25,37 @@ export default function TripList() {
   const [tripSummaries, setTripSummaries] = useState<
     Record<string, TripSummary>
   >({});
-  const [tripMembers, setTripMembers] = useState<Record<string, Member[]>>(
-    {},
-  );
-  const [isGettingTrips, setIsGettingTrips] = useState<boolean>(true);
+  const [tripMembers, setTripMembers] = useState<Record<string, Member[]>>({});
   const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
-      setIsGettingTrips(true);
-      getAllTripsWithMembersAndExpenses()
-        .then((rows) => {
-          const summaries: Record<string, TripSummary> = {};
-          const members: Record<string, Member[]> = {};
+      getAllTripsWithMembersAndExpenses().then((rows) => {
+        const summaries: Record<string, TripSummary> = {};
+        const members: Record<string, Member[]> = {};
 
-          for (const row of rows) {
-            const transformedMembers = row.members.map(transformMemberRow);
-            const transformedExpenses = row.expenses.map(transformExpenseRow);
-            const owner = transformedMembers.find((member) => member.isOwner);
+        for (const row of rows) {
+          const transformedMembers = row.members.map(transformMemberRow);
+          const transformedExpenses = row.expenses.map(transformExpenseRow);
+          const owner = transformedMembers.find((member) => member.isOwner);
 
-            summaries[row.id] = {
-              balance: owner
-                ? computeTripBalance(transformedExpenses, owner.id)
-                : 0,
-              expenseCount: transformedExpenses.length,
-              totalAmount: transformedExpenses.reduce(
-                (sum, expense) => sum + expense.amount,
-                0,
-              ),
-            };
-            members[row.id] = transformedMembers;
-          }
+          summaries[row.id] = {
+            balance: owner
+              ? computeTripBalance(transformedExpenses, owner.id)
+              : 0,
+            expenseCount: transformedExpenses.length,
+            totalAmount: transformedExpenses.reduce(
+              (sum, expense) => sum + expense.amount,
+              0,
+            ),
+          };
+          members[row.id] = transformedMembers;
+        }
 
-          setTrips(rows.map(transformTripRow));
-          setTripSummaries(summaries);
-          setTripMembers(members);
-        })
-        .finally(() => setIsGettingTrips(false));
+        setTrips(rows.map(transformTripRow));
+        setTripSummaries(summaries);
+        setTripMembers(members);
+      });
     }, []),
   );
 

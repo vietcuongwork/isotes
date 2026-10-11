@@ -21,9 +21,10 @@ Done when, for every user story, you can name the modules it touches, from where
 
 - **Vertical**: a phase cuts a narrow but complete path through every layer its behaviour needs, and ends on a **Demo**: what the user can see working on the simulator, or a named Jest run for a logic-only phase. A phase with no Demo is a horizontal slice; re-cut it.
 - **Tracer bullet first**: the first feature phase is the thinnest end-to-end path; later phases widen it.
-- **Prefactoring first**: Phase 0 holds the prefactors. Its Demo is "behaviour unchanged": tsc clean plus a regression check of what it touches.
+- **Prefactoring first**: Phase 0 holds the prefactors. Its Demo is "behaviour unchanged": a regression check of what it touches. It also proves readiness: the baseline is committed, and every seam a later phase names has at least one passing example test.
 - **One session**: a phase fits one fresh context window.
 - **Wide refactors and migrations run expand–contract**: Expand (the new form beside the old, nothing using it yet; Demo = behaviour unchanged), then one Migrate phase per consumer or batch, each with its own Demo and blocked by Expand, then Contract (delete the old form), blocked by every Migrate.
+- **Acceptance closes the spec**: the last phase ends with an acceptance task (`[Live]`) that first runs `pnpm check` (the feature's one tsc, lint and Prettier run), then re-runs every criterion's check on the final build — a pass logged by an earlier task doesn't count — and ticks only what passes in full. A partly checked criterion stays unticked with a note on what's missing; a dropped one is marked `descoped: {reason} (user, YYYY-MM-DD)` only with the user's OK. Then it sets the spec's `status` to `done`. For a feature that changes the app (`src/`), the same task runs the vault's `Test_golden-path.md` on that build, so a regression outside the feature's own criteria still shows.
 
 </phase-rules>
 
@@ -32,7 +33,7 @@ Each phase declares:
 - **Demo**: the check that ends it.
 - **Covers**: the user stories it delivers (`US3, US4`) and their acceptance criteria.
 - **Blocked by**: the phases that genuinely gate it, or "none".
-- **Seams**: the Jest seams it tests, taken from the spec's testing decisions, or "none (Sim only)".
+- **Seams**: the Jest seams it tests, taken from the spec's testing decisions, or "none (Live only)".
 
 ## 3. Quiz the user
 
@@ -46,9 +47,9 @@ Iterate until the user approves the phase list.
 
 ## 4. Break each phase into tasks
 
-Inside each approved phase, write the tasks by CLAUDE.md Step 2's task rules: smallest, non-breaking, revertible, tagged `[TDD]` or `[Sim]`, with a **Verify** line and `Blocked by` where needed. Tasks may be one file each; the phase carries the vertical slice. A `[TDD]` task names its seam from the phase's **Seams**.
+Inside each approved phase, write the tasks by CLAUDE.md Step 2's task rules: smallest, non-breaking, revertible, tagged `[TDD]` or `[Live]`, with a **Verify** line and `Blocked by` where needed. Tasks may be one file each; the phase carries the vertical slice. A `[TDD]` task names its seam from the phase's **Seams**.
 
-Done when every acceptance criterion in the spec traces to a task, and every phase's last task ends on its Demo.
+Done when every acceptance criterion in the spec traces to a task — write that task's number into the criterion's `verified by` (`Live (T12)`) — and every phase's last task ends on its Demo.
 
 ## 5. Write the planning note
 

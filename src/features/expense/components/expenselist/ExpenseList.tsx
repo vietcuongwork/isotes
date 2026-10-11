@@ -1,9 +1,9 @@
+import { getViewerNetForExpense } from "@/features/expense/helpers/expenseHelpers";
 import { Currency } from "@/types/TCreateTrip";
 import { Expense, Member } from "@/types/TExpense";
 import { formatDisplayAmount } from "@/utils/currency";
 import { formatDateLabel } from "@/utils/date";
-import { View } from "react-native";
-import { getViewerNetForExpense } from "../../helpers/expenseHelpers";
+import { SectionList, View } from "react-native";
 import ExpenseItem from "./ExpenseItem";
 import ExpenseSeparator from "./ExpenseSeparator";
 
@@ -13,6 +13,8 @@ interface ExpenseListProps {
   currency: Currency;
 }
 
+type DateSection = { dateId: string; data: Expense[] };
+
 export default function ExpenseList({
   expenses,
   members,
@@ -20,59 +22,72 @@ export default function ExpenseList({
 }: ExpenseListProps) {
   const viewerMemberId = members.find((member) => member.isOwner)?.id ?? "";
 
+  const RowGap = () => {
+    return <View className="h-3" />;
+  };
+
   // expenses arrives ordered by date desc (getExpensesWithSplitsByTripId), so
-  // consecutive same-date rows can just be appended to the last group instead
+  // consecutive same-date rows can just be appended to the last section instead
   // of a separate sort/group-by pass.
-  const groups: { dateId: string; expenses: Expense[] }[] = [];
+  const sections: DateSection[] = [];
   for (const expense of expenses) {
-    const lastGroup = groups[groups.length - 1];
-    if (lastGroup?.dateId === expense.date) {
-      lastGroup.expenses.push(expense);
+    const lastSection = sections[sections.length - 1];
+    if (lastSection?.dateId === expense.date) {
+      lastSection.data.push(expense);
     } else {
-      groups.push({ dateId: expense.date, expenses: [expense] });
+      sections.push({ dateId: expense.date, data: [expense] });
     }
   }
 
   return (
-    <View className="gap-3 px-5 pt-5">
-      {groups.map((group) => {
-        const dayTotal = group.expenses.reduce(
+    <SectionList
+      // NativeWind doesn't map className on SectionList, so the one layout style is plain
+      style={{ flex: 1 }}
+      contentContainerStyle={{ paddingBottom: 84 }} // ListBottomSpace
+      sections={sections}
+      keyExtractor={(expense) => expense.id}
+      // iOS sticks section headers by default; the design scrolls them with the list
+      stickySectionHeadersEnabled={true}
+      ItemSeparatorComponent={RowGap}
+      renderSectionHeader={({ section }) => {
+        const dayTotal = section.data.reduce(
           (sum, expense) => sum + expense.amount,
           0,
         );
 
         return (
-          <View key={group.dateId} className="gap-3">
+          <View className="px-5">
             <ExpenseSeparator
-              label={formatDateLabel(group.dateId)}
+              label={formatDateLabel(section.dateId)}
               total={formatDisplayAmount(
                 dayTotal,
                 currency.symbol,
                 currency.decimalDigits,
               )}
             />
-            {group.expenses.map((expense) => {
-              const payer =
-                members.find((member) => member.id === expense.paidByMemberId) ??
-                members[0];
-
-              return (
-                <ExpenseItem
-                  key={expense.id}
-                  expense={expense}
-                  payer={payer}
-                  viewerNet={getViewerNetForExpense(
-                    expense,
-                    expense.splits,
-                    viewerMemberId,
-                  )}
-                  currency={currency}
-                />
-              );
-            })}
           </View>
         );
-      })}
-    </View>
+      }}
+      renderItem={({ item: expense }) => {
+        const payer =
+          members.find((member) => member.id === expense.paidByMemberId) ??
+          members[0];
+
+        return (
+          <View className="px-5">
+            <ExpenseItem
+              expense={expense}
+              payer={payer}
+              viewerNet={getViewerNetForExpense(
+                expense,
+                expense.splits,
+                viewerMemberId,
+              )}
+              currency={currency}
+            />
+          </View>
+        );
+      }}
+    />
   );
 }

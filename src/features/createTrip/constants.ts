@@ -1,4 +1,4 @@
-import { Currency } from "../../types/TCreateTrip";
+import { Currency } from "@/types/TCreateTrip";
 
 export const CURRENCY_OPTIONS: Currency[] = [
   { name: "Australian Dollar", code: "AUD", symbol: "$", decimalDigits: 2 },

@@ -15,8 +15,8 @@ export default function StartOverDialog(props: StartOverDialogProps) {
           <Text className="text-grey-50 text-body-lg-medium">Start over?</Text>
           <Text className="pt-2 text-grey-200 text-caption">
             This clears the amount, description, activity and date back to a
-            blank expense. People you added stay in the trip — they aren't part
-            of this form.
+            blank expense. People you added stay in the trip — they aren&apos;t
+            part of this form.
           </Text>
           <View className="flex-row gap-3 pt-4">
             <Pressable

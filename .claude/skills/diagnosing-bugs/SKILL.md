@@ -1,11 +1,11 @@
 ---
 name: diagnosing-bugs
-description: Diagnosis loop for any bug in isotes — Small bugs end to end, Big bugs through Phase 4 (the Investigate_ note). Use when the user says "diagnose"/"debug this", or reports something broken/throwing/failing/slow.
+description: Diagnosis loop for any bug in isotes — two quick fixes first, then a tight loop and logs. Small bugs end to end, Big bugs through Phase 4 (the Investigate_ note). Use when the user says "diagnose"/"debug this", or reports something broken/throwing/failing/slow.
 ---
 
 # Diagnosing Bugs
 
-A discipline for hard bugs. Skip phases only when explicitly justified.
+Two quick fixes first; a discipline for the bugs they don't fix. Skip phases only when explicitly justified.
 
 When exploring the codebase, read `GLOSSARY.md` (if it exists) to get a clear mental model of the relevant modules, and check `documentation/design_decisions.md` for decisions in the area you're touching.
 
@@ -15,9 +15,23 @@ This skill has you show commands, outputs and captured artifacts. **Redact every
 
 If the redacted output is not enough to diagnose the bug, say so and ask the user.
 
+## Phase 0: Quick fixes
+
+Most bugs here are obvious once the symptom is seen. Try up to two fixes before building a loop.
+
+1. **See it once.** Reproduce the symptom one time (simulator steps, a Jest run, or the user's exact steps) and note what you saw: that's the before-picture each fix is checked against. It needn't be tight or minimised. Can't reproduce it → Phase 1.
+2. **Rank 3–5 hypotheses**, each with its prediction (format in Phase 3). Send the list and the fix for the top one in the same message; the user's yes on that file covers both.
+3. **Try it.** Write the fix and repeat the same steps. Symptom gone → Phase 5, then Phase 6; the hypothesis whose prediction held is the cause on record.
+4. **Still there → revert the fix**, then try hypothesis 2 the same way. Each attempt runs on clean code, so its result belongs to one change.
+5. **Both fail → Phase 1.** Carry both hypotheses and what each attempt showed; Phase 3 starts with them ruled out.
+
+Skip straight to Phase 1 when the fix would need 3+ files or a choice between approaches: that's a Big bug from the start. A quick fix that works is a Small bug (`Debug_` note), even in a shared file.
+
+Done when the symptom is gone after one of the two attempts, or both are reverted and their results noted.
+
 ## Phase 1: Build a feedback loop
 
-**This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug (one that goes red on _this_ bug), you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.
+Reached when both quick fixes failed, or the symptom wouldn't show. **This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug (one that goes red on _this_ bug), you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.
 
 Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give up.**
 
@@ -61,7 +75,7 @@ Phase 1 is done when the loop is **tight** and **red-capable**: you can name **o
 - [ ] **Fast**: seconds, not minutes.
 - [ ] **Agent-driven where possible**: a Jest command or a computer-use sequence on the simulator you have already executed once. Fall back to a structured human repro (item 8) only for the cases it lists — never ask the user to reproduce what you can drive.
 
-If you catch yourself reading code to build a theory before this command exists, **stop: jumping straight to a hypothesis is the exact failure this skill prevents.** No red-capable command, no Phase 2.
+If you catch yourself reading code to build a third theory before this command exists, **stop: after two missed guesses, another guess is the exact failure this phase prevents.** No red-capable command, no Phase 2.
 
 ## Phase 2: Reproduce + minimise
 
@@ -85,13 +99,17 @@ Do not proceed until you have reproduced **and** minimised.
 
 ## Phase 3: Hypothesise
 
-Generate **3–5 ranked hypotheses** before testing any of them. Single-hypothesis generation anchors on the first plausible idea.
+Re-rank with what the loop and the failed quick fixes showed: drop the two ruled out, add new ones, **3–5 ranked hypotheses** in all, before testing any of them. Single-hypothesis generation anchors on the first plausible idea.
 
 Each hypothesis must be **falsifiable**: state the prediction it makes.
 
 > Format: "If <X> is the cause, then <changing Y> will make the bug disappear / <changing Z> will make it worse."
 
 If you cannot state the prediction, the hypothesis is a vibe: discard or sharpen it.
+
+**"Will the touch reach X?"** Trace the whole path from the touch point to the view: every ancestor wrapper's `pointerEvents`, sibling overlays, the sheet's wrapper and backdrop (`src/components/sheet-keyboard/sheet/BottomSheet.tsx`). Don't stop at the first blocker, and state the full path in the hypothesis. (2026-09-30: a removed scrim was claimed to free the Split list, but a second wrapper was `pointerEvents="none"`.)
+
+**Why logs after two misses.** A theory that sounds mechanically sound is still a guess until a log confirms that specific mechanism fires; this codebase has several overlapping candidates (the shared `BottomSheet`, gesture-handler, keyboard handling all touch focus). On 2026-09-28 (numpad caret blur) two theories were each implemented before a log disproved them, and the second had to be reverted out of `BottomSheet.tsx`, which every sheet uses. That's why the quick tries stop at two: past them, every fix waits for a log that confirms its mechanism.
 
 **Show the ranked list to the user and wait for their reply before instrumenting.** They often have domain knowledge that re-ranks instantly, or know hypotheses they've already ruled out.
 
@@ -107,11 +125,19 @@ Tool preference:
 
 **Tag every debug log** with a unique prefix, e.g. `[DEBUG-a4f2]`. Cleanup at the end becomes a single grep. Untagged logs survive; tagged logs die.
 
+**One format for every probe**: `[TAG] <event> key=value … t=${performance.now().toFixed(1)}`, one line per event, so captures from different rounds line up and sort by `t`.
+
 **Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, `performance.now()`, profiler, query plan), then bisect. Measure first, fix second.
 
 ## Big bug hand-off
 
-If the confirmed cause needs a Big-bug fix (shared/foundational file, 3+ files, a choice between approaches — see "Issue Scoping" in CLAUDE.md), STOP here. Write Phases 1–4 into `Investigate_{slug}.md` and continue with the Solution_ → Fix_ chain. Phases 5–6 then run as tasks in the Fix_ note.
+If the confirmed cause needs a Big-bug fix (shared/foundational file, 3+ files, a choice between approaches — see "Issue Scoping" in CLAUDE.md), STOP here. Write Phases 0–4 into `Investigate_{slug}.md` and continue with the Solution_ → Fix_ chain. Phases 5–6 then run as tasks in the Fix_ note. All notes go to the vault (`/Users/admin/repository/vault/isotes/`):
+
+1. **Clarify** — anything unclear about the issue: ask before proceeding, in `grilling` rounds.
+2. **Investigate** → `Investigate_{slug}.md`: issue summary, affected files, execution flow, root cause, impact. STOP and present findings.
+3. **Propose Solution** → `Solution_{slug}.md`: design the fix with edge cases and tradeoffs; name the regression-test seam, or record that none exists. Use `codebase-design` / `prototype` when the fix is a design choice. Review with Plannotator (CLAUDE.md "Plannotator Review Gate"), then STOP.
+4. **Task Breakdown** → `Fix_{slug}.md`: small, non-breaking, revertible tasks, each naming the file(s) to change. Review with Plannotator, then STOP.
+5. **Implement** — one task at a time following the Fix note, per "Smallest steps" (AGENTS.md). Write the regression test with `tdd` where a seam exists. Consult `expo-rn-expert` for API usage when unsure; run `review-two-axis` on non-trivial tasks.
 
 ## Phase 5: Fix + regression test
 
@@ -123,7 +149,7 @@ A correct seam is one where the test exercises the **real bug pattern** as it oc
 
 If a correct seam exists:
 
-1. Turn the minimised repro into a failing test at that seam, using the `tdd` skill.
+1. Turn the minimised repro into a failing test at that seam, using the `tdd` skill. From Phase 0 the fix is already in: write the test from the steps that showed the symptom, and see it go red with the fix stashed (`git stash push -- <fix file>`), then green with it back (`git stash pop`).
 2. Watch it fail.
 3. Propose the fix per "Smallest steps" (AGENTS.md) and write it only after the user approves that file.
 4. Watch it pass.
@@ -135,7 +161,7 @@ If the loop is still red after the fix, STOP and return to Phase 3. After 2 fail
 
 Required before declaring done:
 
-- [ ] Original repro no longer reproduces (re-run the Phase 1 loop)
+- [ ] Original repro no longer reproduces (re-run the Phase 1 loop, or Phase 0's steps)
 - [ ] Regression test passes (or absence of seam is documented)
 - [ ] All `[DEBUG-...]` instrumentation removed (`grep` the prefix)
 - [ ] Throwaway prototypes deleted (or moved to a clearly-marked debug location)

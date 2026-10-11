@@ -29,6 +29,8 @@ The spec is the vault note the work implements, under `/Users/admin/repository/v
 
 Read the note(s) with the Obsidian MCP tools and paste the relevant contents into the Spec sub-agent's prompt.
 
+For a task under review, also paste the task's planned **Verify** line and its draft Verify results from this conversation: review runs before the task is logged, so the note doesn't have them yet.
+
 ### 3. Identify the standards sources
 
 The standards sources are `AGENTS.md`, `CLAUDE.md`, every file in `.claude/rules/`, `documentation/design_decisions.md` (a logged decision is deliberate, not a finding, unless its "Revisit when" condition is met), and `documentation/rhf-patterns.md` for form code.
@@ -56,6 +58,7 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 ### 4. Spawn both sub-agents in parallel
 
+- **Standards follows the app.** When no file under review is in `src/` (scripts, tooling), skip the Standards sub-agent, report `Standards: skipped (no src/ change)`, and add brief (e) to the Spec sub-agent.
 - **Standards** runs as the `code-reviewer` agent. Add to its prompt: "Review against standards only — do not judge whether the code matches the spec; that is a separate review." Pass the `.claude/rules/` file list too; the agent doesn't read them by default.
 - **Spec** runs as a `general-purpose` agent with the pasted spec contents.
 
@@ -69,7 +72,7 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 
 - The diff command from step 1 (and the commit list, when reviewing since a fixed point).
 - The path or fetched contents of the spec.
-- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
+- The brief: "Start the report with one row per acceptance criterion the task covers: `| criterion (quoted) | PASS / FAIL / NOT SHOWN | evidence (file:line, test name, or Verify result) |`. NOT SHOWN means the diff and Verify results give no evidence either way. Then report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong; (d) Verify claims the evidence doesn't support: compare the planned Verify line with the Verify results, and flag any criterion that's claimed but not shown, deferred without an Open check, or checked at a lower layer than the plan asked (Jest where it said simulator); (e) when Standards is skipped: wrong output — an input or state under which the code returns a wrong result or crashes, with that input. Report every divergence you find; don't downgrade one because the code looks reasonable. Quote the spec line for each finding. Under 500 words."
 
 If the spec is missing, skip the Spec sub-agent and note this in the final report.
 
@@ -77,7 +80,7 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
 
 Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings, because the two axes are deliberately separate (see _Why two axes_).
 
-End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
+End with a one-line summary: total findings per axis, the Spec axis's PASS / FAIL / NOT SHOWN counts, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
 
 Report only — don't fix anything. Each fix the user picks is proposed per "Smallest steps" (AGENTS.md).
 

@@ -10,7 +10,7 @@ import { Search } from "lucide-react-native";
 import { ReactElement } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import usePaidByBottomSheet from "../../hooks/usePaidByBottomSheet";
+import usePaidByBottomSheet from "@/features/expense/hooks/usePaidByBottomSheet";
 import AddPerson from "../addperson/AddPerson";
 import MemberListRow from "./MemberListRow";
 import SelectionSummaryBar from "./SelectionSummaryBar";

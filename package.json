@@ -2,6 +2,7 @@
   "name": "isotes",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "packageManager": "pnpm@11.9.0",
   "dependencies": {
     "@expo-google-fonts/fraunces": "^0.4.1",
     "@expo/ui": "~57.0.10",
@@ -57,6 +58,7 @@
     "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~57.0.2",
+    "fast-check": "^4.10.2",
     "jest": "~29.7.0",
     "jest-expo": "~57.0.4",
     "prettier": "^3.9.6",
@@ -71,7 +73,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "jest"
+    "test": "jest",
+    "check": "tsc --noEmit && expo lint --max-warnings 0 && prettier --check src && jest"
   },
   "jest": {
     "preset": "jest-expo/ios",

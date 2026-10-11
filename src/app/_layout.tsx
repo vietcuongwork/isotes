@@ -1,10 +1,11 @@
 import { useDatabaseMigrations, useStudio } from "@/db/client";
 import { useFonts } from "expo-font";
+import { useEffect } from "react";
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 import * as SystemUI from "expo-system-ui";
 import { StyleSheet, View } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import { fonts } from "../../assets/fonts";
+import { fonts } from "@/assets/fonts";
 import "../../global.css";
 
 // Set native root view background color before anything mounts
@@ -28,6 +29,17 @@ export default function RootLayout() {
   const { success: migrationReady, error: migrationError } =
     useDatabaseMigrations();
   useStudio();
+
+  // [lifecycle] lines are permanent: .sim/cu.sh waits for "ready", and a
+  // failed migration otherwise renders null with no log
+  useEffect(() => {
+    if (migrationError)
+      console.error("[lifecycle] migration failed", migrationError);
+  }, [migrationError]);
+  useEffect(() => {
+    if (__DEV__ && fontLoaded && migrationReady)
+      console.log("[lifecycle] ready");
+  }, [fontLoaded, migrationReady]);
 
   if (!fontLoaded || !migrationReady) {
     return null;

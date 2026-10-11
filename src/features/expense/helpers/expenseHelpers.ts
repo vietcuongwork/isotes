@@ -453,11 +453,10 @@ export function validateExpenseSheet(
   return errors;
 }
 
-// Rounds each member's share to the currency's decimalDigits (nearest, not
-// floor), then hands any resulting leftover/overage to the payer via
-// distributeRemainderToPayer — persisted splits always sum exactly to
-// totalAmount. See design_decisions.md "Split rounding/leftover is assigned
-// to the payer" (2026-09-25).
+// "equally"/"shares" amounts floor to the currency's decimalDigits and the
+// payer absorbs the leftover (distributeRemainderToPayer), so persisted splits
+// sum exactly to totalAmount. See design_decisions.md "Equally/shares base
+// amounts floor, not round" (2026-09-27).
 export function resolveSplitAmounts(
   members: Member[],
   splitMethod: SplitMethod,

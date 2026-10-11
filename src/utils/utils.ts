@@ -19,4 +19,5 @@ export const getInitial = (s: string) => capitalize(s).charAt(0);
 // ("Robert (Bob)"). Drops emoji and other symbols.
 const NON_NAME_CHAR_PATTERN = /[^\p{L}\p{M}\p{N}\s'&.,()-]/gu;
 
-export const sanitizeNameInput = (s: string) => s.replace(NON_NAME_CHAR_PATTERN, "");
+export const sanitizeNameInput = (s: string) =>
+  s.replace(NON_NAME_CHAR_PATTERN, "");

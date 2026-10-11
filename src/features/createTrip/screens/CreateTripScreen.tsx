@@ -63,8 +63,8 @@ export default function CreateTripScreen() {
               <View className="flex-row items-center gap-3 rounded-card border border-grey-850 bg-grey-950 p-4">
                 <UserPlus color={colors.grey[400]} size={20} />
                 <Text className="max-w-[90%] text-grey-200 text-meta">
-                  No need to add people now — you'll add them as you log the
-                  first expense.
+                  No need to add people now — you&apos;ll add them as you log
+                  the first expense.
                 </Text>
               </View>
             </View>

@@ -18,11 +18,12 @@ export default function ExpenseScreen() {
   } = useExpenseScreen();
 
   return (
-    <SafeAreaView className="flex-1 bg-grey-975">
+    <SafeAreaView
+      edges={["top", "left", "right"]}
+      className="flex-1 bg-grey-975"
+    >
       <TabScreenHeader />
-
       {trip && <TripSummary trip={trip} />}
-
       {!trip || transformedExpenses.length === 0 ? (
         <View className="flex-1 items-center justify-center gap-[18px] px-10">
           {/* //NOTE - no token, 60px circle falls back to arbitrary size */}
@@ -43,14 +44,18 @@ export default function ExpenseScreen() {
           currency={trip.currency}
         />
       )}
-
-      {/* Entry point */}
-      <TouchableOpacity
-        className="mb-4 items-center self-center rounded-pill bg-grey-50 p-4 shadow-fab"
-        onPress={() => setAddExpenseOpen(true)}
+      {/* Entry point: pinned over the list; box-none lets touches beside the button reach the list */}
+      <View
+        className="absolute inset-x-0 bottom-0 items-center"
+        pointerEvents="box-none"
       >
-        <Plus size={20} color={colors.grey[975]} />
-      </TouchableOpacity>
+        <TouchableOpacity
+          className="items-center rounded-pill bg-grey-50 p-4 shadow-fab"
+          onPress={() => setAddExpenseOpen(true)}
+        >
+          <Plus size={20} color={colors.grey[975]} />
+        </TouchableOpacity>
+      </View>
       {/* Modal sheet: renders above everything, wherever it sits in the tree */}
       <AddExpenseBottomSheet
         visible={isAddExpenseOpen}
