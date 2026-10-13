@@ -25,6 +25,7 @@ Copied from https://github.com/cursor/plugins at `11713c6` (2026-10-12), MIT, ©
 | Here | Upstream path |
 |---|---|
 | `create-verification-skill` (`SKILL.md`, `references/feature-map-example/`) | `pstack/skills/create-verification-skill` |
+| `.claude/principles/<name>.md` (prefix dropped, frontmatter kept; private, git-ignored; indexed in `.claude/rules/isotes-principles.md`) | `pstack/skills/principle-<name>/SKILL.md` |
 
 Local edits to keep on re-sync (`create-verification-skill/SKILL.md`): `.cursor/skills/` → `.claude/skills/`; §5 "Offer the maintenance loop" dropped, since `maintain-verification-skill` isn't ported (its loop ends in a PR; revisit when the feature map drifts). `verify-isotes` is this generator's output, not upstream.
 
