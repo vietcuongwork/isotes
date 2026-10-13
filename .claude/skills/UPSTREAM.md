@@ -26,6 +26,8 @@ Copied from https://github.com/cursor/plugins at `11713c6` (2026-10-12), MIT, ©
 |---|---|
 | `create-verification-skill` (`SKILL.md`, `references/feature-map-example/`) | `pstack/skills/create-verification-skill` |
 | `.claude/principles/<name>.md` (prefix dropped, frontmatter kept; private, git-ignored; indexed in `.claude/rules/isotes-principles.md`) | `pstack/skills/principle-<name>/SKILL.md` |
+| `.claude/rules/isotes-typescript.md` (a path-scoped rule, not a skill; private) | `pstack/skills/typescript-best-practices/SKILL.md` |
+| `documentation/typescript-patterns.md` (unchanged; private) | `pstack/skills/typescript-best-practices/references/patterns.md` |
 
 Local edits to keep on re-sync (`create-verification-skill/SKILL.md`): `.cursor/skills/` → `.claude/skills/`; §5 "Offer the maintenance loop" dropped, since `maintain-verification-skill` isn't ported (its loop ends in a PR; revisit when the feature map drifts). `verify-isotes` is this generator's output, not upstream.
 
@@ -39,8 +41,16 @@ Local edits to keep on re-sync (principles; each is one line, so an isotes rule 
 - `test-behavior-not-implementation`: "For a mock, assert the payload it received" → for a mock at a system boundary only (`tdd/mocking.md`).
 - `type-system-discipline`: after "Derive types from authoritative schemas", a line that `schema.ts` mirrors tokens by hand and code past a transform uses `src/types/` (AGENTS.md, `isotes-architecture`).
 
+Local edits to keep on re-sync (`isotes-typescript.md`):
+- Frontmatter: Cursor's `name`/`description`/`paths`/`disable-model-invocation` → `paths:` `src/**/*.ts`, `src/**/*.tsx`.
+- A **Scope** line after "Apply … first": code a task writes or changes; branded types and object args only where the area already uses them or the task says to; no retrofits (AGENTS.md rule 7).
+- Exhaustiveness: adds `return _exhaustive;` (a bare declaration fails `pnpm check`'s 0-warning cap).
+- Schema-derived types: adds "past a transform function, derive from `src/types/`, never from schema row types" (AGENTS.md).
+- Structured telemetry: `console.log` allowed for the permanent `[lifecycle]` lines in `_layout.tsx`.
+- "Examples: `references/patterns.md`" → `documentation/typescript-patterns.md`.
+
 ```bash
-git diff 11713c6..HEAD -- pstack/skills/create-verification-skill 'pstack/skills/principle-*'
+git diff 11713c6..HEAD -- pstack/skills/create-verification-skill 'pstack/skills/principle-*' pstack/skills/typescript-best-practices
 ```
 
 To check every local copy against `11713c6` (or name files as arguments), from the repo root:
