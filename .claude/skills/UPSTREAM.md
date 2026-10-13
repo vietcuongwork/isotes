@@ -31,3 +31,11 @@ Local edits to keep on re-sync (`create-verification-skill/SKILL.md`): `.cursor/
 ```bash
 git diff 11713c6..HEAD -- pstack/skills/create-verification-skill
 ```
+
+To check every local copy against `11713c6` (or name files as arguments), from the repo root:
+
+```bash
+.claude/skills/pstack-diff.sh
+```
+
+It prints `same` or a diff per file, then a `-- N files: …` summary, and exits 1 on a missing, unmapped or unfetched file. Every diff should be one of the local edits listed above.
