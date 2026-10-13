@@ -29,8 +29,18 @@ Copied from https://github.com/cursor/plugins at `11713c6` (2026-10-12), MIT, ©
 
 Local edits to keep on re-sync (`create-verification-skill/SKILL.md`): `.cursor/skills/` → `.claude/skills/`; §5 "Offer the maintenance loop" dropped, since `maintain-verification-skill` isn't ported (its loop ends in a PR; revisit when the feature map drifts). `verify-isotes` is this generator's output, not upstream.
 
+Local edits to keep on re-sync (principles; each is one line, so an isotes rule wins inside the copy). `never-block-on-the-human` isn't ported.
+- `outcome-oriented-execution`: "Intermediate breakage is acceptable …" → every task stays non-breaking (CLAUDE.md Planning); "Declare where temporary breakage is acceptable" → name the phase that removes any temporary form (expand–contract).
+- `fix-root-causes`: "When stuck, instrument. Don't guess" → two quick fixes first, each reverted if it fails (`diagnosing-bugs` Phase 0), then instrument.
+- `guard-the-context-window`: "Keep frequently used content inline" → keep skills around 100 lines, longer content in reference files.
+- `prove-it-works`: "the **show-me-your-work** skill" (not ported) → the task's Verify line in the implementation note.
+- `explain-the-number`: the `benchmark-checklist` link (not ported) → "check that it repeats and that the work really happened before you report it".
+- `minimize-reader-load`: "wrappers with one caller" → pass-through wrappers only; a one-caller function that names a separable concern stays (AGENTS.md "Function scope").
+- `test-behavior-not-implementation`: "For a mock, assert the payload it received" → for a mock at a system boundary only (`tdd/mocking.md`).
+- `type-system-discipline`: after "Derive types from authoritative schemas", a line that `schema.ts` mirrors tokens by hand and code past a transform uses `src/types/` (AGENTS.md, `isotes-architecture`).
+
 ```bash
-git diff 11713c6..HEAD -- pstack/skills/create-verification-skill
+git diff 11713c6..HEAD -- pstack/skills/create-verification-skill 'pstack/skills/principle-*'
 ```
 
 To check every local copy against `11713c6` (or name files as arguments), from the repo root:
