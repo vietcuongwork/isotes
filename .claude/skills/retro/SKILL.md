@@ -26,6 +26,7 @@ The user has asked for a **retrospective**. You are suggesting improvements to t
 - **Setback layers**: tally the `[spec|context|env|verify|state|observe]` prefixes on Deviation lines since the last retro. The most frequent layer is the first place to invest. _Use when_ the implementation note has tagged Deviations.
 - **Routing gaps**: for each "not yet a rule (gap)" row in the vault's `Ref_workflow-skills.md` → Routing, count how often that situation happened since the note was written (Deviation lines, diaries). The second occurrence → propose the rule. _Use when_ any retro runs.
 - **Model change**: list rules that compensate for model behaviour (not user preferences) and propose removing one at a time, checking the next few sessions for regressions. _Use when_ the session ran on a newer model than the last retro.
+- **Principle pruning**: take the last 4 weekly reports (`~/.claude/usage/<week>.json`) whose `fingerprints` list `.claude/principles/` files. For each principle with no `typed` or `called` use in any of them, propose a vault `Tasks_backlog.md` item "drop or reword its use-when line?"; the user decides each one. Fewer than 4 such reports: say so and prune nothing. _Use when_ any retro runs.
 
 4. Present these candidates to the user, in order of severity.
 
