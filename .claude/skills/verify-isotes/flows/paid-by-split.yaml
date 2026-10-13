@@ -1,0 +1,137 @@
+# Run and tree-read commands: ../SKILL.md "Drive" (one driver per session).
+appId: com.anonymous.isotes
+name: paid-by-split
+---
+# Cold start: only a relaunch leaves a trip screen for the start screen.
+- launchApp
+- evalScript: ${const p = (n) => String(n).padStart(2, '0'); const d = new Date(); output.tripName = 'Flow paid-by-split ' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes())}
+
+# The flow's own trip, in the default AUD (two decimals)
+- tapOn: "Start your first trip"
+- tapOn: "Trip to Vegas"
+- inputText: ${output.tripName}
+- pressKey: Enter
+- pressKey: Enter
+- tapOn: "Close sheet"
+- tapOn: "Create trip"
+- extendedWaitUntil:
+    visible:
+      text: "Expenses, tab, 1 of 3"
+      selected: true
+    timeout: 5000
+
+# Expense 1: $60, Ana pays
+- tapOn: "Add expense"
+- tapOn: "0.00"
+- extendedWaitUntil:
+    visible:
+      id: "number-pad"
+    timeout: 3000
+- tapOn:
+    text: "6"
+    retryTapIfNoChange: true
+- tapOn:
+    text: "0"
+    below: "Delete"
+    retryTapIfNoChange: true
+- tapOn: "Done"
+- assertVisible: "60"
+
+# Ana (added from Paid by) pays
+- tapOn: "Y, You paid"
+- tapOn: "Add a person"
+- tapOn: "Enter name"
+- inputText: "Ana"
+# Return drops the keyboard, which otherwise covers "Add to trip".
+- pressKey: Enter
+- tapOn: "Add to trip"
+# Payer is a single select that leaves the sheet open.
+- tapOn: "A, Ana"
+- tapOn:
+    id: "sheet-close"
+- assertVisible: "A, Ana paid"
+
+# Amounts: Ben added from the split sheet; Ana 10, Ben 20, You auto 30
+- tapOn: "Amounts"
+# The people row's label carries the avatar initials ("2 people, Y, A").
+- tapOn: "2 people.*"
+- tapOn: "Add a person"
+- tapOn: "Enter name"
+- inputText: "Ben"
+- pressKey: Enter
+- tapOn: "Add to trip"
+- tapOn: "Amount for Ana"
+- extendedWaitUntil:
+    visible:
+      id: "number-pad"
+    timeout: 3000
+- tapOn:
+    text: "1"
+    retryTapIfNoChange: true
+# The pad must stay up between keys in this nested sheet.
+- assertVisible:
+    id: "number-pad"
+- tapOn:
+    text: "0"
+    below: "Delete"
+    retryTapIfNoChange: true
+- tapOn: "Amount for Ben"
+- tapOn:
+    text: "2"
+    retryTapIfNoChange: true
+- assertVisible:
+    id: "number-pad"
+- tapOn:
+    text: "0"
+    below: "Delete"
+    retryTapIfNoChange: true
+- tapOn: "Done"
+- assertVisible: "All \\$60.00 assigned"
+- tapOn:
+    id: "sheet-close"
+- tapOn: "Save expense"
+- extendedWaitUntil:
+    visible: "Ana paid"
+    timeout: 5000
+- assertVisible: "you owe \\$30.00"
+
+# Expense 2: $40, Ben pays, Shares: Ana 2, You 1, Ben 1 ($10 a share)
+- tapOn: "Add expense"
+- tapOn: "0.00"
+- extendedWaitUntil:
+    visible:
+      id: "number-pad"
+    timeout: 3000
+- tapOn:
+    text: "4"
+    retryTapIfNoChange: true
+- tapOn:
+    text: "0"
+    below: "Delete"
+    retryTapIfNoChange: true
+- tapOn: "Done"
+- tapOn: "Y, You paid"
+- tapOn: "B, Ben"
+- tapOn:
+    id: "sheet-close"
+- assertVisible: "B, Ben paid"
+- tapOn: "Shares"
+- tapOn: "3 people.*"
+- tapOn: "Add a share for Ana"
+# Up and back down: Ben 2, then 1
+- tapOn: "Add a share for Ben"
+- assertVisible: "\\$8.00 per share · 5 shares"
+- tapOn: "Remove a share for Ben"
+- assertVisible: "\\$10.00 per share · 4 shares"
+# A member's name toggles them: You out (3 shares), then back in with 1
+- tapOn: "You"
+- assertVisible: "\\$13.33 per share · .*"
+- tapOn: "You"
+- assertVisible: "\\$10.00 per share · 4 shares"
+- tapOn:
+    id: "sheet-close"
+- tapOn: "Save expense"
+- extendedWaitUntil:
+    visible: "Ben paid"
+    timeout: 5000
+- assertVisible: "you owe \\$10.00"

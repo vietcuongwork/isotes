@@ -478,6 +478,7 @@ export function KeyboardHost({ children, safeAreaInsets }: KeyboardHostProps) {
       <HostContext.Provider value={contextValue}>
         {children}
       </HostContext.Provider>
+      {/* Touches bubble along the React tree into a parent sheet's tap-outside. why: [[Debug_numpad-closes-in-nested-sheet]] */}
       <Animated.View
         testID="number-pad-dock"
         pointerEvents={padInteractive ? "auto" : "none"}
@@ -485,6 +486,8 @@ export function KeyboardHost({ children, safeAreaInsets }: KeyboardHostProps) {
         importantForAccessibility={
           padInteractive ? "auto" : "no-hide-descendants"
         }
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
         style={[styles.dock, { bottom: padBottom }]}
       >
         <View onLayout={onPadLayout}>

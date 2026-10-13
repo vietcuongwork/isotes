@@ -1,0 +1,90 @@
+# Run and tree-read commands: ../SKILL.md "Drive" (one driver per session).
+appId: com.anonymous.isotes
+name: add-expense
+---
+# Cold start: only a relaunch leaves a trip screen, and it drops any in-memory draft.
+- launchApp
+- evalScript: ${const p = (n) => String(n).padStart(2, '0'); const d = new Date(); output.tripName = 'Flow add-expense ' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes())}
+
+# The flow's own trip, in the default AUD (two decimals)
+- tapOn: "Start your first trip"
+- tapOn: "Trip to Vegas"
+- inputText: ${output.tripName}
+- pressKey: Enter
+- pressKey: Enter
+- tapOn: "Close sheet"
+- tapOn: "Create trip"
+- extendedWaitUntil:
+    visible:
+      text: "Expenses, tab, 1 of 3"
+      selected: true
+    timeout: 5000
+
+# Leave a draft: amount 12.50 and a description, then close without saving
+- tapOn: "Add expense"
+# The amount field has no label; its placeholder "0.00" is the selector.
+- tapOn: "0.00"
+- extendedWaitUntil:
+    visible:
+      id: "number-pad"
+    timeout: 3000
+- tapOn:
+    text: "1"
+    retryTapIfNoChange: true
+- tapOn:
+    text: "2"
+    retryTapIfNoChange: true
+- tapOn:
+    text: "Decimal point"
+    retryTapIfNoChange: true
+- tapOn:
+    text: "5"
+    retryTapIfNoChange: true
+- tapOn: "Done"
+- assertVisible: "12.5"
+- tapOn: "What was it for\\?"
+- inputText: "Flow draft"
+- pressKey: Enter
+- tapOn:
+    id: "sheet-close"
+
+# Reopening restores the draft; Start over clears it
+- tapOn: "Add expense"
+- assertVisible: "Picked up where you left off"
+- assertVisible: "Flow draft"
+- tapOn: "Start over"
+- assertVisible: "Start over\\?"
+# The dialog's confirm button, not the banner's chip behind the modal
+- tapOn:
+    text: "Start over"
+    rightOf: "Keep editing"
+- assertNotVisible: "Picked up where you left off"
+- assertNotVisible: "Flow draft"
+
+# The real expense: 7.25 paid by You, saved
+- tapOn: "0.00"
+- extendedWaitUntil:
+    visible:
+      id: "number-pad"
+    timeout: 3000
+- tapOn:
+    text: "7"
+    retryTapIfNoChange: true
+- tapOn:
+    text: "Decimal point"
+    retryTapIfNoChange: true
+- tapOn:
+    text: "2"
+    retryTapIfNoChange: true
+- tapOn:
+    text: "5"
+    retryTapIfNoChange: true
+- tapOn: "Done"
+- assertVisible: "7.25"
+- assertVisible: "Y, You paid"
+- tapOn: "Save expense"
+- extendedWaitUntil:
+    visible: "You paid"
+    timeout: 5000
+- assertVisible: "\\$7.25"
+- assertNotVisible: "No expenses yet"

@@ -11,7 +11,7 @@ Surface architectural friction and propose **deepening opportunities**: refactor
 This command is _informed_ by the project's domain model and built on a shared design vocabulary:
 
 - Call the Skill tool with "codebase-design" for the architecture vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Use these terms exactly in every suggestion, and don't drift into "component," "service," "API," or "boundary."
-- The domain language in `GLOSSARY.md` gives names to good seams; entries in `documentation/design_decisions.md` record decisions this command should not re-litigate.
+- The domain language in `GLOSSARY.md` gives names to good seams; accepted ADRs in `documentation/adr/` record decisions this command should not re-litigate.
 
 ## Process
 
@@ -22,7 +22,7 @@ This command is _informed_ by the project's domain model and built on a shared d
 - If the user named a direction (a module, a subsystem, a pain point), take it, and skip the inference below.
 - Otherwise, walk back a good stretch of the commit history (`git log --oneline`) to find the codebase's hot spots, the files and areas that keep coming up, and let those paths pull your attention first. If the changes are scattered with no clear hot spot, widen the net.
 
-Read the project's domain glossary (`GLOSSARY.md`) and the `design_decisions.md` entries in the area you're touching first.
+Read the project's domain glossary (`GLOSSARY.md`) and the accepted ADRs in the area you're touching (`documentation/adr/README.md`) first.
 
 Then spawn a sub-agent to walk the codebase, passing it the project's structure map (the note named in `CLAUDE.md` under "Check structure docs before traversing") so it starts oriented. Don't follow rigid heuristics; explore organically and note where you experience friction:
 
@@ -53,7 +53,7 @@ End the report with a **Top recommendation** section: which candidate you'd tack
 
 **Use GLOSSARY.md vocabulary for the domain, and the `/codebase-design` vocabulary for the architecture.** If `GLOSSARY.md` defines "Order," talk about "the Order intake module," not "the FooBarHandler," and not "the Order service."
 
-**Design-decision conflicts**: if a candidate contradicts a `design_decisions.md` entry, only surface it when the friction is real enough to meet that entry's "Revisit when" condition. Mark it clearly in the card (e.g. a warning callout: _"contradicts 'Split-method branching stays as explicit per-function if/switch' (2026-09-25), but worth reopening because…"_). Don't list every theoretical refactor a decision forbids.
+**Design-decision conflicts**: if a candidate contradicts an accepted ADR, only surface it when the friction is real enough to meet that ADR's "Revisit when" condition. Mark it clearly in the card (e.g. a warning callout: _"contradicts ADR 0008 'Split-method branching stays as explicit per-function if/switch', but worth reopening because…"_). Don't list every theoretical refactor a decision forbids.
 
 See [HTML-REPORT.md](HTML-REPORT.md) for the full HTML scaffold, diagram patterns, and styling guidance.
 
@@ -67,5 +67,5 @@ Side effects happen inline as decisions crystallize; call the Skill tool with "d
 
 - **Naming a deepened module after a concept not in `GLOSSARY.md`?** Propose the glossary entry per `domain-modeling` (write after the user's yes). Create the file lazily if it doesn't exist.
 - **Sharpening a fuzzy term during the conversation?** Propose the updated entry the same way.
-- **User rejects the candidate with a load-bearing reason?** Offer a `design_decisions.md` entry, framed as: _"Want me to record this as a design decision so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing; skip ephemeral reasons ("not worth it right now") and self-evident ones.
+- **User rejects the candidate with a load-bearing reason?** Offer an ADR (`domain-modeling`'s format), framed as: _"Want me to record this as a design decision so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing; skip ephemeral reasons ("not worth it right now") and self-evident ones.
 - **Want to explore alternative interfaces for the deepened module?** Call the Skill tool with "codebase-design" and use its design-it-twice parallel sub-agent pattern.

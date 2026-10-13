@@ -45,6 +45,7 @@ example
 # claude code (local paths / personal permissions); skills are shared, so tracked
 .mcp.json
 .claude/*
+!.claude/skills/
 /AGENTS.md
 /CLAUDE.md
 /SETUP_INSTRUCTION.md

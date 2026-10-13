@@ -1,0 +1,35 @@
+# Run and tree-read commands: ../SKILL.md "Drive" (one driver per session).
+appId: com.anonymous.isotes
+name: create-trip
+---
+# Cold start: only a relaunch leaves a trip screen for the start screen.
+- launchApp
+- evalScript: ${const p = (n) => String(n).padStart(2, '0'); const d = new Date(); output.tripName = 'Flow create-trip ' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes())}
+
+- tapOn: "Start your first trip"
+
+# An empty name is refused, and nothing is created
+- tapOn: "Create trip"
+- assertVisible: "Trip name is required"
+
+# Name and description; Return on the description opens the currency sheet
+- tapOn: "Trip to Vegas"
+- inputText: ${output.tripName}
+- pressKey: Enter
+- inputText: "Flow description"
+- pressKey: Enter
+# Keep the default currency (the wheel's first row)
+- assertVisible: "Australian Dollar \\(AUD\\) - \\$"
+- tapOn: "Close sheet"
+- assertVisible: ".*Australian Dollar, AUD"
+- tapOn: "Create trip"
+
+# Lands on the new trip's empty expense tab
+- extendedWaitUntil:
+    visible:
+      text: "Expenses, tab, 1 of 3"
+      selected: true
+    timeout: 5000
+- assertVisible: ${output.tripName}
+- assertVisible: "AUD · created .*"
+- assertVisible: "No expenses yet"

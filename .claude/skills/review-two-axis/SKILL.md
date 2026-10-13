@@ -33,7 +33,7 @@ For a task under review, also paste the task's planned **Verify** line and its d
 
 ### 3. Identify the standards sources
 
-The standards sources are `AGENTS.md`, `CLAUDE.md`, every file in `.claude/rules/`, `documentation/design_decisions.md` (a logged decision is deliberate, not a finding, unless its "Revisit when" condition is met), and `documentation/rhf-patterns.md` for form code.
+The standards sources are `AGENTS.md`, `CLAUDE.md`, every file in `.claude/rules/`, the accepted ADRs in the touched area (`documentation/adr/README.md`; an accepted ADR is deliberate, not a finding, unless its "Revisit when" condition is met), and `documentation/rhf-patterns.md` for form code.
 
 On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below: a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:
 

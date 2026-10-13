@@ -10,7 +10,7 @@ Turn a reviewed `Feat_{slug}_spec.md` into **phases**: tracer-bullet vertical sl
 ## 1. Read
 
 - The spec: numbered user stories, acceptance criteria, testing decisions.
-- `GLOSSARY.md` (if it exists) for names, and `documentation/design_decisions.md` in the area you're touching.
+- `GLOSSARY.md` (if it exists) for names, and the accepted ADRs in the area you're touching (`documentation/adr/README.md`).
 - The code each user story touches. Look for prefactoring: "make the change easy, then make the easy change."
 
 Done when, for every user story, you can name the modules it touches, from where its data lives to where the user sees it. A story may touch one layer or many; the feature's scope decides.

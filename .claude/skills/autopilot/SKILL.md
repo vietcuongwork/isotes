@@ -15,7 +15,7 @@ The user hands you one **phase** of `Feat_{slug}_planning.md` to run without per
 - The argument names one phase. Missing or ambiguous: ask and stop.
 - The planning note passed review, and every phase in this phase's **Blocked by** is ticked done.
 - Record `git status --porcelain` as the baseline, so the end report separates this phase's changes from work already in progress. If it covers an earlier phase, ask whether to commit that first: a phase should start from a committed Demo.
-- If the phase has `[Live]` tasks that change `src/`, smoke-test first: `.sim/cu.sh relaunch` must print `ready` and no ERROR lines. Broken → stop and report before task 1.
+- If the phase has `[Live]` tasks that change `src/`, smoke-test first with `verify-isotes` (CLI): Doctor → `doctor: ok`, `.sim/cu.sh mark`, the golden-path flow (that skill's Drive command) green, then `.sim/cu.sh show` with no ERROR lines. Broken → stop and report before task 1.
 - Read the spec, this phase, and `Feat_{slug}_implementation.md`.
 
 Done when the phase is identified, its blockers are done, and the baseline is recorded.

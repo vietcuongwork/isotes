@@ -59,18 +59,20 @@ function SelectionIndicator(props: { selected: boolean }) {
 }
 
 function AmountsInput(props: {
+  name: string;
   amount: string;
   autoAmount: string;
   onChangeAmount: (amount: string) => void;
   currency: Currency;
 }) {
-  const { amount, autoAmount, onChangeAmount, currency } = props;
+  const { name, amount, autoAmount, onChangeAmount, currency } = props;
   const { decimalDigits } = currency;
 
   return (
     <View className="w-[40%] flex-row items-center justify-end gap-1 rounded-seg-item border border-grey-815 bg-grey-965 px-3 py-2">
       {/* Number pad from the sheet's KeyboardHost; groups "1,234.5" as you type */}
       <NumberPadInput
+        accessibilityLabel={`Amount for ${name}`}
         value={amount}
         onChangeText={onChangeAmount}
         grouping
@@ -94,20 +96,29 @@ function AmountsInput(props: {
 }
 
 function SharesStepper(props: {
+  name: string;
   shares: number;
   onIncrement: () => void;
   onDecrement: () => void;
 }) {
-  const { shares, onIncrement, onDecrement } = props;
+  const { name, shares, onIncrement, onDecrement } = props;
   return (
     <View className="flex-row items-center gap-2.5 rounded-[10px] bg-grey-965 px-1.5 py-1">
-      <Pressable onPress={onDecrement} hitSlop={8}>
+      <Pressable
+        onPress={onDecrement}
+        hitSlop={8}
+        accessibilityLabel={`Remove a share for ${name}`}
+      >
         <Minus size={17} color={colors.grey[200]} />
       </Pressable>
       <Text className="w-3 text-center font-outfit-medium text-base text-grey-50">
         {shares}
       </Text>
-      <Pressable onPress={onIncrement} hitSlop={8}>
+      <Pressable
+        onPress={onIncrement}
+        hitSlop={8}
+        accessibilityLabel={`Add a share for ${name}`}
+      >
         <Plus size={17} color={colors.orange[400]} />
       </Pressable>
     </View>
@@ -127,10 +138,14 @@ function getRowBackgroundClass(props: MemberListRowProps): string {
 export default function MemberListRow(props: MemberListRowProps): ReactElement {
   const { variant, name, avatar, state } = props;
   const { selected } = state;
+  // A Pressable row is one accessibility element, which hides the nested
+  // input / steppers from VoiceOver and Maestro; let them be reached
+  const hasNestedControls = variant === "amounts" || variant === "shares";
 
   return (
     <Pressable
       onPress={state.onPress}
+      accessible={!hasNestedControls}
       className={cn(
         "flex-row items-center justify-between rounded-btn px-3.5 py-2.5",
         getRowBackgroundClass(props),
@@ -149,6 +164,7 @@ export default function MemberListRow(props: MemberListRowProps): ReactElement {
 
       {variant === "amounts" && (
         <AmountsInput
+          name={name}
           amount={state.amount}
           autoAmount={state.autoAmount}
           onChangeAmount={state.onChangeAmount}
@@ -158,6 +174,7 @@ export default function MemberListRow(props: MemberListRowProps): ReactElement {
 
       {variant === "shares" && (
         <SharesStepper
+          name={name}
           shares={state.shares}
           onIncrement={state.onIncrement}
           onDecrement={state.onDecrement}

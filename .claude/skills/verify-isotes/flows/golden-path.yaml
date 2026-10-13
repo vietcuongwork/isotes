@@ -1,0 +1,90 @@
+# Run and tree-read commands: ../SKILL.md "Drive" (one driver per session).
+appId: com.anonymous.isotes
+name: golden-path
+---
+# Cold start: only a relaunch leaves a trip screen for the start screen.
+- launchApp
+- evalScript: ${const p = (n) => String(n).padStart(2, '0'); const d = new Date(); output.tripName = 'Flow golden-path ' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes())}
+
+# Create the flow's own trip, in VND
+- tapOn: "Start your first trip"
+- tapOn: "Trip to Vegas"
+- inputText: ${output.tripName}
+# Return: name → Description → opens the currency sheet, which drops the keyboard.
+# (hideKeyboard's tap outside lands on the currency field instead.)
+- pressKey: Enter
+- pressKey: Enter
+# VND is the wheel's last row; the wheel exposes only its selected row.
+- repeat:
+    times: 6
+    while:
+      notVisible: "Vietnamese Dong \\(VND\\) - ₫"
+    commands:
+      - swipe:
+          from:
+            text: ".* \\([A-Z]{3}\\) - .*"
+          direction: UP
+          duration: 200
+- tapOn: "Close sheet"
+- assertVisible: ".*Vietnamese Dong, VND"
+- tapOn: "Create trip"
+
+# Lands on the new trip's expense tab
+- extendedWaitUntil:
+    visible:
+      text: "Expenses, tab, 1 of 3"
+      selected: true
+    timeout: 5000
+- assertVisible: ${output.tripName}
+
+# Add the 90,000 expense: You (the trip's owner member) pays, two added people
+- tapOn: "Add expense"
+# The amount field has no label; its placeholder "0" is the selector.
+- tapOn: "0"
+- extendedWaitUntil:
+    visible:
+      id: "number-pad"
+    timeout: 3000
+# The pad intermittently drops a synthetic tap (one run read 900); retry when
+# the screen didn't change.
+- tapOn:
+    text: "9"
+    retryTapIfNoChange: true
+# "below Delete" picks the pad's 0, not the field's "0" placeholder.
+- repeat:
+    times: 4
+    commands:
+      - tapOn:
+          text: "0"
+          below: "Delete"
+          retryTapIfNoChange: true
+- tapOn: "Done"
+- assertVisible: "90,000"
+
+# Return drops the keyboard, which otherwise covers "Add to trip".
+- tapOn: "Y, You paid"
+- tapOn: "Add a person"
+- tapOn: "Enter name"
+- inputText: "Ana"
+- pressKey: Enter
+- tapOn: "Add to trip"
+- tapOn: "Add a person"
+- tapOn: "Enter name"
+- inputText: "Ben"
+- pressKey: Enter
+- tapOn: "Add to trip"
+# Payer is a single select that leaves the sheet open.
+- tapOn: "Y, You"
+- tapOn:
+    id: "sheet-close"
+
+- tapOn: "Equally"
+- assertVisible: "₫30,000 each · 3 people"
+- tapOn: "Save expense"
+- extendedWaitUntil:
+    visible: "you lent ₫60,000"
+    timeout: 5000
+
+# The saved row, from the payer's side (the Balance tab is a stub for now)
+- assertVisible: "₫90,000"
+- assertVisible: "You paid"

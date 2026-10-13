@@ -50,6 +50,7 @@ export default function ExpenseScreen() {
         pointerEvents="box-none"
       >
         <TouchableOpacity
+          accessibilityLabel="Add expense"
           className="items-center rounded-pill bg-grey-50 p-4 shadow-fab"
           onPress={() => setAddExpenseOpen(true)}
         >

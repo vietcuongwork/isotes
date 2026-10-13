@@ -7,7 +7,7 @@ description: Diagnosis loop for any bug in isotes — two quick fixes first, the
 
 Two quick fixes first; a discipline for the bugs they don't fix. Skip phases only when explicitly justified.
 
-When exploring the codebase, read `GLOSSARY.md` (if it exists) to get a clear mental model of the relevant modules, and check `documentation/design_decisions.md` for decisions in the area you're touching.
+When exploring the codebase, read `GLOSSARY.md` (if it exists) to get a clear mental model of the relevant modules, and check the ADR index (`documentation/adr/README.md`) for decisions in the area you're touching.
 
 ## Redact
 
@@ -19,7 +19,7 @@ If the redacted output is not enough to diagnose the bug, say so and ask the use
 
 Most bugs here are obvious once the symptom is seen. Try up to two fixes before building a loop.
 
-1. **See it once.** Reproduce the symptom one time (simulator steps, a Jest run, or the user's exact steps) and note what you saw: that's the before-picture each fix is checked against. It needn't be tight or minimised. Can't reproduce it → Phase 1.
+1. **See it once.** Reproduce the symptom one time (simulator steps, a Jest run, or the user's exact steps) and note what you saw: that's the before-picture each fix is checked against. On the simulator, reach the screen with a `verify-isotes` flow, then trigger the symptom with computer use. It needn't be tight or minimised. Can't reproduce it → Phase 1.
 2. **Rank 3–5 hypotheses**, each with its prediction (format in Phase 3). Send the list and the fix for the top one in the same message; the user's yes on that file covers both.
 3. **Try it.** Write the fix and repeat the same steps. Symptom gone → Phase 5, then Phase 6; the hypothesis whose prediction held is the cause on record.
 4. **Still there → revert the fix**, then try hypothesis 2 the same way. Each attempt runs on clean code, so its result belongs to one change.
@@ -37,7 +37,7 @@ Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give
 
 ### Ways to construct one, in roughly this order
 
-1. **Simulator repro via computer use** — for anything touching sheets, keyboard, gestures, focus or layout. Follow "Simulator testing" in CLAUDE.md (working simulator, Metro log at `.sim/metro.log`, `.sim/cu.sh relaunch|mark|show` for the log slice since the last mark).
+1. **Simulator repro** — for anything touching sheets, keyboard, gestures, focus or layout. Reach the screen with a `verify-isotes` flow and check state from `isotes.db` or the tree; do the triggering gesture or timing with computer use. Follow "Simulator testing" in CLAUDE.md (working simulator, Metro log at `.sim/metro.log`, `.sim/cu.sh relaunch|mark|show` for the log slice since the last mark).
 2. **Failing Jest test** at whatever seam reaches the bug — for pure logic (helpers, transforms, DB functions).
 3. **Replay a captured trace.** Save a real network request / payload / event log to disk; replay it through the code path in isolation.
 4. **Throwaway harness.** Spin up a minimal subset of the system (one service, mocked deps) that exercises the bug code path with a single function call.

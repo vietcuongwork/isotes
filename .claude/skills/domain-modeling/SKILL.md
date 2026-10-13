@@ -12,7 +12,7 @@ Actively build and sharpen the project's domain model as you design. This is the
 isotes has a single context:
 
 - `GLOSSARY.md` at the repo root — domain terms.
-- `documentation/design_decisions.md` — the decision log (this skill's "ADRs").
+- `documentation/adr/` — the decision log, one file per ADR, indexed in `adr/README.md`.
 
 Create `GLOSSARY.md` lazily, when the first term is resolved.
 
@@ -48,4 +48,4 @@ Only offer to create an ADR when all three are true:
 2. **Surprising without context**: a future reader will wonder "why did they do it this way?"
 3. **The result of a real trade-off**: there were genuine alternatives and you picked one for specific reasons
 
-If any of the three is missing, skip it. Otherwise draft the entry in the format in [ADR-FORMAT.md](./ADR-FORMAT.md) and write it to `documentation/design_decisions.md` only after the user approves the entry.
+If any of the three is missing, skip it. Otherwise draft the ADR in the format in [ADR-FORMAT.md](./ADR-FORMAT.md) and write it to `documentation/adr/`, with its index row, only after the user approves it.

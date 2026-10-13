@@ -110,7 +110,7 @@ Good interfaces make testing natural:
 
 ## In isotes
 
-The project's rules and `documentation/design_decisions.md` win over this vocabulary wherever they conflict:
+The project's rules and its accepted ADRs (`documentation/adr/`) win over this vocabulary wherever they conflict:
 
 - **Function scope (AGENTS.md)** — split a function by concern; that's decomposition, not a mandate for an interface/strategy/registry over a fixed small set. Split-method branching stays plain `if`/`switch` per function until a 4th method exists.
 - **Known seam** — `transformXRow` functions (e.g. `transformTripRow`) are the seam between DB schema types and app-level UI types; schema types never cross it.

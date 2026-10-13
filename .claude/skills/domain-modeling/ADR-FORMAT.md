@@ -1,11 +1,17 @@
-# Decision entry format
+# ADR format
 
-Decisions are appended to `documentation/design_decisions.md`, newest at the end, separated by `---`.
+One file per decision in `documentation/adr/`, named `NNNN-slug.md`: the next free
+four-digit number, then a short hyphenated slug. Every ADR gets a row in
+`documentation/adr/README.md`.
 
 ## Template
 
 ```md
-## {Short title of the decision} ({YYYY-MM-DD})
+# NNNN — {Short title of the decision}
+
+- **Status:** accepted
+- **Date:** {YYYY-MM-DD}
+- **Area:** {data | money | state | sheets | tooling}
 
 **Decision**
 {What we chose, stated plainly.}
@@ -20,7 +26,19 @@ Decisions are appended to `documentation/design_decisions.md`, newest at the end
 {The condition that would make this worth reconsidering.}
 ```
 
-When a new decision replaces an older one, add a line under the old entry's heading: `Superseded by "{new title}" ({YYYY-MM-DD})`. Don't delete it.
+Name the concept and the module that owns it, not line numbers: the decision should
+still read true after a refactor. Add a new area only when none of the five fits.
+
+## Changing a decision
+
+Never rewrite an accepted ADR's body. Write a new ADR, then edit only the old one's
+`Status` line:
+
+- Replaced → `superseded by NNNN`, and move its index row to the Superseded table.
+- Narrowed or extended → `accepted, amended by NNNN`.
+
+A fact in the body that went stale without the decision changing (a renamed symbol)
+gets a dated line under the header: `- **Note (YYYY-MM-DD):** …`.
 
 ## When to offer an ADR
 
@@ -31,6 +49,8 @@ All three of these must be true:
 3. **The result of a real trade-off**: there were genuine alternatives and you picked one for specific reasons
 
 If a decision is easy to reverse, skip it: you'll just reverse it. If it's not surprising, nobody will wonder why. If there was no real alternative, there's nothing to record beyond "we did the obvious thing."
+
+If any test fails, the choice goes in the implementation note's Design choices line or the feature spec, not here.
 
 ### What qualifies
 
