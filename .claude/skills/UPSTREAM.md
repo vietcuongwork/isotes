@@ -30,6 +30,7 @@ Copied from https://github.com/cursor/plugins at `11713c6` (2026-10-12), MIT, ©
 | `documentation/typescript-patterns.md` (unchanged; private) | `pstack/skills/typescript-best-practices/references/patterns.md` |
 | `unslop` (`SKILL.md`, unchanged; `/unslop` only) | `pstack/skills/unslop` |
 | `.claude/rules/isotes-writing.md` (an always-loaded rule, trimmed from `unslop`; private) | `pstack/skills/unslop/SKILL.md` |
+| `correct` (`SKILL.md`; `/correct` only; its rule table is `documentation/rule-enforcement.md`, private) | `pstack/skills/correct` |
 
 Local edits to keep on re-sync (`create-verification-skill/SKILL.md`): `.cursor/skills/` → `.claude/skills/`; §5 "Offer the maintenance loop" dropped, since `maintain-verification-skill` isn't ported (its loop ends in a PR; revisit when the feature map drifts). `verify-isotes` is this generator's output, not upstream.
 
@@ -55,8 +56,13 @@ Local edits to keep on re-sync (`isotes-writing.md`):
 - Frontmatter, `# Unslop` title and intro line → `# Writing`, a pointer to `/unslop`, a **Scope** line (prose meant for the user) and an **Exempt** line (diary State lines, trails, tables, and formats a skill, command, template or CLAUDE.md fixes).
 - Kept rules 7, 8, 13–16 and 20–33 word for word, with their numbers. Dropped the rest and the emptied `### Content` heading.
 
+Local edits to keep on re-sync (`correct/SKILL.md`; isotes has no CI):
+- The rule table: "the agent instruction file" → `documentation/rule-enforcement.md`.
+- "Run the same command locally and in CI" → run each check in `pnpm check`; "a lint or CI check" → "a lint or a `pnpm check` step".
+- "one commit each" → each fix is its own file proposal under AGENTS.md "Smallest steps", committed by the user with a `commit-message` message.
+
 ```bash
-git diff 11713c6..HEAD -- pstack/skills/create-verification-skill 'pstack/skills/principle-*' pstack/skills/typescript-best-practices pstack/skills/unslop
+git diff 11713c6..HEAD -- pstack/skills/create-verification-skill 'pstack/skills/principle-*' pstack/skills/typescript-best-practices pstack/skills/unslop pstack/skills/correct
 ```
 
 To check every local copy against `11713c6` (or name files as arguments), from the repo root:
