@@ -29,7 +29,7 @@ export default function ExpenseItem({
           <Icon size={16} color={colors.orange[400]} />
         </View>
         <View>
-          <Text className="text-grey-50 text-body">{title}</Text>
+          <Text className="text-grey-50 text-legacy-body">{title}</Text>
           <Text className="text-grey-200 text-meta">
             {payer.isOwner ? "You paid" : `${payer.name} paid`}
           </Text>
@@ -37,7 +37,7 @@ export default function ExpenseItem({
       </View>
 
       <View>
-        <Text className="text-grey-50 text-body">
+        <Text className="text-grey-50 text-legacy-body">
           {formatDisplayAmount(
             expense.amount,
             currency.symbol,
@@ -46,7 +46,7 @@ export default function ExpenseItem({
         </Text>
         {viewerNet !== 0 && (
           <Text
-            className={`text-label ${isLent ? "text-green-400" : "text-red-400"}`}
+            className={`text-legacy-label ${isLent ? "text-green-400" : "text-red-400"}`}
           >
             {isLent ? "you lent " : "you owe "}
             {formatDisplayAmount(

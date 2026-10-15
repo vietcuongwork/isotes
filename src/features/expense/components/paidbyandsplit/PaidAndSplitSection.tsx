@@ -13,7 +13,7 @@ export default function PaidAndSplitSection(): ReactElement {
 
   return (
     <View>
-      <Text className="mb-2 text-grey-200 text-label">Paid & Split</Text>
+      <Text className="mb-2 text-grey-200 text-legacy-label">Paid & Split</Text>
 
       <View className="rounded-card border border-grey-825 bg-grey-960">
         <PayerRow

@@ -218,6 +218,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   tallKey: { flex: 0, height: KEY_HEIGHT * 3 + GAP * 2 },
-  label: textStyle("amount"),
+  label: textStyle("legacy-amount"),
   accentLabel: textStyle("body-semibold"),
 });

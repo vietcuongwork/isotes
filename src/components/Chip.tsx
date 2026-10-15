@@ -13,7 +13,7 @@ export default function Chip(props: ChipProps) {
       onPress={onPress}
       className="rounded-badge bg-grey-850 px-2.5 py-1"
     >
-      <Text className="text-grey-100 text-label">{label}</Text>
+      <Text className="text-grey-100 text-legacy-label">{label}</Text>
     </Pressable>
   );
 }

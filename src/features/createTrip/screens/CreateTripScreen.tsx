@@ -41,10 +41,10 @@ export default function CreateTripScreen() {
           {/* Content */}
           <View>
             <View className="px-5 pt-8">
-              <Text className="text-grey-50 text-display">
+              <Text className="text-grey-50 text-legacy-display">
                 Create a new split
               </Text>
-              <Text className="text-grey-200 text-body">
+              <Text className="text-grey-200 text-legacy-body">
                 You can change any of this later.
               </Text>
             </View>

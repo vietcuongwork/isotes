@@ -13,7 +13,7 @@ export default function StartOverDialog(props: StartOverDialogProps) {
       <View className="flex-1 items-center justify-center bg-grey-scrim px-8">
         <View className="w-full rounded-card border border-grey-800 bg-grey-900 p-5">
           <Text className="text-grey-50 text-body-lg-medium">Start over?</Text>
-          <Text className="pt-2 text-grey-200 text-caption">
+          <Text className="pt-2 text-grey-200 text-legacy-caption">
             This clears the amount, description, activity and date back to a
             blank expense. People you added stay in the trip — they aren&apos;t
             part of this form.

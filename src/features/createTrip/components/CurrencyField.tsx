@@ -25,7 +25,7 @@ export default function CurrencyField(props: CurrencyFieldProps) {
             </Text>
           </View>
           <View>
-            <Text className="text-grey-50 text-body">{value.name}</Text>
+            <Text className="text-grey-50 text-legacy-body">{value.name}</Text>
             <Text className="text-grey-400 text-meta">{value.code}</Text>
           </View>
         </View>

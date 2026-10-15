@@ -157,7 +157,9 @@ export default function MemberListRow(props: MemberListRowProps): ReactElement {
         <View>
           <Text className="text-grey-50 text-row">{name}</Text>
           {(variant === "shares" || variant === "equally") && (
-            <Text className="text-grey-400 text-micro">{state.amount}</Text>
+            <Text className="text-grey-400 text-legacy-micro">
+              {state.amount}
+            </Text>
           )}
         </View>
       </View>

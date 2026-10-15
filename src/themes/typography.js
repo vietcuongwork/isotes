@@ -16,7 +16,12 @@ const fontFamily = {
 const roles = {
   // ── headlines
   hero: { family: "outfit-light", size: 44, line: 48, tracking: -1.3 },
-  display: { family: "outfit-light", size: 34, line: 37, tracking: -0.95 },
+  "legacy-display": {
+    family: "outfit-light",
+    size: 34,
+    line: 37,
+    tracking: -0.95,
+  },
   "screen-title": {
     family: "outfit-regular",
     size: 34,
@@ -24,8 +29,13 @@ const roles = {
     tracking: -0.95,
   },
   // ── amounts
-  "hero-amount": { family: "outfit-light", size: 40, tracking: -1 },
-  amount: { family: "outfit-light", size: 21, line: 26, tracking: -0.42 },
+  "legacy-hero-amount": { family: "outfit-light", size: 40, tracking: -1 },
+  "legacy-amount": {
+    family: "outfit-light",
+    size: 21,
+    line: 26,
+    tracking: -0.42,
+  },
   "amount-regular": {
     family: "outfit-regular",
     size: 21,
@@ -33,7 +43,12 @@ const roles = {
     tracking: -0.42,
   },
   // ── titles & body
-  title: { family: "outfit-regular", size: 19, line: 24, tracking: -0.19 },
+  "legacy-title": {
+    family: "outfit-regular",
+    size: 19,
+    line: 24,
+    tracking: -0.19,
+  },
   "title-medium": {
     family: "outfit-medium",
     size: 19,
@@ -49,7 +64,7 @@ const roles = {
   "body-lg": { family: "outfit-regular", size: 16, line: 20 },
   "body-lg-medium": { family: "outfit-medium", size: 16, line: 20 },
   button: { family: "outfit-semibold", size: 16, line: 20 },
-  body: { family: "outfit-regular", size: 15, line: 22 },
+  "legacy-body": { family: "outfit-regular", size: 15, line: 22 },
   "body-tight": { family: "outfit-regular", size: 15, line: 20 },
   "body-tight-flat": { family: "outfit-regular", size: 15 },
   "body-medium": { family: "outfit-medium", size: 15, line: 20 },
@@ -60,12 +75,12 @@ const roles = {
   "row-medium": { family: "outfit-medium", size: 14, line: 20 },
   seg: { family: "outfit-semibold", size: 13, line: 16 },
   "seg-idle": { family: "outfit-regular", size: 13, line: 16 },
-  caption: { family: "outfit-regular", size: 13, line: 18 },
+  "legacy-caption": { family: "outfit-regular", size: 13, line: 18 },
   // ── small
-  label: { family: "outfit-medium", size: 12, line: 16 },
+  "legacy-label": { family: "outfit-medium", size: 12, line: 16 },
   meta: { family: "outfit-regular", size: 12, line: 16 },
   "meta-tight": { family: "outfit-regular", size: 11, line: 16 },
-  micro: {
+  "legacy-micro": {
     family: "outfit-medium",
     size: 11,
     line: 14,

@@ -663,7 +663,7 @@ const styles = StyleSheet.create({
   },
   // Left-aligned, as the old sheets' title rows were
   title: {
-    ...textStyle("label"),
+    ...textStyle("legacy-label"),
     alignSelf: "stretch",
     marginBottom: 16, // = pb-4 under the old sheets' title row
     color: tokens.grey[50],

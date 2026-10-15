@@ -250,7 +250,7 @@ export default function SplitSummary(props: SplitSummaryProps) {
         <Text className="text-grey-200 text-meta">
           Nobody owes anything yet -{" "}
         </Text>
-        <Text className="text-orange-400 text-label">
+        <Text className="text-orange-400 text-legacy-label">
           add people to the trip
         </Text>
       </View>

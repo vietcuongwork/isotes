@@ -55,7 +55,7 @@ export default function AmountField(props: AmountFieldProps) {
         {/* Number pad from the sheet's KeyboardHost; groups "1,234.5" as you type */}
         <NumberPadInput
           className={cn(
-            "flex-1 text-grey-50 text-hero-amount",
+            "flex-1 text-grey-50 text-legacy-hero-amount",
             error && "text-red-400",
           )}
           placeholder={placeholder}

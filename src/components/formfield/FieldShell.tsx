@@ -50,7 +50,7 @@ export default function FieldShell(props: FieldShellProps) {
   return (
     <View className={cn("gap-2", className)}>
       <View className="flex-row justify-between">
-        <Text className="text-grey-200 text-label">{label}</Text>
+        <Text className="text-grey-200 text-legacy-label">{label}</Text>
         {optionalLabel && (
           <Text className="text-grey-500 text-meta">{optionalLabel}</Text>
         )}

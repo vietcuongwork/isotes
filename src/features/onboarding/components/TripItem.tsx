@@ -42,8 +42,10 @@ export default function TripItem(props: TripItemProps) {
     >
       {/* Header */}
       <View className="flex-row justify-between">
-        <Text className="text-grey-50 text-title">{trip.name}</Text>
-        <Text className={`${balanceColor} text-title`}>{balanceText}</Text>
+        <Text className="text-grey-50 text-legacy-title">{trip.name}</Text>
+        <Text className={`${balanceColor} text-legacy-title`}>
+          {balanceText}
+        </Text>
       </View>
 
       {/* Summary */}

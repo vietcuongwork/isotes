@@ -45,7 +45,7 @@ export default function TripSummary(props: TripSummaryProps) {
         <View className="flex-row items-start justify-between">
           <View>
             <Text className="text-grey-200 text-meta">You&apos;re owed</Text>
-            <Text className="mt-1 text-grey-400 text-display">
+            <Text className="mt-1 text-grey-400 text-legacy-display">
               $0<Text className="text-grey-600">.00</Text>
             </Text>
           </View>

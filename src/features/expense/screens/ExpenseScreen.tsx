@@ -31,7 +31,9 @@ export default function ExpenseScreen() {
             <ReceiptText size={28} color={colors.grey[500]} />
           </View>
           <View className="items-center gap-2">
-            <Text className="text-grey-50 text-title">No expenses yet</Text>
+            <Text className="text-grey-50 text-legacy-title">
+              No expenses yet
+            </Text>
             <Text className="text-center text-grey-200 text-row">
               Log the first one and we&apos;ll work out who owes what.
             </Text>

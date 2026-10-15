@@ -44,7 +44,7 @@ function AddDateContent(props: { today: string }): ReactElement {
       {/* Dynamic mode sizes the sheet from this scroll view's content */}
       <KeyboardAwareScrollView>
         <View className="items-center px-5 pb-3.5">
-          <Text className="tracking-[0.08em] text-grey-200 text-label">
+          <Text className="tracking-[0.08em] text-grey-200 text-legacy-label">
             EXPENSE DATE
           </Text>
         </View>
