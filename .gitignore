@@ -46,9 +46,14 @@ example
 .mcp.json
 .claude/*
 !.claude/skills/
+.claude/skills/impeccable/
 /AGENTS.md
 /CLAUDE.md
 /SETUP_INSTRUCTION.md
+/PRODUCT.md
+/PRD.md
+/DESIGN.md
+/.impeccable/
 
 # simulator debug output: metro.log, cu.sh log helper (private; findings go to the vault)
 .sim/
