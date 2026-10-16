@@ -71,6 +71,7 @@ Prove the real user path: the action and the state it leaves, not just the last 
 
 - **Database** (side effects): `scripts/db.sh` (Helpers). Two runs in one minute share a trip name, so pick the newest by `created_at`.
 - **Screen:** one filtered tree value (Drive), or the flow's own `assertVisible` lines in its run output.
+- **Roles and traits** (button, header, selected): Maestro's iOS tree has labels and bounds only, so check these in Accessibility Inspector, never Maestro. The user picks the simulator in its device dropdown (computer use can't open it); open Device Hub so the simulator has a window, hover the element with point-to-inspect on, then step with Inspector's Back / Forward buttons. The Element line reads `<label>, Button`.
 - **Logs:** `.sim/cu.sh mark` before, `.sim/cu.sh show` after → list new WARN/ERROR lines, or "cu.sh → none".
 - **Screenshots** only for a visual check (layout, color, spacing) or a failed check. A failed flow leaves exactly one in its run folder (`find .sim/maestro/<run> -name '*.png'`); read that one, nothing else.
 
@@ -81,7 +82,7 @@ Quote the values (rows, tree lines, log result) in the task's log in the vault's
 - Once findings are quoted in the vault, delete that run's folder: `rm -rf .sim/maestro/<flow>-<time>`. Keep `.sim/maestro/home/`.
 - Flow runs and tree reads write nothing to `~/.maestro/tests/`, but each MCP driver start (an `xctest_runner_*.log`) and each `maestro list-devices` does: delete the `~/.maestro/tests/<time>/` folders this session created (`ls -lt ~/.maestro/tests | head`).
 - Stop only what this session started, by its background task or PID: `caffeinate`, and Metro if Launch started it. Never kill by process name; never stop another project's Metro.
-- Flow trips stay in the app; the user deletes them by hand.
+- At the end of a test session, once the evidence is quoted in the vault, run `scripts/cleanup.sh`: it deletes flow trips, keeping the newest per flow and the baseline trip. The user's own trips never match the flow-name pattern.
 
 ## Helpers
 
@@ -92,5 +93,6 @@ Quote the values (rows, tree lines, log result) in the task's log in the vault's
   .claude/skills/verify-isotes/scripts/db.sh "SELECT m.name, s.individual_amount FROM expense_splits s JOIN expenses e ON e.id = s.expense_id JOIN members m ON m.id = s.member_id WHERE e.trip_id = (SELECT id FROM trips WHERE name LIKE 'Flow golden-path %' ORDER BY created_at DESC LIMIT 1) ORDER BY m.name"
   ```
 
+- `scripts/cleanup.sh [--dry-run]` — deletes flow trips (Cleanup, above). It stops the app, backs up `isotes.db` to `.sim/backup/`, deletes in one transaction, prints before and after counts and a restore command, then runs `cu.sh relaunch`. `--dry-run` prints per-flow counts only.
 - `.sim/cu.sh relaunch | mark | show` — the project's launcher and Metro log reader (outside this skill).
 - `flows/<flow>.yaml` — one per mapped feature; run with the Drive command.

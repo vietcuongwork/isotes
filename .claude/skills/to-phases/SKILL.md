@@ -49,6 +49,8 @@ Iterate until the user approves the phase list.
 
 Inside each approved phase, write the tasks by CLAUDE.md Step 2's task rules: smallest, non-breaking, revertible, tagged `[TDD]` or `[Live]`, with a **Verify** line and `Blocked by` where needed. Tasks may be one file each; the phase carries the vertical slice. A `[TDD]` task names its seam from the phase's **Seams**.
 
+A task that renames, removes or replaces a labelled element, or puts a new screen in a flow's path, names the flows that select it (`grep -ln '<label>' .claude/skills/verify-isotes/flows/*.yaml`). Its **Verify** line runs them, and the task updates them by the upkeep rule in `verify-isotes/features/README.md`.
+
 Done when every acceptance criterion in the spec traces to a task — write that task's number into the criterion's `verified by` (`Live (T12)`) — and every phase's last task ends on its Demo.
 
 ## 5. Write the planning note

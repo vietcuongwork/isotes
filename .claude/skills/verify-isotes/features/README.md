@@ -12,7 +12,8 @@ This directory is the maintained source for verifying isotes' user-facing behavi
 
 - Every recipe is a flow in `../flows/`, run with SKILL.md's "Whole flow" command; it cold-starts the app with `launchApp`.
 - Select by accessibility label, `testID` (`id:`) or visible text, never `point:`. Text selectors are full-string regex.
-- A flow that writes creates its own trip, `Flow <flow> <MM-DD HH:mm>`, and never edits or deletes another. Flow trips stay; the user deletes them by hand.
+- A task that renames, removes or replaces a labelled element, or puts a new screen in a flow's path, updates the flows and the feature file that use it in the same task. An assertion that changes because the spec changed on purpose needs the user's OK first, logged on the task's Deviation line ("Frozen targets" in CLAUDE.md).
+- A flow that writes creates its own trip, `Flow <flow> <MM-DD HH:mm>`, and never edits or deletes another. `../scripts/cleanup.sh` removes flow trips at the end of a test session (SKILL.md, Cleanup).
 - Treat commands as literal; keep quoted names and flags unchanged.
 
 ## Proof and skip reporting
