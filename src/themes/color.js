@@ -106,5 +106,37 @@ module.exports = {
       900: "#2A1510", // tinted surface (added for badges — not in the mocks yet)
       950: "#2A120A", // text/icon sitting ON red-400 (avatar initial)
     },
+
+    // ── Ink & Shine ── the light look, values from DESIGN.md. Lives beside the
+    // dark set above until the migration's last feature deletes the old one.
+    ink: {
+      50: "#F3F1EC", // page background (paper)
+      100: "#E9E6E0",
+      200: "#D9D5CE",
+      300: "#B9B4AC",
+      400: "#8C877F",
+      500: "#6E6962",
+      700: "#3D3A36",
+      900: "#1B1918", // primary text, primary button
+      950: "#0F0E0D",
+    },
+    card: "#FFFEFB",
+    shine: {
+      100: "#FBF0D2",
+      400: "#E8B33E",
+      700: "#85600F",
+    },
+    get: {
+      100: "#E3F0E6",
+      600: "#2E7A4C",
+    },
+    owe: {
+      100: "#F8E3DD",
+      600: "#B83A26",
+    },
+    // illustration only, never UI
+    lavender: "#B79BE0",
+    flame: "#5B9BD5",
+    ember: "#E07A5F",
   },
 };

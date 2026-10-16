@@ -4,6 +4,8 @@
 
 const fontFamily = {
   fraunces: "fraunces-bold", // NOTE - unused
+  "fraunces-regular": "fraunces-regular",
+  "fraunces-medium": "fraunces-medium",
   "outfit-light": "outfit-light",
   "outfit-regular": "outfit-regular",
   "outfit-medium": "outfit-medium",
@@ -95,6 +97,29 @@ const roles = {
   "initial-loose": { family: "outfit-semibold", size: 11, line: 20 },
   // ── mock chrome only, not app UI
   clock: { family: "outfit-semibold", size: 17, tracking: -0.2 },
+
+  // ── Ink & Shine (DESIGN.md Typography). The legacy-* roles above are the
+  // dark set's old styles under these names, kept until the migration ends.
+  display: { family: "fraunces-medium", size: 40, line: 44, tracking: -1 },
+  title: { family: "fraunces-medium", size: 28, line: 32, tracking: -0.5 },
+  heading: { family: "fraunces-medium", size: 20, line: 28 },
+  "hero-amount": {
+    family: "fraunces-regular",
+    size: 48,
+    line: 52,
+    tracking: -1,
+  },
+  body: { family: "outfit-regular", size: 16, line: 24 },
+  amount: { family: "outfit-medium", size: 16, line: 24 },
+  label: { family: "outfit-medium", size: 14, line: 20 },
+  caption: { family: "outfit-regular", size: 13, line: 20 },
+  micro: {
+    family: "outfit-semibold",
+    size: 11,
+    line: 16,
+    tracking: 0.88, // 0.08em × 11
+    uppercase: true,
+  },
 };
 
 /** CSS block for the Tailwind plugin (px strings). */

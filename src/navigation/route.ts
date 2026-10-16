@@ -1,4 +1,5 @@
 export const EXPO_ROUTER = {
+  WELCOME: "/(screens)/welcome",
   ONBOARDING: "/(screens)/onboarding",
   CREATE_TRIP: "/(screens)/create-trip",
   EXPENSE: (tripId: string) => ({

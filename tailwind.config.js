@@ -1,6 +1,7 @@
 const plugin = require("tailwindcss/plugin");
 const { fontFamily, textUtilities } = require("./src/themes/typography");
 const {
+  spacing,
   padding,
   gap,
   space,
@@ -17,6 +18,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily,
+      spacing,
       padding,
       gap,
       space,
