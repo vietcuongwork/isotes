@@ -58,3 +58,18 @@ export function getAvatarStack<T>(
   const shown = maxDiscs - 1;
   return { visible: members.slice(0, shown), overflow: members.length - shown };
 }
+
+// NFD splits "à" into "a" plus a combining mark (U+0300 to U+036F),
+// but has no decomposition for "Đ"/"đ", so those map to "d" by hand
+function normalizeForSearch(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[đĐ]/g, "d")
+    .toLowerCase()
+    .trim();
+}
+
+export function matchesTripSearch(name: string, query: string): boolean {
+  return normalizeForSearch(name).includes(normalizeForSearch(query));
+}

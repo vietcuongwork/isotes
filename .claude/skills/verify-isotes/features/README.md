@@ -33,3 +33,4 @@ Each feature file starts with an H1 title and one paragraph on the user-visible 
 - [Create trip](./create-trip.md): the empty-name refusal, name, description and default currency, landing on an empty Expenses tab.
 - [Add expense](./add-expense.md): a decimal amount and description, the restored draft and Start over, and saving an expense paid by You.
 - [Paid by & split](./paid-by-split.md): a payer other than You, Add person from both sheets, custom amounts and shares, with the stored splits summing to each amount.
+- [Trips](./trips.md): open Trips from Welcome, a query that matches nothing and its message, and the clear button listing every trip again; read-only.

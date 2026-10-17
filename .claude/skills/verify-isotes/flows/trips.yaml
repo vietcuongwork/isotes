@@ -1,0 +1,27 @@
+# Run and tree-read commands: ../SKILL.md "Drive" (one driver per session).
+# Read-only: needs at least one trip (search is hidden when there are none).
+appId: com.anonymous.isotes
+name: trips
+---
+# Cold start: only a relaunch leaves a trip screen for the start screen.
+- launchApp
+
+# Welcome's secondary button opens Trips
+- tapOn: "I've used it before"
+- extendedWaitUntil:
+    visible: "Your trips"
+    timeout: 10000
+- assertVisible: "Ongoing"
+
+# A query no trip name contains shows the no-matches state, without the "ONGOING" row
+- tapOn: "Search trips"
+- inputText: "zzq no such trip"
+- assertVisible: "No trips match “zzq no such trip”"
+- assertVisible: "Search looks at trip names.*"
+- assertNotVisible: "Ongoing"
+- assertVisible: "New trip"
+
+# The clear button (shown while the field has focus) lists every trip again
+- tapOn: "Clear text"
+- assertVisible: "Ongoing"
+- assertNotVisible: "No trips match.*"
