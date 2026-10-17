@@ -7,6 +7,7 @@ import { Text, View } from "react-native";
 export interface AvatarProps {
   label: string;
   color: MemberColor;
+  ringClassName?: string;
   innerViewClassName?: string;
   textClassName?: string;
 }
@@ -17,10 +18,11 @@ interface AvatarStackProps {
 }
 
 function Avatar(props: AvatarProps) {
-  const { label, color, innerViewClassName, textClassName } = props;
+  const { label, color, ringClassName, innerViewClassName, textClassName } =
+    props;
 
   return (
-    <View className="rounded-full bg-grey-900 p-0.5">
+    <View className={cn("rounded-full bg-grey-900 p-0.5", ringClassName)}>
       <View
         className={cn(
           "h-7 w-7 items-center justify-center overflow-hidden rounded-pill",

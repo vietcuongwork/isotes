@@ -4,7 +4,7 @@ import {
   transformMemberRow,
   transformTripRow,
 } from "@/features/expense/helpers/expenseHelpers";
-import { computeTripBalance } from "@/features/onboarding/helpers/onboardingHelpers";
+import { computeTripBalance } from "@/features/trips/helpers/tripsHelpers";
 import { EXPO_ROUTER } from "@/navigation/route";
 import { Trip } from "@/types/TCreateTrip";
 import { Member } from "@/types/TExpense";
