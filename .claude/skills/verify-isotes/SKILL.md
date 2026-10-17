@@ -63,14 +63,16 @@ appId: com.anonymous.isotes
 
 **Selectors:** accessibility label, `testID` (`id:`) or visible text, never `point:`. Stable handles: `Add expense` (the `+`), `id: number-pad`, `id: sheet-close`, `Expenses, tab, 1 of 3` (`selected: true` when open). Trip cards' labels are compound (`<name>, +₫9,666, 5 expenses · …`): match them by regex. Per-feature selectors and gotchas: `features/`.
 
-**Writes:** a flow that saves anything creates its own trip, `Flow <flow> <MM-DD HH:mm>`, and never edits or deletes other trips. Flows never delete.
+**Writes:** a flow that saves anything creates its own trip, `Flow <flow> <MM-DD HH:mm>`, and never edits or deletes other trips. Flows never delete. A trip seeded by hand follows the same pattern (`Flow <purpose> <MM-DD HH:mm>`); without the stamp, `cleanup.sh` leaves it behind.
+
+**Don't save files while a flow runs:** Metro's fast refresh reloads the app mid-flow (a blue "Refreshing…" banner), and the next step fails on a screen that isn't there.
 
 ## Evidence
 
 Prove the real user path: the action and the state it leaves, not just the last screen.
 
 - **Database** (side effects): `scripts/db.sh` (Helpers). Two runs in one minute share a trip name, so pick the newest by `created_at`.
-- **Screen:** one filtered tree value (Drive), or the flow's own `assertVisible` lines in its run output.
+- **Screen:** one filtered tree value (Drive), or the flow's own `assertVisible` lines in its run output. Assert a value only the item under test has, such as its trip name; a total that two trips share doesn't prove which one opened.
 - **Roles and traits** (button, header, selected): Maestro's iOS tree has labels and bounds only, so check these in Accessibility Inspector, never Maestro. The user picks the simulator in its device dropdown (computer use can't open it); open Device Hub so the simulator has a window, hover the element with point-to-inspect on, then step with Inspector's Back / Forward buttons. The Element line reads `<label>, Button`.
 - **Logs:** `.sim/cu.sh mark` before, `.sim/cu.sh show` after → list new WARN/ERROR lines, or "cu.sh → none".
 - **Screenshots** only for a visual check (layout, color, spacing) or a failed check. A failed flow leaves exactly one in its run folder (`find .sim/maestro/<run> -name '*.png'`); read that one, nothing else.
