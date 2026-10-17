@@ -1,3 +1,4 @@
+import Raven from "@/components/Raven";
 import TripCard from "@/features/trips/components/TripCard";
 import { useTrips } from "@/features/trips/hooks/useTrips";
 import { EXPO_ROUTER } from "@/navigation/route";
@@ -24,6 +25,10 @@ export default function TripsScreen() {
         <Text accessibilityRole="header" className="text-ink-900 text-display">
           Your <Text className="text-ink-400">trips</Text>
         </Text>
+        {/* //NOTE - no token for the board's 23pt bleed past the gutter, falling back to -mr-[23px] */}
+        <View className="-mr-[23px]">
+          <Raven pose="peeking" height={96} />
+        </View>
       </View>
 
       {/* Trip list */}
@@ -32,6 +37,16 @@ export default function TripsScreen() {
         contentContainerClassName="gap-space-3 px-space-5 pt-space-6"
         showsVerticalScrollIndicator={false}
       >
+        {/* Ongoing count */}
+        {trips && (
+          <View className="flex-row justify-between">
+            <Text className="text-ink-500 text-micro">Ongoing</Text>
+            <Text className="text-ink-500 text-micro">
+              {trips.length} {trips.length === 1 ? "trip" : "trips"}
+            </Text>
+          </View>
+        )}
+
         {trips?.map((data) => (
           <TripCard
             key={data.trip.id}
