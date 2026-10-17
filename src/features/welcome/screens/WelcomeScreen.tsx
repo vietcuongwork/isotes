@@ -53,7 +53,7 @@ export default function WelcomeScreen() {
             {/* //NOTE - no token for the 44pt touch target, falling back to min-h-[44px] */}
             <Pressable
               accessibilityRole="button"
-              onPress={() => router.push(EXPO_ROUTER.ONBOARDING)}
+              onPress={() => router.push(EXPO_ROUTER.TRIPS)}
               // shrinks so large Dynamic Type wraps the label, not pushes the arrow off
               className="min-h-[44px] shrink justify-center"
             >
