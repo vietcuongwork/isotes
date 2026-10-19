@@ -1,5 +1,9 @@
-import { getViewerNetForExpense } from "@/features/expense/helpers/expenseHelpers";
+import {
+  getViewerNetForExpense,
+  transformTripWithRelationsRow,
+} from "@/features/expense/helpers/expenseHelpers";
 import { Expense } from "@/types/TExpense";
+import { TripCardData } from "@/types/TTrips";
 import { roundToDecimals } from "@/utils/currency";
 
 export function computeTripBalance(
@@ -11,6 +15,22 @@ export function computeTripBalance(
       total + getViewerNetForExpense(expense, expense.splits, viewerMemberId),
     0,
   );
+}
+
+// A trip with no owner member has nobody to be the viewer, so its balance is 0
+export function getTripCardData(
+  input: ReturnType<typeof transformTripWithRelationsRow>,
+): TripCardData {
+  const { trip, members, expenses } = input;
+  const owner = members.find((member) => member.isOwner);
+
+  return {
+    trip,
+    members,
+    expenseCount: expenses.length,
+    totalAmount: expenses.reduce((sum, expense) => sum + expense.amount, 0),
+    balance: owner ? computeTripBalance(expenses, owner.id) : 0,
+  };
 }
 
 // createdAt is in Unix seconds; the year shows only when it isn't now's year

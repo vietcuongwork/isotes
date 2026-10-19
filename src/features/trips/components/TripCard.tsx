@@ -7,12 +7,9 @@ import {
 } from "@/features/trips/helpers/tripsHelpers";
 import { TripCardData } from "@/types/TTrips";
 import { cn } from "@/utils/cn";
+import { tabularNums } from "@/themes/typography";
 import { formatDisplayAmount } from "@/utils/currency";
-import { Pressable, Text, TextStyle, View } from "react-native";
-
-// css-interop 0.2.6 has no case for font-variant-numeric, so the tabular-nums
-// class compiles to nothing. why: [[Learn_react-native_nativewind-tabular-nums]]
-const TABULAR_NUMS: TextStyle = { fontVariant: ["tabular-nums"] };
+import { Pressable, Text, View } from "react-native";
 
 const BADGE_CLASSES = {
   get: { box: "bg-get-100", text: "text-get-600" },
@@ -51,7 +48,7 @@ function TripStatusBadge(props: { state: BadgeState; text: string }) {
 
   return (
     <View className={cn("rounded-pill px-space-3 py-space-1", classes.box)}>
-      <Text style={TABULAR_NUMS} className={cn("text-label", classes.text)}>
+      <Text style={tabularNums} className={cn("text-label", classes.text)}>
         {text}
       </Text>
     </View>
@@ -108,7 +105,7 @@ export default function TripCard(props: TripCardProps) {
       <View className="flex-row items-center justify-between border-t border-ink-100 pt-space-3">
         <View>
           <Text className="text-ink-500 text-micro">Spent</Text>
-          <Text style={TABULAR_NUMS} className="text-ink-900 text-amount">
+          <Text style={tabularNums} className="text-ink-900 text-amount">
             {spent}
           </Text>
         </View>

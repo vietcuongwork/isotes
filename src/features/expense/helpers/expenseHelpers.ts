@@ -76,6 +76,20 @@ export function transformExpenseRow(
   };
 }
 
+// One row of getAllTripsWithMembersAndExpenses(), with its members and expenses
+export function transformTripWithRelationsRow(
+  row: TripRow & {
+    members: MemberRow[];
+    expenses: (ExpenseRow & { splits: ExpenseSplitRow[] })[];
+  },
+): { trip: Trip; members: Member[]; expenses: Expense[] } {
+  return {
+    trip: transformTripRow(row),
+    members: row.members.map(transformMemberRow),
+    expenses: row.expenses.map(transformExpenseRow),
+  };
+}
+
 export function getDefaultExpenseSplit(members: Member[]) {
   const owner = members.find((member) => member.isOwner) ?? members[0];
   return {

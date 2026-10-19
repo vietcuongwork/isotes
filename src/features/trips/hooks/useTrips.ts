@@ -1,10 +1,6 @@
 import { getAllTripsWithMembersAndExpenses } from "@/db/trips";
-import {
-  transformExpenseRow,
-  transformMemberRow,
-  transformTripRow,
-} from "@/features/expense/helpers/expenseHelpers";
-import { computeTripBalance } from "@/features/trips/helpers/tripsHelpers";
+import { transformTripWithRelationsRow } from "@/features/expense/helpers/expenseHelpers";
+import { getTripCardData } from "@/features/trips/helpers/tripsHelpers";
 import { TripCardData } from "@/types/TTrips";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
@@ -20,22 +16,9 @@ export function useTrips(): TripCardData[] | null {
     useCallback(() => {
       getAllTripsWithMembersAndExpenses().then((rows) => {
         setTrips(
-          rows.map((row) => {
-            const members = row.members.map(transformMemberRow);
-            const expenses = row.expenses.map(transformExpenseRow);
-            const owner = members.find((member) => member.isOwner);
-
-            return {
-              trip: transformTripRow(row),
-              members,
-              expenseCount: expenses.length,
-              totalAmount: expenses.reduce(
-                (sum, expense) => sum + expense.amount,
-                0,
-              ),
-              balance: owner ? computeTripBalance(expenses, owner.id) : 0,
-            };
-          }),
+          rows.map((row) =>
+            getTripCardData(transformTripWithRelationsRow(row)),
+          ),
         );
       });
     }, []),

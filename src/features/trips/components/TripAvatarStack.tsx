@@ -13,11 +13,15 @@ const INITIAL = "text-initial-md";
 
 interface TripAvatarStackProps {
   members: Member[];
+  /** Merged over the default `card` ring, e.g. "bg-ink-100" on an ink-100 row */
+  ringClassName?: string;
 }
 
 // Later discs overlap earlier ones by 8, as on the board
 export default function TripAvatarStack(props: TripAvatarStackProps) {
-  const { visible, overflow } = getAvatarStack(props.members);
+  const { members, ringClassName } = props;
+  const { visible, overflow } = getAvatarStack(members);
+  const ring = cn(RING, ringClassName);
 
   return (
     <View className="flex-row">
@@ -26,7 +30,7 @@ export default function TripAvatarStack(props: TripAvatarStackProps) {
           <Avatar
             label={getInitial(member.name)}
             color={member.memberColor}
-            ringClassName={RING}
+            ringClassName={ring}
             innerViewClassName={DISC}
             textClassName={INITIAL}
           />
@@ -34,7 +38,7 @@ export default function TripAvatarStack(props: TripAvatarStackProps) {
       ))}
 
       {overflow > 0 && (
-        <View className={cn("-ml-space-2 rounded-pill", RING)}>
+        <View className={cn("-ml-space-2 rounded-pill", ring)}>
           <View
             className={cn(
               "items-center justify-center rounded-pill bg-ink-100",
