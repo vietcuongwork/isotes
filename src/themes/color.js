@@ -134,6 +134,8 @@ module.exports = {
       100: "#F8E3DD",
       600: "#B83A26",
     },
+    // behind the drawer and bottom sheets (DESIGN.md Neutral)
+    scrim: "rgba(15,14,13,0.32)",
     // illustration only, never UI
     lavender: "#B79BE0",
     flame: "#5B9BD5",

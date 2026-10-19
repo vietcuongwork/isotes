@@ -1,6 +1,6 @@
 import {
   BottomSheet,
-  KeyboardAwareScrollView,
+  BottomSheetScrollView,
 } from "@/components/sheet-keyboard";
 import { ReactElement } from "react";
 import { Text, View } from "react-native";
@@ -42,7 +42,7 @@ function AddDateContent(props: { today: string }): ReactElement {
   return (
     <>
       {/* Dynamic mode sizes the sheet from this scroll view's content */}
-      <KeyboardAwareScrollView>
+      <BottomSheetScrollView>
         <View className="items-center px-5 pb-3.5">
           <Text className="tracking-[0.08em] text-grey-200 text-legacy-label">
             EXPENSE DATE
@@ -64,7 +64,7 @@ function AddDateContent(props: { today: string }): ReactElement {
             onMonthChange={setMonthId}
           />
         </View>
-      </KeyboardAwareScrollView>
+      </BottomSheetScrollView>
     </>
   );
 }

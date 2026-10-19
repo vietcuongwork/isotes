@@ -1,8 +1,8 @@
 export { BottomSheet } from "./sheet/BottomSheet";
 export type { BottomSheetProps } from "./sheet/BottomSheet";
-export { KeyboardAwareScrollView } from "./sheet/KeyboardAwareScrollView";
-export type { KeyboardAwareScrollViewProps } from "./sheet/KeyboardAwareScrollView";
-export { FormTextInput } from "./sheet/FormTextInput";
+export { BottomSheetScrollView } from "./sheet/BottomSheetScrollView";
+export type { BottomSheetScrollViewProps } from "./sheet/BottomSheetScrollView";
+export { BottomSheetTextInput } from "./sheet/BottomSheetTextInput";
 export { KeyboardHost, useKeyboardHost } from "./keyboard/KeyboardHost";
 export { NumberPadInput } from "./keyboard/NumberPadInput";
 export type { NumberPadInputProps } from "./keyboard/NumberPadInput";

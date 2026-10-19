@@ -1,7 +1,7 @@
 import {
   BottomSheet,
-  FormTextInput,
-  KeyboardAwareScrollView,
+  BottomSheetTextInput,
+  BottomSheetScrollView,
 } from "@/components/sheet-keyboard";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { colors } from "@/themes/color";
@@ -75,7 +75,7 @@ function SplitContent(): ReactElement {
   return (
     // One scroll view for the whole sheet (rebuild rule); the search block
     // (child 1) stays pinned while the rows scroll
-    <KeyboardAwareScrollView stickyHeaderIndices={[1]}>
+    <BottomSheetScrollView stickyHeaderIndices={[1]}>
       {/* Method + summary */}
       <View className="px-5">
         <View className="pb-3">
@@ -93,7 +93,7 @@ function SplitContent(): ReactElement {
           {/* //NOTE - no token for input chrome, falling back to rounded-row/grey-965/grey-825 */}
           <View className="flex-row items-center gap-2.5 rounded-row border border-grey-825 bg-grey-965 px-3.5 py-2.5">
             <Search size={18} color={colors.grey[200]} />
-            <FormTextInput
+            <BottomSheetTextInput
               value={query}
               onChangeText={setQuery}
               placeholder="Search people"
@@ -176,7 +176,7 @@ function SplitContent(): ReactElement {
       <View className="px-5">
         <AddPerson />
       </View>
-    </KeyboardAwareScrollView>
+    </BottomSheetScrollView>
   );
 }
 

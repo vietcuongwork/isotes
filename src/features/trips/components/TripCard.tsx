@@ -14,9 +14,48 @@ import { Pressable, Text, TextStyle, View } from "react-native";
 // class compiles to nothing. why: [[Learn_react-native_nativewind-tabular-nums]]
 const TABULAR_NUMS: TextStyle = { fontVariant: ["tabular-nums"] };
 
+const BADGE_CLASSES = {
+  get: { box: "bg-get-100", text: "text-get-600" },
+  owe: { box: "bg-owe-100", text: "text-owe-600" },
+  square: { box: "bg-shine-100", text: "text-shine-700" },
+} satisfies Record<BadgeState, { box: string; text: string }>;
 interface TripCardProps {
   data: TripCardData;
   onPress: () => void;
+}
+
+type BadgeState = Exclude<TripCardState, "empty">;
+
+function getBadgeText(state: BadgeState, amount: string): string {
+  switch (state) {
+    case "get":
+      return `You get back ${amount}`;
+    case "owe":
+      return `You owe ${amount}`;
+    case "square":
+      return "All square";
+    default: {
+      const _exhaustive: never = state;
+      return _exhaustive;
+    }
+  }
+}
+
+function formatPeopleCount(count: number): string {
+  return `${count} ${count === 1 ? "person" : "people"}`;
+}
+
+function TripStatusBadge(props: { state: BadgeState; text: string }) {
+  const { state, text } = props;
+  const classes = BADGE_CLASSES[state];
+
+  return (
+    <View className={cn("rounded-pill px-space-3 py-space-1", classes.box)}>
+      <Text style={TABULAR_NUMS} className={cn("text-label", classes.text)}>
+        {text}
+      </Text>
+    </View>
+  );
 }
 
 export default function TripCard(props: TripCardProps) {
@@ -76,45 +115,5 @@ export default function TripCard(props: TripCardProps) {
         {badge && <TripStatusBadge state={badge.state} text={badge.text} />}
       </View>
     </Pressable>
-  );
-}
-
-type BadgeState = Exclude<TripCardState, "empty">;
-
-const BADGE_CLASSES = {
-  get: { box: "bg-get-100", text: "text-get-600" },
-  owe: { box: "bg-owe-100", text: "text-owe-600" },
-  square: { box: "bg-shine-100", text: "text-shine-700" },
-} satisfies Record<BadgeState, { box: string; text: string }>;
-
-function getBadgeText(state: BadgeState, amount: string): string {
-  switch (state) {
-    case "get":
-      return `You get back ${amount}`;
-    case "owe":
-      return `You owe ${amount}`;
-    case "square":
-      return "All square";
-    default: {
-      const _exhaustive: never = state;
-      return _exhaustive;
-    }
-  }
-}
-
-function formatPeopleCount(count: number): string {
-  return `${count} ${count === 1 ? "person" : "people"}`;
-}
-
-function TripStatusBadge(props: { state: BadgeState; text: string }) {
-  const { state, text } = props;
-  const classes = BADGE_CLASSES[state];
-
-  return (
-    <View className={cn("rounded-pill px-space-3 py-space-1", classes.box)}>
-      <Text style={TABULAR_NUMS} className={cn("text-label", classes.text)}>
-        {text}
-      </Text>
-    </View>
   );
 }

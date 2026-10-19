@@ -1,6 +1,6 @@
 import {
   BottomSheet,
-  KeyboardAwareScrollView,
+  BottomSheetScrollView,
 } from "@/components/sheet-keyboard";
 import { colors } from "@/themes/color";
 import { fontFamily } from "@/themes/typography";
@@ -33,14 +33,14 @@ export default function CurrencyPickerBottomSheet(
     >
       {/* Dynamic mode measures its content through this scroll view; scrolling
           is off so it never competes with the wheel's own drag */}
-      <KeyboardAwareScrollView scrollEnabled={false}>
+      <BottomSheetScrollView scrollEnabled={false}>
         <Picker
           intialValue={selectedCurrency.code}
           options={currencyOptions}
           onSelectionChange={onCurrencyChange}
           itemStyle={styles.pickerText}
         />
-      </KeyboardAwareScrollView>
+      </BottomSheetScrollView>
     </BottomSheet>
   );
 }

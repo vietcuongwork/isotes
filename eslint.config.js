@@ -19,13 +19,13 @@ const SCHEMA = {
 const KEYBOARD_CONTROLLER = {
   name: "react-native-keyboard-controller",
   message:
-    "keyboard-controller in a sheet. Why: sheets use sheet-keyboard's KeyboardHost; keyboard-controller is for screen-level forms (design_decisions 2026-10-05). Fix: KeyboardAwareScrollView / FormTextInput from @/components/sheet-keyboard.",
+    "keyboard-controller in a sheet. Why: sheets use sheet-keyboard's KeyboardHost; keyboard-controller is for screen-level forms (design_decisions 2026-10-05). Fix: BottomSheetScrollView / BottomSheetTextInput from @/components/sheet-keyboard.",
 };
 const PLAIN_TEXT_INPUT = {
   name: "react-native",
   importNames: ["TextInput"],
   message:
-    "Plain TextInput in a sheet. Why: it misses the pad hand-off and the dark keyboardAppearance ([[Debug_keyboard-flashes-white-on-pad-handoff]]). Fix: NumberPadInput for numbers, FormTextInput for text, from @/components/sheet-keyboard.",
+    "Plain TextInput in a sheet. Why: it misses the pad hand-off and the dark keyboardAppearance ([[Debug_keyboard-flashes-white-on-pad-handoff]]). Fix: NumberPadInput for numbers, BottomSheetTextInput for text, from @/components/sheet-keyboard.",
 };
 
 const PRESSABLE_FUNCTION_STYLE = {
@@ -41,6 +41,17 @@ const NUMERIC_SPACING = {
   selector: `JSXAttribute[name.name=/[cC]lassName$/] :matches(Literal[value=/${NUMERIC_SPACING_CLASS}/], TemplateElement[value.raw=/${NUMERIC_SPACING_CLASS}/])`,
   message:
     "Numeric spacing class. Why: NativeWind inlines 1rem as 14 px on native, so p-4 renders 14, not DESIGN.md's 16 ([[Debug_ink-shine-spacing-rem]]). Fix: a DESIGN.md token (p-space-4, h-space-16), or an [Npx] value with a no-token note.",
+};
+const { roles } = require("./src/themes/typography");
+// text-body, text-label, …: the roles that set a line height
+const LINE_HEIGHT_ROLES = Object.keys(roles)
+  .filter((name) => roles[name].line != null)
+  .join("|");
+const LINE_HEIGHT_CLASS = `(^|\\s|:)text-(${LINE_HEIGHT_ROLES})(\\s|$)`;
+const TEXT_INPUT_LINE_HEIGHT = {
+  selector: `JSXOpeningElement[name.name=/^(TextInput|BottomSheetTextInput)$/]:not(:has(JSXAttribute[name.name="multiline"])) JSXAttribute[name.name="className"] :matches(Literal[value=/${LINE_HEIGHT_CLASS}/], TemplateElement[value.raw=/${LINE_HEIGHT_CLASS}/])`,
+  message:
+    "Text role with a line height on a single-line TextInput. Why: iOS draws its text low when lineHeight is set ([[Learn_react-native_textinput-lineheight-ios]]). Fix: a -flat role, or the role's font and size through style.",
 };
 // Built before the px tokens; a file leaves this list when the migration restyles it
 const LEGACY_SPACING_FILES = [
@@ -83,9 +94,6 @@ const LEGACY_SPACING_FILES = [
   "src/features/expense/components/paidbyandsplit/SplitMethodControl.tsx",
   "src/features/expense/components/paidbyandsplit/SplitSummary.tsx",
   "src/features/expense/screens/ExpenseScreen.tsx",
-  "src/features/onboarding/components/TripItem.tsx",
-  "src/features/onboarding/components/TripList.tsx",
-  "src/features/onboarding/screens/OnboardingScreen.tsx",
 ];
 
 module.exports = defineConfig([
@@ -139,6 +147,7 @@ module.exports = defineConfig([
         "error",
         PRESSABLE_FUNCTION_STYLE,
         NUMERIC_SPACING,
+        TEXT_INPUT_LINE_HEIGHT,
       ],
     },
   },
@@ -146,7 +155,11 @@ module.exports = defineConfig([
     // Legacy screens keep Tailwind's numeric scale until they're restyled
     files: LEGACY_SPACING_FILES,
     rules: {
-      "no-restricted-syntax": ["error", PRESSABLE_FUNCTION_STYLE],
+      "no-restricted-syntax": [
+        "error",
+        PRESSABLE_FUNCTION_STYLE,
+        TEXT_INPUT_LINE_HEIGHT,
+      ],
     },
   },
 ]);

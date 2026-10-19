@@ -3,7 +3,7 @@ import Button from "@/components/Button";
 import TextField from "@/components/formfield/TextField";
 import {
   BottomSheet,
-  KeyboardAwareScrollView,
+  BottomSheetScrollView,
 } from "@/components/sheet-keyboard";
 import { insertMember } from "@/db/members";
 import { useAddPersonStore } from "@/stores/useAddPersonStore";
@@ -70,7 +70,7 @@ export default function AddPersonBottomSheet(
       safeAreaInsets={safeAreaInsets}
     >
       {/* revealMargin 50 = keyboard-controller's old bottomOffset */}
-      <KeyboardAwareScrollView revealMargin={50}>
+      <BottomSheetScrollView revealMargin={50}>
         <View>
           <View className="items-center gap-3.5 px-5 pb-6 pt-4">
             <Avatar
@@ -106,7 +106,7 @@ export default function AddPersonBottomSheet(
             />
           </View>
         </View>
-      </KeyboardAwareScrollView>
+      </BottomSheetScrollView>
     </BottomSheet>
   );
 }

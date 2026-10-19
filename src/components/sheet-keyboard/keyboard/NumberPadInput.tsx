@@ -54,7 +54,7 @@ export function NumberPadInput({
   onBlur,
   onSelectionChange,
   ref,
-  // Same dark default as FormTextInput (app.json userInterfaceStyle is "automatic")
+  // Same dark default as BottomSheetTextInput (app.json userInterfaceStyle is "automatic")
   keyboardAppearance = "dark",
   ...rest
 }: NumberPadInputProps) {

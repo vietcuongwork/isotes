@@ -18,8 +18,8 @@ import {
 import { HANDOFF_PT, PAD_RELEASE_AT, SHEET_FADE } from "../keyboard/motion";
 import { NumberPadInput } from "../keyboard/NumberPadInput";
 import { BottomSheet } from "../sheet/BottomSheet";
-import { FormTextInput } from "../sheet/FormTextInput";
-import { KeyboardAwareScrollView } from "../sheet/KeyboardAwareScrollView";
+import { BottomSheetTextInput } from "../sheet/BottomSheetTextInput";
+import { BottomSheetScrollView } from "../sheet/BottomSheetScrollView";
 import { MIN_VISIBLE_SCROLL } from "../sheet/sheetMath";
 
 const INSETS = { top: 47, bottom: 34 };
@@ -97,8 +97,12 @@ function Form() {
   const [note, setNote] = useState("");
   return (
     <KeyboardHost safeAreaInsets={INSETS}>
-      <KeyboardAwareScrollView>
-        <FormTextInput testID="note" value={note} onChangeText={setNote} />
+      <BottomSheetScrollView>
+        <BottomSheetTextInput
+          testID="note"
+          value={note}
+          onChangeText={setNote}
+        />
         <NumberPadInput
           testID="a"
           value={a}
@@ -111,7 +115,7 @@ function Form() {
           onChangeText={setB}
           maxDecimals={4}
         />
-      </KeyboardAwareScrollView>
+      </BottomSheetScrollView>
       <Text testID="values">{`${a}|${b}|${note}`}</Text>
     </KeyboardHost>
   );
@@ -324,11 +328,11 @@ describe("tap outside, deferred native keyboard, transition events", () => {
     const [note, setNote] = useState("");
     return (
       <KeyboardHost safeAreaInsets={INSETS}>
-        <KeyboardAwareScrollView
+        <BottomSheetScrollView
           testID="kasv"
           keyboardShouldPersistTaps={persist}
         >
-          <FormTextInput
+          <BottomSheetTextInput
             ref={noteRef}
             testID="note"
             value={note}
@@ -340,7 +344,7 @@ describe("tap outside, deferred native keyboard, transition events", () => {
             value={v}
             onChangeText={setV}
           />
-        </KeyboardAwareScrollView>
+        </BottomSheetScrollView>
       </KeyboardHost>
     );
   }
@@ -526,9 +530,9 @@ describe("tap outside, deferred native keyboard, transition events", () => {
       const [v, setV] = useState("");
       return (
         <BottomSheet visible onClose={() => {}} safeAreaInsets={INSETS}>
-          <KeyboardAwareScrollView testID="scroll">
+          <BottomSheetScrollView testID="scroll">
             <NumberPadInput testID="sp" value={v} onChangeText={setV} />
-          </KeyboardAwareScrollView>
+          </BottomSheetScrollView>
         </BottomSheet>
       );
     }
@@ -576,7 +580,7 @@ describe("keyboard sequences and stacked hosts", () => {
       return (
         <KeyboardHost safeAreaInsets={INSETS}>
           <Probe seen={seen} />
-          <FormTextInput testID="n" />
+          <BottomSheetTextInput testID="n" />
           <NumberPadInput testID="p" value={v} onChangeText={setV} />
         </KeyboardHost>
       );
@@ -622,7 +626,7 @@ describe("keyboard sequences and stacked hosts", () => {
       return (
         <KeyboardHost safeAreaInsets={INSETS}>
           <Probe seen={seen} />
-          <FormTextInput testID="n" />
+          <BottomSheetTextInput testID="n" />
           <NumberPadInput testID="p" value={v} onChangeText={setV} />
         </KeyboardHost>
       );
@@ -673,7 +677,7 @@ describe("keyboard sequences and stacked hosts", () => {
         <Probe seen={outer} />
         <KeyboardHost safeAreaInsets={INSETS}>
           <Probe seen={inner} />
-          <FormTextInput testID="inner-note" />
+          <BottomSheetTextInput testID="inner-note" />
         </KeyboardHost>
       </KeyboardHost>,
     );
@@ -756,9 +760,9 @@ describe("sheet modes", () => {
         onSnapChange={onSnapChange}
         safeAreaInsets={INSETS}
       >
-        <KeyboardAwareScrollView testID="scroll">
+        <BottomSheetScrollView testID="scroll">
           <Text>Body</Text>
-        </KeyboardAwareScrollView>
+        </BottomSheetScrollView>
       </BottomSheet>,
     );
     const pull = () =>
@@ -785,9 +789,9 @@ describe("sheet modes", () => {
         snapPoints={snap ? [500] : undefined}
         safeAreaInsets={INSETS}
       >
-        <KeyboardAwareScrollView testID="scroll">
-          <FormTextInput testID="field" />
-        </KeyboardAwareScrollView>
+        <BottomSheetScrollView testID="scroll">
+          <BottomSheetTextInput testID="field" />
+        </BottomSheetScrollView>
       </BottomSheet>
     );
   }
@@ -1000,9 +1004,9 @@ describe("sheet modes", () => {
         title="Fit"
         safeAreaInsets={INSETS}
       >
-        <KeyboardAwareScrollView testID="scroll">
+        <BottomSheetScrollView testID="scroll">
           <Text>Body</Text>
-        </KeyboardAwareScrollView>
+        </BottomSheetScrollView>
       </BottomSheet>,
     );
     await fireEvent(screen.getByTestId("sheet-handle"), "layout", {
@@ -1333,9 +1337,9 @@ describe("BottomSheet", () => {
     const onClose = jest.fn();
     await render(
       <BottomSheet visible onClose={onClose} safeAreaInsets={INSETS}>
-        <KeyboardAwareScrollView testID="scroll">
+        <BottomSheetScrollView testID="scroll">
           <Text>Body</Text>
-        </KeyboardAwareScrollView>
+        </BottomSheetScrollView>
       </BottomSheet>,
     );
     const endDrag = (y: number, vy: number) =>

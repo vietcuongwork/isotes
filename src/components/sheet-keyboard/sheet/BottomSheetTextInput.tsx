@@ -2,13 +2,13 @@ import React, { ComponentRef, Ref } from "react";
 import { TextInput, TextInputProps } from "react-native";
 import { useOptionalKeyboardHost } from "../keyboard/KeyboardHost";
 
-export interface FormTextInputProps extends TextInputProps {
+export interface BottomSheetTextInputProps extends TextInputProps {
   ref?: Ref<ComponentRef<typeof TextInput>>;
 }
 
 /**
  * A system-keyboard TextInput. Any plain TextInput already works with
- * KeyboardAwareScrollView when the keyboard moves. This one also:
+ * BottomSheetScrollView when the keyboard moves. This one also:
  *  - tells the host about focus, so it is revealed when focus moves between
  *    fields of the same keyboard height (no keyboard event fires then);
  *  - when tapped while the number pad is up, waits for the pad to leave before
@@ -17,15 +17,17 @@ export interface FormTextInputProps extends TextInputProps {
  *    and RN reloads the input views of the focused field, which raises the
  *    system keyboard (RCTTextInputComponentView _setShowSoftInputOnFocus,
  *    verified in RN 0.86.3; re-check on upgrades).
+ * Outside a KeyboardHost (a screen-level form) it is a plain TextInput with
+ * the dark keyboard.
  */
-export function FormTextInput({
+export function BottomSheetTextInput({
   onFocus,
   onBlur,
   showSoftInputOnFocus = true,
   // isotes is dark-only, but app.json's userInterfaceStyle is "automatic"
   keyboardAppearance = "dark",
   ...rest
-}: FormTextInputProps) {
+}: BottomSheetTextInputProps) {
   const host = useOptionalKeyboardHost();
   const deferKeyboard = !!host?.padUp;
   return (

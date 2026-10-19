@@ -61,16 +61,17 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 - **Standards follows the app.** When no file under review is in `src/` (scripts, tooling), skip the Standards sub-agent, report `Standards: skipped (no src/ change)`, and add brief (e) to the Spec sub-agent.
 - **Standards** runs as the `code-reviewer` agent. Add to its prompt: "Review against standards only — do not judge whether the code matches the spec; that is a separate review." Pass the `.claude/rules/` file list too; the agent doesn't read them by default.
 - **Spec** runs as a `general-purpose` agent with the pasted spec contents.
+- **Diff as a file.** `code-reviewer` has no shell, so write the step 1 diff to `.sim/review/<slug>-<task>.diff` first: `git diff HEAD -- <task files>`, plus `git diff --no-index /dev/null <file>` for each new untracked file (or `git diff <fixed-point>...HEAD`). Pass that path to both sub-agents.
 
 **Standards sub-agent prompt** should include:
 
-- The diff command from step 1 (and the commit list, when reviewing since a fixed point).
+- The diff file path from step 4 (and the commit list, when reviewing since a fixed point).
 - The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full (the sub-agent has no other access to it).
 - The brief: "Report, per file/hunk where relevant, (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls: documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
 
 **Spec sub-agent prompt** should include:
 
-- The diff command from step 1 (and the commit list, when reviewing since a fixed point).
+- The diff file path from step 4 (and the commit list, when reviewing since a fixed point).
 - The path or fetched contents of the spec.
 - The brief: "Start the report with one row per acceptance criterion the task covers: `| criterion (quoted) | PASS / FAIL / NOT SHOWN | evidence (file:line, test name, or Verify result) |`. NOT SHOWN means the diff and Verify results give no evidence either way. Then report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong; (d) Verify claims the evidence doesn't support: compare the planned Verify line with the Verify results, and flag any criterion that's claimed but not shown, deferred without an Open check, or checked at a lower layer than the plan asked (Jest where it said simulator); (e) when Standards is skipped: wrong output — an input or state under which the code returns a wrong result or crashes, with that input. Report every divergence you find; don't downgrade one because the code looks reasonable. Quote the spec line for each finding. Under 500 words."
 

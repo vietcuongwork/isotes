@@ -7,7 +7,7 @@ import { StyleSheet, Text } from "react-native";
 import { KeyboardHost } from "../keyboard/KeyboardHost";
 import { NumberPadInput } from "../keyboard/NumberPadInput";
 import { BottomSheet } from "../sheet/BottomSheet";
-import { FormTextInput } from "../sheet/FormTextInput";
+import { BottomSheetTextInput } from "../sheet/BottomSheetTextInput";
 
 const INSETS = { top: 47, bottom: 34 };
 
@@ -109,8 +109,8 @@ describe("keyboardAppearance", () => {
   it("defaults to dark on both inputs, and a caller can override it", async () => {
     await render(
       <KeyboardHost safeAreaInsets={INSETS}>
-        <FormTextInput testID="text" />
-        <FormTextInput testID="text-light" keyboardAppearance="light" />
+        <BottomSheetTextInput testID="text" />
+        <BottomSheetTextInput testID="text-light" keyboardAppearance="light" />
         <NumberPadInput testID="pad" value="" onChangeText={() => {}} />
       </KeyboardHost>,
     );

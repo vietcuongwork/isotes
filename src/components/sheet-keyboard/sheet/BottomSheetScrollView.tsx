@@ -29,13 +29,15 @@ import {
   transitionProgress,
 } from "./sheetMath";
 
-export interface KeyboardAwareScrollViewProps extends ScrollViewProps {
+export interface BottomSheetScrollViewProps extends ScrollViewProps {
   /** Space kept between the focused field and the viewport edge. */
   revealMargin?: number;
 }
 
 /**
- * A ScrollView that keeps the focused TextInput visible.
+ * The sheet's scroll view. It keeps the focused TextInput visible, reports its
+ * content height (a sheet without snapPoints sizes from it), and pulls the
+ * sheet down when dragged past its top. Outside a sheet it is a ScrollView.
  *
  * It reaches the sheet's bottom edge, so content is drawn behind keyboards and
  * the home indicator, and the covered part becomes bottom `contentInset` (the
@@ -52,7 +54,7 @@ export interface KeyboardAwareScrollViewProps extends ScrollViewProps {
  *
  * Any TextInput descendant works (it uses the globally focused input).
  */
-export function KeyboardAwareScrollView({
+export function BottomSheetScrollView({
   revealMargin = 20,
   keyboardShouldPersistTaps = "handled",
   children,
@@ -61,7 +63,7 @@ export function KeyboardAwareScrollView({
   onContentSizeChange,
   onScrollEndDrag,
   ...rest
-}: KeyboardAwareScrollViewProps) {
+}: BottomSheetScrollViewProps) {
   const host = useOptionalKeyboardHost();
   const sheet = useSheet();
   const scrollRef = useRef<ScrollView>(null);

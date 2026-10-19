@@ -2,7 +2,7 @@ import Button from "@/components/Button";
 import PickerField from "@/components/formfield/PickerField";
 import {
   BottomSheet,
-  KeyboardAwareScrollView,
+  BottomSheetScrollView,
 } from "@/components/sheet-keyboard";
 import { colors } from "@/themes/color";
 import { Camera } from "lucide-react-native";
@@ -72,7 +72,7 @@ function AddExpenseContent(props: { onClose: () => void }): ReactElement {
 
   return (
     <>
-      <KeyboardAwareScrollView>
+      <BottomSheetScrollView>
         {/*NOTE - position:relative → stacking parent for the picker scrim.
              The scrim + the Activity/Date row are direct siblings here; their
              zIndex is what floats the row (and its popover) above the dim. */}
@@ -122,7 +122,7 @@ function AddExpenseContent(props: { onClose: () => void }): ReactElement {
             onConfirm={handleConfirmStartOver}
           />
         )}
-      </KeyboardAwareScrollView>
+      </BottomSheetScrollView>
 
       {/* Modal sheet: a sibling of the scroll view, not inside its content */}
       <AddDateBottomSheet

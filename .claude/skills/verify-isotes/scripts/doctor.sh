@@ -41,7 +41,14 @@ else
   for pid in $pids; do
     cmd=$(ps -o command= -p "$pid")
     [[ "$cmd" == "node $repo/node_modules/"* ]] \
-      || fail ":8081 is held by another process (pid $pid: ${cmd:0:80}). Why: the isotes build would load that bundle. Fix: ask the user before stopping it."
+      || { fail ":8081 is held by another process (pid $pid: ${cmd:0:80}). Why: the isotes build would load that bundle. Fix: ask the user before stopping it."; continue; }
+    # cu.sh reads app logs from .sim/metro.log, which only Launch step 3's `script -qF` writes
+    logged=no; p=$pid
+    for _ in 1 2 3 4 5; do
+      p=$(ps -o ppid= -p "$p" | tr -d ' '); [ -z "$p" ] || [ "$p" = 1 ] && break
+      ps -o command= -p "$p" | grep -q "script .*metro\.log" && { logged=yes; break; }
+    done
+    [ "$logged" = yes ] || fail "Metro (pid $pid) isn't writing .sim/metro.log, so cu.sh sees no app logs. Why: it wasn't started through script -qF. Fix: ask the user, then restart it with Launch step 3."
   done
   [ "$(curl -s -m 3 localhost:8081/status)" = "packager-status:running" ] \
     || fail ":8081 doesn't answer packager-status:running (Metro still starting, hung, or not Metro). Fix: wait and rerun, or ask the user."

@@ -1,7 +1,7 @@
 import {
   BottomSheet,
-  FormTextInput,
-  KeyboardAwareScrollView,
+  BottomSheetTextInput,
+  BottomSheetScrollView,
 } from "@/components/sheet-keyboard";
 import { colors } from "@/themes/color";
 import { fontFamily } from "@/themes/typography";
@@ -51,14 +51,14 @@ function PaidByContent(): ReactElement {
     <>
       {/* One scroll view for the whole sheet (rebuild rule); the search block
           (child 0) stays pinned while the rows scroll */}
-      <KeyboardAwareScrollView stickyHeaderIndices={[0]}>
+      <BottomSheetScrollView stickyHeaderIndices={[0]}>
         {/* Search — opaque so rows don't show through while pinned */}
         <View className="bg-grey-905 px-5">
           <View className="pb-3">
             {/* //NOTE - no token for input chrome, falling back to rounded-row/grey-965/grey-825 */}
             <View className="flex-row items-center gap-2.5 rounded-row border border-grey-825 bg-grey-965 px-3.5 py-2.5">
               <Search size={18} color={colors.grey[200]} />
-              <FormTextInput
+              <BottomSheetTextInput
                 value={query}
                 onChangeText={setQuery}
                 placeholder="Search people"
@@ -96,7 +96,7 @@ function PaidByContent(): ReactElement {
         <View className="px-5">
           <AddPerson />
         </View>
-      </KeyboardAwareScrollView>
+      </BottomSheetScrollView>
     </>
   );
 }

@@ -50,7 +50,7 @@ export interface TransitionPlan {
  *  - pad -> system: the pad stays until the rising system keyboard has
  *    covered it, then hides (plain TextInputs). If the system keyboard is
  *    shorter than the pad, nothing would cover it, so the pad slides out.
- *    FormTextInput instead defers its keyboard until the pad has left.
+ *    BottomSheetTextInput instead defers its keyboard until the pad has left.
  *  - none <-> pad: the pad slides like a keyboard.
  */
 export function planTransition(
