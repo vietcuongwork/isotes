@@ -1,7 +1,12 @@
 import ExpenseDayCard from "@/features/expense/components/ExpenseDayCard";
 import ExpenseEmpty from "@/features/expense/components/ExpenseEmpty";
 import TripHeader from "@/features/expense/components/TripHeader";
-import { groupExpensesByDay } from "@/features/expense/helpers/tripHomeHelpers";
+import TripPeopleRow from "@/features/expense/components/TripPeopleRow";
+import TripSummaryTiles from "@/features/expense/components/TripSummaryTiles";
+import {
+  getTripSummary,
+  groupExpensesByDay,
+} from "@/features/expense/helpers/tripHomeHelpers";
 import { colors } from "@/themes/color";
 import { useIsFocused } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -63,8 +68,17 @@ export default function ExpenseScreen() {
             />
           )}
           ListHeaderComponent={
-            <View className="pb-space-5">
+            <View className="gap-space-5 pb-space-5">
               <TripHeader trip={trip} now={now} />
+              <TripPeopleRow members={transformedMembers} />
+              <TripSummaryTiles
+                summary={getTripSummary(
+                  transformedExpenses,
+                  viewerMemberId,
+                  trip.currency.decimalDigits,
+                )}
+                currency={trip.currency}
+              />
             </View>
           }
           ListEmptyComponent={ExpenseEmpty}

@@ -15,11 +15,13 @@ interface TripAvatarStackProps {
   members: Member[];
   /** Merged over the default `card` ring, e.g. "bg-ink-100" on an ink-100 row */
   ringClassName?: string;
+  /** Merged over the default `ink-100` "+N" disc, e.g. "bg-ink-200" on an ink-100 row */
+  overflowClassName?: string;
 }
 
 // Later discs overlap earlier ones by 8, as on the board
 export default function TripAvatarStack(props: TripAvatarStackProps) {
-  const { members, ringClassName } = props;
+  const { members, ringClassName, overflowClassName } = props;
   const { visible, overflow } = getAvatarStack(members);
   const ring = cn(RING, ringClassName);
 
@@ -43,6 +45,7 @@ export default function TripAvatarStack(props: TripAvatarStackProps) {
             className={cn(
               "items-center justify-center rounded-pill bg-ink-100",
               DISC,
+              overflowClassName,
             )}
           >
             <Text className={cn("text-ink-700", INITIAL)}>+{overflow}</Text>

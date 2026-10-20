@@ -1,4 +1,18 @@
+import {
+  computeTripBalance,
+  getTripCardState,
+  TripCardState,
+} from "@/features/trips/helpers/tripsHelpers";
 import { Expense } from "@/types/TExpense";
+import { roundToDecimals } from "@/utils/currency";
+
+export interface TripSummary {
+  total: number;
+  count: number;
+  share: number;
+  balance: number;
+  state: TripCardState;
+}
 
 export interface ExpenseDay {
   dateId: string;
@@ -37,4 +51,43 @@ export function formatDayHeader(dateId: string, now: Date): string {
     day: "numeric",
     year: isThisYear ? undefined : "numeric",
   });
+}
+
+// `count` includes you
+export function formatPeopleLabel(count: number): string {
+  const others = count - 1;
+  if (others === 0) return "Just you";
+  return `You and ${others} ${others === 1 ? "other" : "others"}`;
+}
+
+export function formatExpenseCount(count: number): string {
+  return `${count} ${count === 1 ? "expense" : "expenses"}`;
+}
+
+// The share is what you were split into, whoever paid
+export function getTripSummary(
+  expenses: Expense[],
+  viewerMemberId: string,
+  decimalDigits: number,
+): TripSummary {
+  const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const share = expenses.reduce(
+    (sum, expense) =>
+      sum +
+      (expense.splits.find((split) => split.memberId === viewerMemberId)
+        ?.individualAmount ?? 0),
+    0,
+  );
+  // Rounded here too, so the amount the tile shows agrees with its state
+  const balance = roundToDecimals(
+    computeTripBalance(expenses, viewerMemberId),
+    decimalDigits,
+  );
+  const state = getTripCardState({
+    expenseCount: expenses.length,
+    balance,
+    decimalDigits,
+  });
+
+  return { total, count: expenses.length, share, balance, state };
 }
