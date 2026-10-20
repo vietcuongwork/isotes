@@ -63,6 +63,8 @@ appId: com.anonymous.isotes
 
 **Selectors:** accessibility label, `testID` (`id:`) or visible text, never `point:`. Stable handles: `Add expense` (the `+`), `id: number-pad`, `id: sheet-close`, `Expenses, tab, 1 of 3` (`selected: true` when open). Trip cards' labels are compound (`<name>, +₫9,666, 5 expenses · …`): match them by regex. Per-feature selectors and gotchas: `features/`.
 
+**Keyboard:** close it with `pressKey: Enter` (Return, or Search on a search field). `hideKeyboard` taps or swipes outside the keyboard, so it can land on a field, fail with nothing to swipe, or blur a search field, which hides its `Clear text` button.
+
 **Writes:** a flow that saves anything creates its own trip, `Flow <flow> <MM-DD HH:mm>`, and never edits or deletes other trips. Flows never delete. A trip seeded by hand follows the same pattern (`Flow <purpose> <MM-DD HH:mm>`); without the stamp, `cleanup.sh` leaves it behind.
 
 **Don't save files while a flow runs:** Metro's fast refresh reloads the app mid-flow (a blue "Refreshing…" banner), and the next step fails on a screen that isn't there.
@@ -77,6 +79,7 @@ Prove the real user path: the action and the state it leaves, not just the last 
 - **Logs:** `.sim/cu.sh mark` before, `.sim/cu.sh show` after → list new WARN/ERROR lines, or "cu.sh → none".
 - **No flash while loading** (a state that lasts a few frames): record with `xcrun simctl io booted recordVideo <file>.mp4`, then `scripts/frames.sh <file>.mp4 [from to]` tiles the frames 12 per sheet and prints each cell's frame number and timestamp. Read the key first, then only the sheets around the change.
 - **Screenshots** only for a visual check (layout, color, spacing) or a failed check. A failed flow leaves exactly one in its run folder (`find .sim/maestro/<run> -name '*.png'`); read that one, nothing else.
+  - A flow's own `takeScreenshot` takes a bare name, never a path: Maestro rejects an absolute path. Run it with `--test-output-dir .sim/maestro/<run>/shots`, and the image lands at `shots/<time>/<flow name>/takeScreenshot/<name>.png`. Copy it out from there.
 
 Quote the values (rows, tree lines, log result) in the task's log in the vault's implementation note. That note is where evidence lives; run folders are scratch.
 
@@ -97,5 +100,6 @@ Quote the values (rows, tree lines, log result) in the task's log in the vault's
   ```
 
 - `scripts/cleanup.sh [--dry-run]` — deletes flow trips (Cleanup, above). It stops the app, backs up `isotes.db` to `.sim/backup/`, deletes in one transaction, prints before and after counts and a restore command, then runs `cu.sh relaunch`. `--dry-run` prints per-flow counts only.
+- `scripts/green.sh mark | check` — fingerprints `src/` (tracked and untracked files) into `.sim/last-green` after a green Demo; `check` prints `same` (exit 0) when nothing in `src/` changed since, so autopilot's Preflight can skip the smoke flow.
 - `.sim/cu.sh relaunch | mark | show` — the project's launcher and Metro log reader (outside this skill).
 - `flows/<flow>.yaml` — one per mapped feature; run with the Drive command.

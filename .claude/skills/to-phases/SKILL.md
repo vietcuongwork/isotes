@@ -51,6 +51,8 @@ Inside each approved phase, write the tasks by CLAUDE.md Step 2's task rules: sm
 
 A task that renames, removes or replaces a labelled element, or puts a new screen in a flow's path, names the flows that select it (`grep -ln '<label>' .claude/skills/verify-isotes/flows/*.yaml`). Its **Verify** line runs them, and the task updates them by the upkeep rule in `verify-isotes/features/README.md`.
 
+An `accessible` row or card exposes one joined label, so wrapping texts in one replaces their labels. Its flows and **Verify** lines match the whole label by regex (`".*, You paid, \\$7\\.25"`), and a size inside it is measured from a screenshot.
+
 Done when every acceptance criterion in the spec traces to a task — write that task's number into the criterion's `verified by` (`Live (T12)`) — and every phase's last task ends on its Demo.
 
 ## 5. Write the planning note

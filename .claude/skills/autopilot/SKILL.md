@@ -14,11 +14,12 @@ The user hands you one **phase** of `Feat_{slug}_planning.md` to run without per
 
 - The argument names one phase. Missing or ambiguous: ask and stop.
 - The planning note passed review, and every phase in this phase's **Blocked by** is ticked done.
+- The phase starts in a session that hasn't run one yet. If this session already ran a phase to its Demo, run `/preserve` and hand over its `/recall` line: a phase needs the room for its Demo and report.
 - Record `git status --porcelain` as the baseline, so the end report separates this phase's changes from work already in progress. If it covers an earlier phase, ask whether to commit that first: a phase should start from a committed Demo.
-- If the phase has `[Live]` tasks that change `src/`, smoke-test first with `verify-isotes` (CLI): Doctor → `doctor: ok`, `.sim/cu.sh mark`, the golden-path flow (that skill's Drive command) green, then `.sim/cu.sh show` with no ERROR lines. Broken → stop and report before task 1.
+- If the phase has `[Live]` tasks that change `src/`, smoke-test first with `verify-isotes` (CLI): Doctor → `doctor: ok`, then `scripts/green.sh check`. `same`: the last green Demo ran on this `src`, so it stands in for the flow. `changed`: `.sim/cu.sh mark`, the golden-path flow (that skill's Drive command) green, then `.sim/cu.sh show` with no ERROR lines. Broken → stop and report before task 1. When the flow was skipped and the first `[Live]` Verify fails, run golden-path before blaming the task.
 - Read the spec, this phase, and `Feat_{slug}_implementation.md`.
 
-Done when the phase is identified, its blockers are done, and the baseline is recorded.
+Done when the phase is identified, its blockers are done, the session is fresh, and the baseline is recorded.
 
 ## 1. Run each task, in order
 
@@ -44,6 +45,7 @@ Stop, report where you are, and wait for the user when:
 - Run the full Jest suite once (`pnpm test`).
 - Run the phase's **Demo**.
 - Confirm no debug logs are left.
+- Demo green and the phase changed `src/`: run `verify-isotes/scripts/green.sh mark`, so the next phase's Preflight can skip its smoke flow.
 - Every Open check due by this phase is closed, re-targeted, or listed in the report for the user to accept.
 - Report: the Demo result, tasks done, Deviations, review judgement calls, open checks, and the files changed since the baseline. Add a suggested commit (the `commit-message` skill, as a runnable `git commit` command). The user commits.
 - **Read these first**: up to 3 hunks where the phase's risk sits (logic no test covers, a deviation from the plan, a judgement call the review flagged — at least one from review, if any were flagged), each as `file:line` plus one line on why. These are what to understand before committing; Verify and review cover the rest.
