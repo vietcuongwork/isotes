@@ -31,5 +31,5 @@ name: create-trip
       selected: true
     timeout: 5000
 - assertVisible: ${output.tripName}
-- assertVisible: "AUD · created .*"
+- assertVisible: "Created .* · AUD"
 - assertVisible: "No expenses yet"

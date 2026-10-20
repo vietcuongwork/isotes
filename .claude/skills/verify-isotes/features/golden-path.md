@@ -24,15 +24,15 @@ Preconditions:
 - `scripts/doctor.sh` → `doctor: ok`.
 - No MCP steps planned for the rest of this session (the CLI run kills the MCP driver).
 
-- **Run it.** Run SKILL.md's "Whole flow" command with `golden-path` (`flows/golden-path.yaml`). Exit code `0`; the last lines are `Assert that "₫90,000" is visible... COMPLETED` and `Assert that "You paid" is visible... COMPLETED`.
+- **Run it.** Run SKILL.md's "Whole flow" command with `golden-path` (`flows/golden-path.yaml`). Exit code `0`; the last line waits for the saved row `.*, You paid, ₫90,000, you lent ₫60,000`.
 - **Create the trip.** "Start your first trip" → the name field (placeholder `Trip to Vegas`) → Return twice (name → Description → opens the currency sheet) → swipe the wheel up from `.* \([A-Z]{3}\) - .*` until `Vietnamese Dong \(VND\) - ₫` → `Close sheet` → `Create trip`. Result: `Expenses, tab, 1 of 3` is `selected: true` and the trip name is visible.
 - **Enter the amount.** `Add expense` → the amount field (placeholder `0`) → wait for `id: number-pad` → `9`, then four `{text: "0", below: "Delete"}` → `Done`. Result: `90,000`.
 - **Add two people.** `Y, You paid` → `Add a person` → `Enter name` → `Ana` → Return → `Add to trip`; again with `Ben`; then `Y, You` → `id: sheet-close`. Result: the sheet closes with You as payer.
 - **Split equally.** `Equally`. Result: `₫30,000 each · 3 people`.
-- **Save.** `Save expense`. Result: the row shows `₫90,000`, `You paid` and `you lent ₫60,000`.
+- **Save.** `Save expense`. Result: one row labelled `<activity>, You paid, ₫90,000, you lent ₫60,000` (a row is one VoiceOver element, so its texts are matched together).
 - **Proof: stored expense.** Run `.claude/skills/verify-isotes/scripts/db.sh "SELECT e.amount, e.split_method, m.name FROM expenses e JOIN members m ON m.id = e.paid_by_member_id WHERE e.trip_id = (SELECT id FROM trips WHERE name LIKE 'Flow golden-path %' ORDER BY created_at DESC LIMIT 1)"`. Output: `90000.0|equally|You`.
 - **Proof: stored splits.** Run SKILL.md's Helpers splits query. Output: `Ana|30000.0`, `Ben|30000.0`, `You|30000.0`.
-- **Proof: screen.** Run SKILL.md's tree read (after the flow, so isotes is in front). Output: `you lent ₫60,000`.
+- **Proof: screen.** Run SKILL.md's tree read (after the flow, so isotes is in front). Output: the row label, `<activity>, You paid, ₫90,000, you lent ₫60,000`.
 
 ## Gotchas
 

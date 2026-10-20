@@ -83,8 +83,8 @@ name: add-expense
 - assertVisible: "7.25"
 - assertVisible: "Y, You paid"
 - tapOn: "Save expense"
+# A row is one VoiceOver element, so its payer and amount share one label
 - extendedWaitUntil:
-    visible: "You paid"
+    visible: ".*, You paid, \\$7\\.25"
     timeout: 5000
-- assertVisible: "\\$7.25"
 - assertNotVisible: "No expenses yet"

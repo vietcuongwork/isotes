@@ -25,7 +25,7 @@ Preconditions:
 - **Empty name.** "Start your first trip" → `Create trip`. Result: `Trip name is required`.
 - **Name and description.** The name field (placeholder `Trip to Vegas`) → the trip name → Return → `Flow description` → Return. Result: the currency sheet opens on `Australian Dollar \(AUD\) - \$`.
 - **Currency.** `Close sheet`. Result: the field reads `.*Australian Dollar, AUD`.
-- **Create.** `Create trip`. Result: `Expenses, tab, 1 of 3` is `selected: true`, with the trip name, `AUD · created .*` and `No expenses yet`.
+- **Create.** `Create trip`. Result: `Expenses, tab, 1 of 3` is `selected: true`, with the trip name, `Created .* · AUD` and `No expenses yet`.
 - **Proof: stored trip.** Run `.claude/skills/verify-isotes/scripts/db.sh "SELECT name, description, currency_code, (SELECT count(*) FROM members WHERE trip_id = t.id), (SELECT count(*) FROM expenses WHERE trip_id = t.id) FROM trips t WHERE name LIKE 'Flow create-trip %' ORDER BY created_at DESC LIMIT 1"`. Output: `Flow create-trip <MM-DD HH:mm>|Flow description|AUD|1|0`.
 
 ## Gotchas

@@ -90,10 +90,10 @@ name: paid-by-split
 - tapOn:
     id: "sheet-close"
 - tapOn: "Save expense"
+# A row is one VoiceOver element, so its payer and net share one label
 - extendedWaitUntil:
-    visible: "Ana paid"
+    visible: ".*, Ana paid, .*, you owe \\$30\\.00"
     timeout: 5000
-- assertVisible: "you owe \\$30.00"
 
 # Expense 2: $40, Ben pays, Shares: Ana 2, You 1, Ben 1 ($10 a share)
 - tapOn: "Add expense"
@@ -132,6 +132,5 @@ name: paid-by-split
     id: "sheet-close"
 - tapOn: "Save expense"
 - extendedWaitUntil:
-    visible: "Ben paid"
+    visible: ".*, Ben paid, .*, you owe \\$10\\.00"
     timeout: 5000
-- assertVisible: "you owe \\$10.00"

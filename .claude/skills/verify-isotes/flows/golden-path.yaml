@@ -81,10 +81,8 @@ name: golden-path
 - tapOn: "Equally"
 - assertVisible: "₫30,000 each · 3 people"
 - tapOn: "Save expense"
+# The saved row, from the payer's side (the Balance tab is a stub for now).
+# A row is one VoiceOver element, so its payer, amount and net share one label.
 - extendedWaitUntil:
-    visible: "you lent ₫60,000"
+    visible: ".*, You paid, ₫90,000, you lent ₫60,000"
     timeout: 5000
-
-# The saved row, from the payer's side (the Balance tab is a stub for now)
-- assertVisible: "₫90,000"
-- assertVisible: "You paid"

@@ -25,15 +25,15 @@ Preconditions:
 - `scripts/doctor.sh` → `doctor: ok`.
 - No MCP steps planned for the rest of this session.
 
-- **Run it.** Run SKILL.md's "Whole flow" command with `paid-by-split` (`flows/paid-by-split.yaml`). Exit code `0`; the last line is `Assert that "you owe \$10.00" is visible... COMPLETED`.
+- **Run it.** Run SKILL.md's "Whole flow" command with `paid-by-split` (`flows/paid-by-split.yaml`). Exit code `0`; the last step waits for the row `.*, Ben paid, .*, you owe \$10\.00`.
 - **Trip.** Creates `Flow paid-by-split <MM-DD HH:mm>` in the default AUD (see `create-trip.md`).
 - **Amount.** `Add expense` → the amount field (placeholder `0.00`) → wait for `id: number-pad` → `6`, `{text: "0", below: "Delete"}` → `Done`. Result: `60`.
 - **Payer, adding Ana.** `Y, You paid` → `Add a person` → `Enter name` → `Ana` → Return → `Add to trip` → `A, Ana` → `id: sheet-close`. Result: `A, Ana paid`.
 - **Amounts, adding Ben.** `Amounts` → `2 people.*` → `Add a person` → `Enter name` → `Ben` → Return → `Add to trip`. Then `Amount for Ana` → `1`, `0`; `Amount for Ben` → `2`, `0` → `Done`. Result: `id: number-pad` stays visible between keys; `All \$60.00 assigned`.
-- **Save.** `id: sheet-close` → `Save expense`. Result: `Ana paid`, `you owe \$30.00`.
+- **Save.** `id: sheet-close` → `Save expense`. Result: a row labelled `.*, Ana paid, .*, you owe \$30\.00` (a row is one VoiceOver element).
 - **Shares.** A second expense: `4`, `0` → `Done` → `Y, You paid` → `B, Ben` → `id: sheet-close` (`B, Ben paid`) → `Shares` → `3 people.*` → `Add a share for Ana` → `Add a share for Ben` (`\$8.00 per share · 5 shares`) → `Remove a share for Ben`. Result: `\$10.00 per share · 4 shares`.
 - **Toggle a member.** `You` (`\$13.33 per share · .*`) → `You` again. Result: `\$10.00 per share · 4 shares`.
-- **Save the shares expense.** `id: sheet-close` → `Save expense`. Result: `Ben paid`, `you owe \$10.00`.
+- **Save the shares expense.** `id: sheet-close` → `Save expense`. Result: a row labelled `.*, Ben paid, .*, you owe \$10\.00`.
 - **Proof: stored splits.** Run `.claude/skills/verify-isotes/scripts/db.sh "SELECT e.amount, e.split_method, p.name, (SELECT group_concat(m.name || '=' || s.individual_amount, ' ') FROM expense_splits s JOIN members m ON m.id = s.member_id WHERE s.expense_id = e.id), (SELECT sum(s.individual_amount) FROM expense_splits s WHERE s.expense_id = e.id) FROM expenses e JOIN members p ON p.id = e.paid_by_member_id WHERE e.trip_id = (SELECT id FROM trips WHERE name LIKE 'Flow paid-by-split %' ORDER BY created_at DESC LIMIT 1) ORDER BY e.amount"`. Output: `40.0|shares|Ben|You=10.0 Ana=20.0 Ben=10.0|40.0` and `60.0|amounts|Ana|You=30.0 Ana=10.0 Ben=20.0|60.0`.
 
 ## Gotchas

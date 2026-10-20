@@ -28,7 +28,7 @@ Preconditions:
 - **Leave a draft.** `Add expense` → the amount field (placeholder `0.00`) → wait for `id: number-pad` → `1`, `2`, `Decimal point`, `5` → `Done`. Result: `12.5`. Then `What was it for\?` → `Flow draft` → Return → `id: sheet-close`.
 - **Restore.** `Add expense`. Result: `Picked up where you left off` and `Flow draft`.
 - **Start over.** The chip `Start over` → `Start over\?` → the dialog's `{text: "Start over", rightOf: "Keep editing"}`. Result: neither the banner nor `Flow draft` is visible.
-- **Save.** The amount field → `7`, `Decimal point`, `2`, `5` → `Done` (`7.25`, `Y, You paid`) → `Save expense`. Result: the list shows `You paid` and `\$7.25`, and `No expenses yet` is gone.
+- **Save.** The amount field → `7`, `Decimal point`, `2`, `5` → `Done` (`7.25`, `Y, You paid`) → `Save expense`. Result: one row labelled `.*, You paid, \$7\.25` (a row is one VoiceOver element), and `No expenses yet` is gone.
 - **Proof: stored expense.** Run `.claude/skills/verify-isotes/scripts/db.sh "SELECT e.amount, m.name, coalesce(e.description, '<none>'), e.split_method FROM expenses e JOIN members m ON m.id = e.paid_by_member_id WHERE e.trip_id = (SELECT id FROM trips WHERE name LIKE 'Flow add-expense %' ORDER BY created_at DESC LIMIT 1)"`. Output: exactly one row, `7.25|You|<none>|equally` (the draft's description was not saved).
 
 ## Gotchas
