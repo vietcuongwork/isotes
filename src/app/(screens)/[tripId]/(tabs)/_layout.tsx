@@ -1,22 +1,13 @@
-import { colors } from "@/themes/color";
+import FloatingTabBar from "@/components/tabbar/FloatingTabBar";
 import { Tabs } from "expo-router";
-import { ChartPie, ReceiptText, Scale } from "lucide-react-native";
+import { ChartNoAxesColumn, ReceiptText, Scale } from "lucide-react-native";
 
 export default function TabLayout() {
   return (
     <Tabs
       initialRouteName="expense"
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.orange[400],
-        tabBarInactiveTintColor: colors.grey[200],
-        tabBarStyle: {
-          backgroundColor: colors.grey[950],
-          borderTopColor: colors.grey[825],
-          borderTopWidth: 1,
-          paddingTop: 12,
-        },
-      }}
+      tabBar={(props) => <FloatingTabBar {...props} />}
+      screenOptions={{ headerShown: false }}
     >
       <Tabs.Screen
         name="expense"
@@ -39,7 +30,7 @@ export default function TabLayout() {
         options={{
           title: "Insights",
           tabBarIcon: ({ color, size }) => (
-            <ChartPie color={color} size={size} />
+            <ChartNoAxesColumn color={color} size={size} />
           ),
         }}
       />

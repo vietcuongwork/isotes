@@ -6,10 +6,12 @@ import * as SystemUI from "expo-system-ui";
 import { StyleSheet, View } from "react-native";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { fonts } from "@/assets/fonts";
+import { colors } from "@/themes/color";
 import "../../global.css";
 
-// Set native root view background color before anything mounts
-SystemUI.setBackgroundColorAsync("#0a0a0a");
+// Set native root view background color before anything mounts. Light, because
+// iOS rounds the lower screen's corners during a swipe back and this shows there
+SystemUI.setBackgroundColorAsync(colors.ink[50]);
 
 // react-native-screens backs each native-stack screen with a container
 // whose background comes from the navigation theme's `colors.background`
@@ -19,7 +21,7 @@ const AppTheme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    background: "#0a0a0a",
+    background: colors.ink[50],
     card: "#0a0a0a",
   },
 };
@@ -51,7 +53,7 @@ export default function RootLayout() {
           <Stack
             screenOptions={{
               headerShown: false,
-              contentStyle: { backgroundColor: "#0a0a0a" },
+              contentStyle: { backgroundColor: colors.ink[50] },
             }}
           />
         </ThemeProvider>

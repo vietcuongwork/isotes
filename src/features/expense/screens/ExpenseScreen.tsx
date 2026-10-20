@@ -12,7 +12,7 @@ import { useIsFocused } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Menu, Plus } from "lucide-react-native";
 import { useState } from "react";
-import { FlatList, Pressable, TouchableOpacity, View } from "react-native";
+import { FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddExpenseBottomSheet from "../components/AddExpenseBottomSheet";
 import useExpenseScreen from "../hooks/useExpenseScreen";
@@ -83,25 +83,21 @@ export default function ExpenseScreen() {
           }
           ListEmptyComponent={ExpenseEmpty}
           ItemSeparatorComponent={DaySeparator}
-          // NOTE - no token for 84 (the old FAB's clearance), falling back to pb-[84px] until the tab bar's padding lands
-          contentContainerClassName="grow px-space-5 pb-[84px] pt-space-3"
+          // NOTE - no token for 120 (64 tab bar + 32 bottom offset + 24 space-6), falling back to pb-[120px]
+          contentContainerClassName="grow px-space-5 pb-[120px] pt-space-3"
           showsVerticalScrollIndicator={false}
         />
       )}
 
-      {/* Entry point: pinned over the list; box-none lets touches beside the button reach the list */}
-      <View
-        className="absolute inset-x-0 bottom-0 items-center"
-        pointerEvents="box-none"
+      {/* Docked FAB (fab-docked, 64): in the 76 the tab bar leaves on this route, level with it */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Add expense"
+        className="absolute bottom-space-8 right-space-5 h-space-16 w-space-16 items-center justify-center rounded-pill bg-ink-900 shadow-lifted"
+        onPress={() => setAddExpenseOpen(true)}
       >
-        <TouchableOpacity
-          accessibilityLabel="Add expense"
-          className="items-center rounded-pill bg-grey-50 p-4 shadow-fab"
-          onPress={() => setAddExpenseOpen(true)}
-        >
-          <Plus size={20} color={colors.grey[975]} />
-        </TouchableOpacity>
-      </View>
+        <Plus size={24} color={colors.card} />
+      </Pressable>
       {/* Modal sheet: renders above everything, wherever it sits in the tree */}
       <AddExpenseBottomSheet
         visible={isAddExpenseOpen}
