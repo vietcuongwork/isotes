@@ -1,6 +1,7 @@
 // https://docs.expo.dev/guides/using-eslint/
 const { defineConfig } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
+const noTokenNote = require("./scripts/eslint-rules/no-token-note");
 
 // no-restricted-imports and no-restricted-syntax options don't merge across
 // blocks: a file matched by two blocks gets only the last one, so each block
@@ -95,6 +96,12 @@ const LEGACY_SPACING_FILES = [
   "src/features/expense/components/paidbyandsplit/SplitSummary.tsx",
   "src/features/expense/screens/ExpenseScreen.tsx",
 ];
+// Old dark-theme files with raw px and no notes; a file leaves when the migration restyles it
+const NO_TOKEN_NOTE_EXEMPT = [
+  "src/components/header/TabScreenHeader.tsx",
+  "src/features/expense/components/paidbyandsplit/MemberListRow.tsx",
+  "src/features/expense/components/paidbyandsplit/PaidByBottomSheet.tsx",
+];
 
 module.exports = defineConfig([
   expoConfig,
@@ -161,5 +168,14 @@ module.exports = defineConfig([
         TEXT_INPUT_LINE_HEIGHT,
       ],
     },
+  },
+  {
+    files: ["src/**/*.tsx"],
+    plugins: { isotes: { rules: { "no-token-note": noTokenNote } } },
+    rules: { "isotes/no-token-note": "error" },
+  },
+  {
+    files: NO_TOKEN_NOTE_EXEMPT,
+    rules: { "isotes/no-token-note": "off" },
   },
 ]);
