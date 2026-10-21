@@ -26,7 +26,7 @@ Preconditions:
 - No MCP steps planned for the rest of this session.
 
 - **Run it.** Run SKILL.md's "Whole flow" command with `paid-by-split` (`flows/paid-by-split.yaml`). Exit code `0`; the last step waits for the row `.*, Ben paid, .*, you owe \$10\.00`.
-- **Trip.** Creates `Flow paid-by-split <MM-DD HH:mm>` in AUD: Return twice opens the wheel, swipes down until `Australian Dollar \(AUD\) - \$`, `Close sheet`. Result: `Currency, Australian Dollar, AUD` (see `create-trip.md`).
+- **Trip.** Creates `Flow paid-by-split <MM-DD HH:mm>` in AUD: Return twice opens the currency sheet, then `Australian Dollar, AUD, \$` (the row picks and closes it). Result: `Currency, Australian Dollar, AUD` (see `create-trip.md`).
 - **Amount.** `Add expense` → the amount field (placeholder `0.00`) → wait for `id: number-pad` → `6`, `{text: "0", below: "Delete"}` → `Done`. Result: `60`.
 - **Payer, adding Ana.** `Y, You paid` → `Add a person` → `Enter name` → `Ana` → Return → `Add to trip` → `A, Ana` → `id: sheet-close`. Result: `A, Ana paid`.
 - **Amounts, adding Ben.** `Amounts` → `2 people.*` → `Add a person` → `Enter name` → `Ben` → Return → `Add to trip`. Then `Amount for Ana` → `1`, `0`; `Amount for Ben` → `2`, `0` → `Done`. Result: `id: number-pad` stays visible between keys; `All \$60.00 assigned`.

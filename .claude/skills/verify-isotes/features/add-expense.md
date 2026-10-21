@@ -24,7 +24,7 @@ Preconditions:
 - No MCP steps planned for the rest of this session.
 
 - **Run it.** Run SKILL.md's "Whole flow" command with `add-expense` (`flows/add-expense.yaml`). Exit code `0`; the last line is `Assert that "No expenses yet" is not visible... COMPLETED`.
-- **Trip.** Creates `Flow add-expense <MM-DD HH:mm>` in AUD: Return twice opens the wheel, swipes down until `Australian Dollar \(AUD\) - \$`, `Close sheet`. Result: `Currency, Australian Dollar, AUD` (see `create-trip.md`).
+- **Trip.** Creates `Flow add-expense <MM-DD HH:mm>` in AUD: Return twice opens the currency sheet, then `Australian Dollar, AUD, \$` (the row picks and closes it). Result: `Currency, Australian Dollar, AUD` (see `create-trip.md`).
 - **Leave a draft.** `Add expense` → the amount field (placeholder `0.00`) → wait for `id: number-pad` → `1`, `2`, `Decimal point`, `5` → `Done`. Result: `12.5`. Then `What was it for\?` → `Flow draft` → Return → `id: sheet-close`.
 - **Restore.** `Add expense`. Result: `Picked up where you left off` and `Flow draft`.
 - **Start over.** The chip `Start over` → `Start over\?` → the dialog's `{text: "Start over", rightOf: "Keep editing"}`. Result: neither the banner nor `Flow draft` is visible.

@@ -6,13 +6,13 @@ A user starts a trip by naming it, optionally adding a note and choosing its cur
 
 - `ct-name-required` refuses an empty name with "Give the trip a name to continue." and creates nothing.
 - `ct-description` stores an optional note (the trip's description).
-- `ct-currency` keeps the default currency (the newest trip's, or US Dollar with no trips) or picks another (golden-path picks VND).
+- `ct-currency` keeps the default currency (the newest trip's, or US Dollar with no trips) or picks another in the currency sheet: a "From your trips" chip (newest trip first, at most 3) or a row of the A–Z list (golden-path picks VND).
 - `ct-create` creates the trip with one member, "You", and lands on its empty Expenses tab.
 
 ## How to get to it (user POV)
 
 - Start screen after a cold launch: "Start your first trip" (shown even when trips exist).
-- In the form, Return moves name → note → opens the currency sheet; tapping the currency button opens it too.
+- In the form, Return moves name → note → opens the currency sheet; tapping the currency button (`Currency, <name>, <code>`) opens it too.
 
 ## Driving it with Maestro
 
@@ -25,16 +25,17 @@ Preconditions:
 - **Run it.** Run SKILL.md's "Whole flow" command with `create-trip` (`flows/create-trip.yaml`), adding `-e NEWEST_CODE="$NEWEST_CODE"`. Exit code `0`; the last line is `Assert that "No expenses yet" is visible... COMPLETED`.
 - **Default currency.** "Start your first trip". Result: the currency button reads `Currency, .*, ${NEWEST_CODE}`.
 - **Empty name.** `Create trip`. Result: `Give the trip a name to continue\.`.
-- **Name and note.** The name field (placeholder `Kyoto in spring`) → the trip name → Return → `Flow description` → Return. Result: the currency sheet opens on `.* \(${NEWEST_CODE}\) - .*`.
-- **Currency.** `Close sheet`. Result: the currency button reads `Currency, .*, ${NEWEST_CODE}`.
+- **Name and note.** The name field (placeholder `Kyoto in spring`) → the trip name → Return → `Flow description` → Return. Result: the currency sheet opens with the newest trip's chip selected: `[^,]+, ${NEWEST_CODE}` with `selected: true`.
+- **Currency.** `Close currency sheet` (the sheet's X). Result: the currency button reads `Currency, .*, ${NEWEST_CODE}`.
 - **Create.** `Create trip`. Result: `Expenses, tab, 1 of 3` is `selected: true`, with the trip name, `Created .* · ${NEWEST_CODE}` and `No expenses yet`.
 - **Proof: stored trip.** Run `.claude/skills/verify-isotes/scripts/db.sh "SELECT name, description, currency_code, (SELECT count(*) FROM members WHERE trip_id = t.id), (SELECT count(*) FROM expenses WHERE trip_id = t.id) FROM trips t WHERE name LIKE 'Flow create-trip %' ORDER BY created_at DESC LIMIT 1"`. Output: `Flow create-trip <MM-DD HH:mm>|Flow description|<NEWEST_CODE>|1|0`.
 
 ## Gotchas
 
 - `hideKeyboard` taps outside the keyboard and lands on the currency button, reopening its sheet. Use Return through the form instead.
-- The currency wheel exposes only its selected row, so the sheet's first visible row is the current currency, not a list.
-- The default follows the newest trip, so a flow that needs one currency picks it on the wheel (`add-expense` and `paid-by-split` pick AUD). A swipe down from the wheel moves it about one row; a swipe up moves about five.
-- Text selectors are regex: escape `( ) $` in currency rows (`\\(AUD\\) - \\$` in YAML).
+- Labels in the sheet: a row is `<name>, <code>, <symbol>` (`Australian Dollar, AUD, \\$` in YAML), a chip is `<name>, <code>`, and the current one of each reads Selected. A row or chip tap picks and closes the sheet.
+- The default follows the newest trip, so a flow that needs one currency taps its row (`add-expense` and `paid-by-split` tap AUD, the list's first row). A row further down needs `scrollUntilVisible` first (golden-path, VND).
+- Close the sheet with `Close currency sheet`, not `Close sheet`: the scrim fills the screen, so a tap on its centre lands on the sheet's list and picks a row.
+- The pinned letter at the list's top is an overlay hidden from the tree; the in-list letters (`A`, `B`, …) are the headers.
 - The trip header shows `$0.00` in USD whatever the currency; don't assert it.
 - Each run adds a `Flow create-trip …` trip; nothing is deleted.

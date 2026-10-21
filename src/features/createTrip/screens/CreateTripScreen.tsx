@@ -68,6 +68,7 @@ function CreateTripContent(props: { codes: string[]; onBack: () => void }) {
           <CreateTripForm
             ref={formRef}
             control={control}
+            codes={codes}
             handleCurrencyChange={handleCurrencyChange}
             scrollViewRef={scrollViewRef}
           />

@@ -1,12 +1,12 @@
 import { getTripCurrencyCodes, insertTrip } from "@/db/trips";
 import { EXPO_ROUTER } from "@/navigation/route";
+import { Currency } from "@/types/TCreateTrip";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FieldErrors, useForm } from "react-hook-form";
 import { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 import { CreateTripFormHandle } from "../components/CreateTripForm";
-import { PickerOption } from "../components/Picker";
 import { CURRENCY_OPTIONS } from "../constants";
 import { getDefaultCurrency } from "../helpers/currencyHelpers";
 import {
@@ -51,9 +51,7 @@ export function useCreateTripForm(codes: string[]) {
     defaultValues: defaultFormValues,
   });
 
-  const handleCurrencyChange = (option: PickerOption<string>) => {
-    const currency = CURRENCY_OPTIONS.find((c) => c.code === option.value);
-    if (!currency) return;
+  const handleCurrencyChange = (currency: Currency) => {
     form.setValue("currency", currency, { shouldValidate: true });
   };
 

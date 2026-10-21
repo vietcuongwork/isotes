@@ -7,24 +7,14 @@ name: paid-by-split
 - evalScript: ${const p = (n) => String(n).padStart(2, '0'); const d = new Date(); output.tripName = 'Flow paid-by-split ' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes())}
 
 # The flow's own trip, in AUD (two decimals). The default follows the newest
-# trip, so pick AUD, the wheel's first row; the wheel shows only its selected row
+# trip, so pick AUD, the list's first row
 - tapOn: "Start your first trip"
 - tapOn: "Kyoto in spring"
 - inputText: ${output.tripName}
 - pressKey: Enter
 - pressKey: Enter
-# A swipe down from the low-sitting wheel moves it about one row, and AUD is at most 33 rows up (from VND)
-- repeat:
-    times: 36
-    while:
-      notVisible: "Australian Dollar \\(AUD\\) - \\$"
-    commands:
-      - swipe:
-          from:
-            text: ".* \\([A-Z]{3}\\) - .*"
-          direction: DOWN
-          duration: 200
-- tapOn: "Close sheet"
+# A row tap picks it and closes the sheet
+- tapOn: "Australian Dollar, AUD, \\$"
 - assertVisible: "Currency, Australian Dollar, AUD"
 - tapOn: "Create trip"
 - extendedWaitUntil:

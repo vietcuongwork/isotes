@@ -22,9 +22,13 @@ name: create-trip
 - pressKey: Enter
 - inputText: "Flow description"
 - pressKey: Enter
-# Keep the default currency; the wheel shows only its selected row
-- assertVisible: ".* \\(${NEWEST_CODE}\\) - .*"
-- tapOn: "Close sheet"
+# Keep the default currency. The newest trip's code is the first chip, selected;
+# "[^,]+" keeps the row ("name, code, symbol") and the button out of the match
+- assertVisible:
+    text: "[^,]+, ${NEWEST_CODE}"
+    selected: true
+# The X: the scrim's centre is under the tall sheet, so tapping "Close sheet" would hit a row
+- tapOn: "Close currency sheet"
 - assertVisible: "Currency, .*, ${NEWEST_CODE}"
 - tapOn: "Create trip"
 

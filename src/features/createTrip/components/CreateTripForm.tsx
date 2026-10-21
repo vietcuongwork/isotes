@@ -1,4 +1,5 @@
 import { colors } from "@/themes/color";
+import { Currency } from "@/types/TCreateTrip";
 import { UserPlus } from "lucide-react-native";
 import {
   forwardRef,
@@ -13,12 +14,13 @@ import { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 import { CreateTripFormData } from "../validation/createTripFormSchema";
 import CurrencyButton from "./CurrencyButton";
 import CurrencyPickerBottomSheet from "./CurrencyPickerBottomSheet";
-import { PickerOption } from "./Picker";
 import TripDetailsCard from "./TripDetailsCard";
 
 interface CreateTripFormProps {
   control: Control<CreateTripFormData>;
-  handleCurrencyChange: (option: PickerOption<string>) => void;
+  /** The trips' currency codes, newest trip first, for the sheet's chips. */
+  codes: string[];
+  handleCurrencyChange: (currency: Currency) => void;
   scrollViewRef: RefObject<KeyboardAwareScrollViewRef | null>;
 }
 export interface CreateTripFormHandle {
@@ -35,7 +37,7 @@ const FIELD_ORDER: FocusableField[] = ["tripName", "description"];
 
 const CreateTripForm = forwardRef<CreateTripFormHandle, CreateTripFormProps>(
   function CreateTripForm(props, ref) {
-    const { control, handleCurrencyChange, scrollViewRef } = props;
+    const { control, codes, handleCurrencyChange, scrollViewRef } = props;
 
     const tripNameRef = useRef<TextInput>(null);
     const descriptionRef = useRef<TextInput>(null);
@@ -91,6 +93,7 @@ const CreateTripForm = forwardRef<CreateTripFormHandle, CreateTripFormProps>(
                   visible={isCurrencyPickerOpen}
                   onClose={() => setCurrencyPickerOpen(false)}
                   selectedCurrency={value}
+                  codes={codes}
                   onCurrencyChange={handleCurrencyChange}
                 />
               </>

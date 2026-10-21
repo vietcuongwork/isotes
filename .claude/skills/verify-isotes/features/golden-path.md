@@ -25,7 +25,7 @@ Preconditions:
 - No MCP steps planned for the rest of this session (the CLI run kills the MCP driver).
 
 - **Run it.** Run SKILL.md's "Whole flow" command with `golden-path` (`flows/golden-path.yaml`). Exit code `0`; the last line waits for the saved row `.*, You paid, ₫90,000, you lent ₫60,000`.
-- **Create the trip.** "Start your first trip" → the name field (placeholder `Kyoto in spring`) → Return twice (name → note → opens the currency sheet) → swipe the wheel up from `.* \([A-Z]{3}\) - .*` until `Vietnamese Dong \(VND\) - ₫` → `Close sheet` → `Create trip`. Result: `Expenses, tab, 1 of 3` is `selected: true` and the trip name is visible.
+- **Create the trip.** "Start your first trip" → the name field (placeholder `Kyoto in spring`) → Return twice (name → note → opens the currency sheet) → scroll the list until `Vietnamese Dong, VND, ₫` is visible → tap it (the row picks and closes the sheet) → `Create trip`. Result: `Expenses, tab, 1 of 3` is `selected: true` and the trip name is visible.
 - **Enter the amount.** `Add expense` → the amount field (placeholder `0`) → wait for `id: number-pad` → `9`, then four `{text: "0", below: "Delete"}` → `Done`. Result: `90,000`.
 - **Add two people.** `Y, You paid` → `Add a person` → `Enter name` → `Ana` → Return → `Add to trip`; again with `Ben`; then `Y, You` → `id: sheet-close`. Result: the sheet closes with You as payer.
 - **Split equally.** `Equally`. Result: `₫30,000 each · 3 people`.
@@ -38,7 +38,7 @@ Preconditions:
 
 - Only a cold launch reaches the start screen; neither a back swipe nor the menu leaves a trip. Deep links are ignored while a trip is open.
 - `hideKeyboard` taps outside the keyboard and lands on the currency field, reopening its sheet. Use Return through the form instead.
-- The currency wheel exposes only its selected row; VND is the last of 34, so the swipe stops there.
+- VND is the last of the 34 rows, so `scrollUntilVisible` scrolls the whole list.
 - The number pad has dropped synthetic taps (one run read `900`); the flow retries a tap only when the screen didn't change.
 - The amount field, `Enter name` and the pad's `0` are matched by placeholder or position, not a label or `testID` yet.
 - The Balance tab is an empty stub: check on the Expenses tab. The trip header shows `$0.00` in USD on a VND trip; don't assert it.
