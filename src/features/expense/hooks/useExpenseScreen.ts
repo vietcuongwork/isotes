@@ -89,16 +89,9 @@ export default function useExpenseScreen() {
   ]);
 
   useEffect(() => {
-    // Cleared only on unmount, not on every render — useExpenseSheetStore's
-    // draft (amount/description/split/etc.) is meant to persist across the
-    // add-expense sheet closing/reopening within the same trip (the "picked
-    // up where you left off" resume UI in screen_ui_drafts/04-add-expense.html),
-    // and should only be wiped when actually leaving this trip. This only
-    // holds as long as trip-switching always navigates to a new tripId route
-    // via router.push/replace (a real unmount+remount) rather than
-    // router.setParams on the same route entry — if that ever changes, this
-    // cleanup stops firing and the reset needs to move to a tripId-change
-    // effect instead.
+    // Unmount only, so the draft survives the sheet closing and reopening.
+    // Holds while switching trips replaces this screen (push, or the drawer's
+    // root Stack replace); setParams would skip it. why: ADR 0004
     return () => reset();
   }, [reset]);
 

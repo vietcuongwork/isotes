@@ -49,7 +49,7 @@ JAVA_TOOL_OPTIONS=-Duser.home=$PWD/.sim/maestro/home maestro --device F074204A-8
 | `open_maestro_viewer` | not used | yes |
 | `list_cloud_devices`, `run_on_cloud`, `get_cloud_run_status`, `describe_cloud_run` | not used: `run_on_cloud` uploads the app and flows | yes |
 
-**Reach a trip with no taps:** links work on a cold start only, so stop the app first. Trip id from `db.sh` (Helpers). Text selectors are full-string regex: escape `( ) + . ?` in the trip name.
+**Reach a trip with no taps:** links work on a cold start only, so stop the app first. Text selectors are full-string regex: escape `( ) + . ?` in the trip name.
 
 ```yaml
 appId: com.anonymous.isotes
@@ -59,6 +59,13 @@ appId: com.anonymous.isotes
 - extendedWaitUntil:
     visible: "<trip name>"
     timeout: 15000
+```
+
+**Flows that open an existing trip** take its name and id as `-e` variables (`${A}`, `${A_ID}` in the YAML), looked up at run time with `trip.sh`. `cleanup.sh` keeps only the newest trip per flow, so a trip written into the YAML is gone by the next session.
+
+```bash
+IFS='|' read -r A_ID A < <(.claude/skills/verify-isotes/scripts/trip.sh "Flow paid-by-split")
+maestro test --device F074204A-8DED-491A-9D45-3C6344EECCEB --debug-output .sim/maestro/switch-$(date +%m%d-%H%M%S) -e A="$A" -e A_ID="$A_ID" <flow>.yaml
 ```
 
 **Selectors:** accessibility label, `testID` (`id:`) or visible text, never `point:`. Stable handles: `Add expense` (the `+`), `id: number-pad`, `id: sheet-close`, `Expenses, tab, 1 of 3` (`selected: true` when open). Trip cards' labels are compound (`<name>, +₫9,666, 5 expenses · …`): match them by regex. Per-feature selectors and gotchas: `features/`.
@@ -79,7 +86,7 @@ Prove the real user path: the action and the state it leaves, not just the last 
 - **Logs:** `.sim/cu.sh mark` before, `.sim/cu.sh show` after → list new WARN/ERROR lines, or "cu.sh → none".
 - **No flash while loading** (a state that lasts a few frames): record with `xcrun simctl io booted recordVideo <file>.mp4`, then `scripts/frames.sh <file>.mp4 [from to]` tiles the frames 12 per sheet and prints each cell's frame number and timestamp. Read the key first, then only the sheets around the change.
 - **Screenshots** only for a visual check (layout, color, spacing) or a failed check. A failed flow leaves exactly one in its run folder (`find .sim/maestro/<run> -name '*.png'`); read that one, nothing else.
-  - A flow's own `takeScreenshot` takes a bare name, never a path: Maestro rejects an absolute path. Run it with `--test-output-dir .sim/maestro/<run>/shots`, and the image lands at `shots/<time>/<flow name>/takeScreenshot/<name>.png`. Copy it out from there.
+  - A flow's own `takeScreenshot` takes a bare name, never a path: Maestro rejects an absolute path. Run it with both `--debug-output .sim/maestro/<run>` and `--test-output-dir .sim/maestro/<run>/shots`: without `--debug-output`, Maestro writes its log to `~/.maestro/tests`. The image lands at `shots/<time>/<flow name>/takeScreenshot/<name>.png`. Copy it out from there.
 
 Quote the values (rows, tree lines, log result) in the task's log in the vault's implementation note. That note is where evidence lives; run folders are scratch.
 
@@ -99,6 +106,7 @@ Quote the values (rows, tree lines, log result) in the task's log in the vault's
   .claude/skills/verify-isotes/scripts/db.sh "SELECT m.name, s.individual_amount FROM expense_splits s JOIN expenses e ON e.id = s.expense_id JOIN members m ON m.id = s.member_id WHERE e.trip_id = (SELECT id FROM trips WHERE name LIKE 'Flow golden-path %' ORDER BY created_at DESC LIMIT 1) ORDER BY m.name"
   ```
 
+- `scripts/trip.sh "<name prefix>"` — the newest trip whose name starts with the prefix, as `id|name`; exits 1 when none matches. For a flow's `-e` variables (Drive).
 - `scripts/cleanup.sh [--dry-run]` — deletes flow trips (Cleanup, above). It stops the app, backs up `isotes.db` to `.sim/backup/`, deletes in one transaction, prints before and after counts and a restore command, then runs `cu.sh relaunch`. `--dry-run` prints per-flow counts only.
 - `scripts/green.sh mark | check` — fingerprints `src/` (tracked and untracked files) into `.sim/last-green` after a green Demo; `check` prints `same` (exit 0) when nothing in `src/` changed since, so autopilot's Preflight can skip the smoke flow.
 - `.sim/cu.sh relaunch | mark | show` — the project's launcher and Metro log reader (outside this skill).
