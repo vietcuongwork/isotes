@@ -22,6 +22,7 @@ This directory is the maintained source for verifying isotes' user-facing behavi
 - Pick the flow's trip as the newest by `created_at`: two runs in one minute share a name.
 - Quote rows and tree values in the vault task log; run folders are scratch.
 - Report an unreachable path with the command tried and the unmet precondition; never count a different path as verified.
+- Save each check flow a `[Live]` task writes in `.sim/ctr/<feature-slug>/`, named by the acceptance criterion it checks (`c07-chips.yaml`), with its measuring command (`pixels.sh`, `traits.sh`, `db.sh`) as a comment at the top. The acceptance task re-runs the folder with one `maestro test` call. A task that renames a label greps this folder as well as `flows/`.
 
 ## Feature entry contract
 

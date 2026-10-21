@@ -36,5 +36,5 @@ Preconditions:
 - The clear button is iOS's own (`Clear text`) and shows only while the field has focus; after coming back from a trip, tap `Search trips` first.
 - With the no-matches message showing there is nothing to swipe, so `hideKeyboard` fails; close the keyboard with `pressKey: Enter` (the Search key).
 - Cards are one accessibility element each, labelled `<name>, created <date>, <code>, <N people>, spent <total>, <position>`: match by regex on the name.
-- The no-trips state needs an empty database. Check it on a temporary simulator with a fresh install, never by deleting trips on the working one.
+- The no-trips state needs an empty database. Check it on the spare simulator, never by deleting trips on the working one: `T=$(.claude/skills/verify-isotes/scripts/fresh.sh)`, then `maestro test --device "$T" …`, then `fresh.sh --shutdown`.
 - With 30+ trips, `scrollUntilVisible` to the oldest card needs `speed: 90` and a longer `timeout` than the 20 s default.

@@ -53,6 +53,8 @@ A task that renames, removes or replaces a labelled element, or puts a new scree
 
 An `accessible` row or card exposes one joined label, so wrapping texts in one replaces their labels. Its flows and **Verify** lines match the whole label by regex (`".*, You paid, \\$7\\.25"`), and a size inside it is measured from a screenshot.
 
+A UI task's board check compares bounds with the board's HTML, as the vault's `Ref_claude-design.md` → "In the feature workflow" describes. Its **Verify** line says so; a rendered picture of the board is used only when the user asks for one.
+
 Done when every acceptance criterion in the spec traces to a task — write that task's number into the criterion's `verified by` (`Live (T12)`) — and every phase's last task ends on its Demo.
 
 ## 5. Write the planning note

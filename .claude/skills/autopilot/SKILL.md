@@ -27,6 +27,7 @@ Done when the phase is identified, its blockers are done, the session is fresh, 
 - `[Live]`: write the change, then run the real thing per CLAUDE.md Step 3 (simulator for `src/`, otherwise the real command or task).
 - After each file: the task's own test file, when there is one.
 - Run the task's **Verify** line.
+- The acceptance task: put each of its checks on the task list as its own step (`pnpm check`, the saved check flows, the golden path, each group of criteria, cleanup), so the user sees progress during a run of 20 minutes or more.
 - Non-trivial task: run `review-two-axis` on its files. Fix hard violations; record judgement calls in the log. One review pass per task.
 - Log the task in the implementation note per CLAUDE.md Step 3 (Change, Verify, Design choices, Deviation), and tick it in the planning note.
 
