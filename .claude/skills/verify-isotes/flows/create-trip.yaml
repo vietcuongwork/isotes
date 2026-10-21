@@ -10,10 +10,10 @@ name: create-trip
 
 # An empty name is refused, and nothing is created
 - tapOn: "Create trip"
-- assertVisible: "Trip name is required"
+- assertVisible: "Give the trip a name to continue\\."
 
-# Name and description; Return on the description opens the currency sheet
-- tapOn: "Trip to Vegas"
+# Name and note; Return on the note opens the currency sheet
+- tapOn: "Kyoto in spring"
 - inputText: ${output.tripName}
 - pressKey: Enter
 - inputText: "Flow description"
@@ -21,7 +21,7 @@ name: create-trip
 # Keep the default currency (the wheel's first row)
 - assertVisible: "Australian Dollar \\(AUD\\) - \\$"
 - tapOn: "Close sheet"
-- assertVisible: ".*Australian Dollar, AUD"
+- assertVisible: "Currency, Australian Dollar, AUD"
 - tapOn: "Create trip"
 
 # Lands on the new trip's empty expense tab

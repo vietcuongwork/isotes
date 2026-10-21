@@ -1,5 +1,5 @@
-import TextField from "@/components/formfield/TextField";
-import { mergeRefs } from "@/utils/utils";
+import { colors } from "@/themes/color";
+import { UserPlus } from "lucide-react-native";
 import {
   forwardRef,
   RefObject,
@@ -7,22 +7,16 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  Control,
-  Controller,
-  FieldErrors,
-  UseFormReturn,
-  useFormState,
-} from "react-hook-form";
-import { TextInput, View } from "react-native";
+import { Control, Controller, FieldErrors } from "react-hook-form";
+import { Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 import { CreateTripFormData } from "../validation/createTripFormSchema";
-import CurrencyField from "./CurrencyField";
+import CurrencyButton from "./CurrencyButton";
 import CurrencyPickerBottomSheet from "./CurrencyPickerBottomSheet";
 import { PickerOption } from "./Picker";
+import TripDetailsCard from "./TripDetailsCard";
 
 interface CreateTripFormProps {
-  form: UseFormReturn<CreateTripFormData>;
   control: Control<CreateTripFormData>;
   handleCurrencyChange: (option: PickerOption<string>) => void;
   scrollViewRef: RefObject<KeyboardAwareScrollViewRef | null>;
@@ -35,14 +29,13 @@ type FocusableField = Exclude<keyof CreateTripFormData, "currency">;
 
 const SCROLL_TOP_PADDING = 40;
 
-//NOTE - Currency excluded: it's a TouchableOpacity trigger, not a focusable TextInput,
+//NOTE - Currency excluded: it's a button that opens a sheet, not a focusable TextInput,
 // so there's no ref to call .focus()/measureLayout() on.
 const FIELD_ORDER: FocusableField[] = ["tripName", "description"];
 
 const CreateTripForm = forwardRef<CreateTripFormHandle, CreateTripFormProps>(
   function CreateTripForm(props, ref) {
-    const { form, control, handleCurrencyChange, scrollViewRef } = props;
-    const { submitCount } = useFormState({ control });
+    const { control, handleCurrencyChange, scrollViewRef } = props;
 
     const tripNameRef = useRef<TextInput>(null);
     const descriptionRef = useRef<TextInput>(null);
@@ -73,76 +66,49 @@ const CreateTripForm = forwardRef<CreateTripFormHandle, CreateTripFormProps>(
     }));
 
     return (
-      <View className="gap-6 px-5 pt-8">
-        <Controller
+      <View className="pt-space-8">
+        <TripDetailsCard
           control={control}
-          name="tripName"
-          render={({
-            field: { value, onChange, onBlur, ref: rhfRef },
-            fieldState: { error },
-          }) => (
-            <TextField
-              ref={mergeRefs(tripNameRef, rhfRef)}
-              label="Trip name"
-              placeholder="Trip to Vegas"
-              value={value}
-              textInputProps={{
-                onChangeText: onChange,
-                onBlur: onBlur,
-                returnKeyType: "next",
-                submitBehavior: "submit",
-                onSubmitEditing: () => {
-                  form.setFocus("description");
-                },
-              }}
-              error={error?.message}
-              shakeTrigger={submitCount}
-            />
-          )}
+          nameRef={tripNameRef}
+          noteRef={descriptionRef}
+          onNoteSubmit={() => setCurrencyPickerOpen(true)}
         />
 
-        <Controller
-          control={control}
-          name="description"
-          render={({ field: { value, onChange, onBlur, ref: rhfRef } }) => (
-            <TextField
-              ref={mergeRefs(descriptionRef, rhfRef)}
-              label="Description"
-              optionalLabel="optional"
-              placeholder="Optional"
-              value={value}
-              textInputProps={{
-                onChangeText: onChange,
-                onBlur: onBlur,
-                returnKeyType: "next",
-                submitBehavior: "submit",
-                onSubmitEditing: () => {
-                  setCurrencyPickerOpen(true);
-                },
-              }}
-            />
-          )}
-        />
+        {/* Currency */}
+        <View className="mt-space-8 gap-space-2">
+          <Text className="text-ink-500 text-micro">Currency</Text>
+          <Controller
+            control={control}
+            name="currency"
+            render={({ field: { value } }) => (
+              <>
+                {/* Opening the sheet blurs the focused field itself (no Keyboard.dismiss) */}
+                <CurrencyButton
+                  value={value}
+                  onPress={() => setCurrencyPickerOpen(true)}
+                />
+                <CurrencyPickerBottomSheet
+                  visible={isCurrencyPickerOpen}
+                  onClose={() => setCurrencyPickerOpen(false)}
+                  selectedCurrency={value}
+                  onCurrencyChange={handleCurrencyChange}
+                />
+              </>
+            )}
+          />
+          <Text className="text-ink-500 text-caption">
+            New expenses start in this currency.
+          </Text>
+        </View>
 
-        <Controller
-          control={control}
-          name="currency"
-          render={({ field: { value } }) => (
-            <>
-              {/* Opening the sheet blurs the focused field itself (no Keyboard.dismiss) */}
-              <CurrencyField
-                value={value}
-                onPress={() => setCurrencyPickerOpen(true)}
-              />
-              <CurrencyPickerBottomSheet
-                visible={isCurrencyPickerOpen}
-                onClose={() => setCurrencyPickerOpen(false)}
-                selectedCurrency={value}
-                onCurrencyChange={handleCurrencyChange}
-              />
-            </>
-          )}
-        />
+        {/* People hint */}
+        <View className="mt-space-6 flex-row items-start gap-space-3">
+          <UserPlus size={20} strokeWidth={1.75} color={colors.ink[500]} />
+          <Text className="flex-1 text-ink-500 text-caption">
+            No need to add people now. You&apos;ll add them with the first
+            expense.
+          </Text>
+        </View>
       </View>
     );
   },

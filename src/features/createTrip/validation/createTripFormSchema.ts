@@ -1,6 +1,9 @@
 import { z } from "zod";
 
-const tripNameSchema = z.string().trim().min(1, "Trip name is required");
+const tripNameSchema = z
+  .string()
+  .trim()
+  .min(1, "Give the trip a name to continue.");
 
 const descriptionSchema = z.string().optional();
 

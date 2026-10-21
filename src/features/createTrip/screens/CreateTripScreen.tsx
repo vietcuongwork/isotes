@@ -1,11 +1,22 @@
-import Button from "@/components/Button";
+import PrimaryButton from "@/components/PrimaryButton";
 import { colors } from "@/themes/color";
-import { MoveLeft, UserPlus } from "lucide-react-native";
-import { Text, TouchableOpacity, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import { useIsFocused } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { ChevronLeft } from "lucide-react-native";
+import { Pressable, Text, View } from "react-native";
+import {
+  KeyboardAwareScrollView,
+  KeyboardStickyView,
+} from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CreateTripForm from "../components/CreateTripForm";
 import { useCreateTripScreen } from "../hooks/useCreateTripScreen";
+
+// Create rests 40 above the bottom edge; with the keyboard up it moves by the
+// keyboard's height, and 24 more back down leaves it 16 (space-4) above the keyboard
+const CREATE_STICKY_OFFSET = { closed: 0, opened: 40 - 16 };
+// A focused field stops above Create: 52 button + 16 under it + 16 over it
+const FIELD_BOTTOM_OFFSET = 52 + 16 + 16;
 
 export default function CreateTripScreen() {
   const {
@@ -17,73 +28,63 @@ export default function CreateTripScreen() {
     onInvalid,
     onBack,
   } = useCreateTripScreen();
+  // StatusBar props merge in mount order and the pushed trip keeps this
+  // screen mounted, so dark text is rendered only while Create trip is on top
+  const isFocused = useIsFocused();
 
   const { control, handleSubmit, formState } = form;
 
   return (
-    <SafeAreaView className="flex-1 bg-grey-975">
-      <View>
-        {/* Header */}
-        <View className="relative flex-row items-center border-b border-grey-825 px-5 py-3.5">
-          <TouchableOpacity onPress={onBack} className="z-10">
-            <MoveLeft color={colors.grey[200]} size={24} />
-          </TouchableOpacity>
+    <SafeAreaView className="flex-1 bg-ink-50" edges={["top"]}>
+      {isFocused && <StatusBar style="dark" />}
 
-          <Text className="absolute inset-x-0 text-center text-grey-50 text-body-lg-medium">
-            New Trip
+      <KeyboardAwareScrollView
+        keyboardShouldPersistTaps="handled"
+        bottomOffset={FIELD_BOTTOM_OFFSET}
+        ref={scrollViewRef}
+      >
+        {/* //NOTE - no token for 108 (52 button + 40 bottom offset + 16 space-4), falling back to pb-[108px] */}
+        <View className="px-space-5 pb-[108px] pt-space-2">
+          {/* Back */}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            onPress={onBack}
+            // NOTE - no token for the 44pt touch target, falling back to h-[44px] w-[44px]
+            className="h-[44px] w-[44px] items-center justify-center rounded-pill bg-ink-100"
+          >
+            <ChevronLeft size={24} strokeWidth={1.75} color={colors.ink[900]} />
+          </Pressable>
+
+          {/* Title */}
+          <Text
+            accessibilityRole="header"
+            className="mt-space-6 text-ink-900 text-display"
+          >
+            New <Text className="text-ink-400">trip</Text>
           </Text>
+          <Text className="mt-space-2 text-ink-500 text-body">
+            You can change any of this later.
+          </Text>
+
+          <CreateTripForm
+            ref={formRef}
+            control={control}
+            handleCurrencyChange={handleCurrencyChange}
+            scrollViewRef={scrollViewRef}
+          />
         </View>
+      </KeyboardAwareScrollView>
 
-        <KeyboardAwareScrollView
-          keyboardShouldPersistTaps="handled"
-          ref={scrollViewRef}
-        >
-          {/* Content */}
-          <View>
-            <View className="px-5 pt-8">
-              <Text className="text-grey-50 text-legacy-display">
-                Create a new split
-              </Text>
-              <Text className="text-grey-200 text-legacy-body">
-                You can change any of this later.
-              </Text>
-            </View>
-
-            {/* Form */}
-            <CreateTripForm
-              ref={formRef}
-              form={form}
-              control={control}
-              handleCurrencyChange={handleCurrencyChange}
-              scrollViewRef={scrollViewRef}
-            />
-
-            {/* Footer */}
-            <View className="px-5 pt-7">
-              <View className="flex-row items-center gap-3 rounded-card border border-grey-850 bg-grey-950 p-4">
-                <UserPlus color={colors.grey[400]} size={20} />
-                <Text className="max-w-[90%] text-grey-200 text-meta">
-                  No need to add people now — you&apos;ll add them as you log
-                  the first expense.
-                </Text>
-              </View>
-            </View>
-
-            {/* Button group */}
-            <View className="gap-cta px-5 pt-28">
-              <Text className="text-center text-grey-400 text-meta">
-                No account required · share via link
-              </Text>
-              <Button
-                buttonText="Create trip"
-                onPress={handleSubmit(onFormSubmit, onInvalid)}
-                touchableOpacityProps={{
-                  disabled: formState.isSubmitting,
-                }}
-              />
-            </View>
-          </View>
-        </KeyboardAwareScrollView>
+      {/* Create, 40 above the screen's bottom edge as on the board, riding above the keyboard */}
+      <View className="absolute bottom-space-10 left-space-5 right-space-5">
+        <KeyboardStickyView offset={CREATE_STICKY_OFFSET}>
+          <PrimaryButton
+            label="Create trip"
+            onPress={handleSubmit(onFormSubmit, onInvalid)}
+            disabled={formState.isSubmitting}
+          />
+        </KeyboardStickyView>
       </View>
     </SafeAreaView>
   );

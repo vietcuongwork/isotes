@@ -8,7 +8,7 @@ name: add-expense
 
 # The flow's own trip, in the default AUD (two decimals)
 - tapOn: "Start your first trip"
-- tapOn: "Trip to Vegas"
+- tapOn: "Kyoto in spring"
 - inputText: ${output.tripName}
 - pressKey: Enter
 - pressKey: Enter

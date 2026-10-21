@@ -25,7 +25,7 @@ Preconditions:
 - No MCP steps planned for the rest of this session (the CLI run kills the MCP driver).
 
 - **Run it.** Run SKILL.md's "Whole flow" command with `golden-path` (`flows/golden-path.yaml`). Exit code `0`; the last line waits for the saved row `.*, You paid, ₫90,000, you lent ₫60,000`.
-- **Create the trip.** "Start your first trip" → the name field (placeholder `Trip to Vegas`) → Return twice (name → Description → opens the currency sheet) → swipe the wheel up from `.* \([A-Z]{3}\) - .*` until `Vietnamese Dong \(VND\) - ₫` → `Close sheet` → `Create trip`. Result: `Expenses, tab, 1 of 3` is `selected: true` and the trip name is visible.
+- **Create the trip.** "Start your first trip" → the name field (placeholder `Kyoto in spring`) → Return twice (name → note → opens the currency sheet) → swipe the wheel up from `.* \([A-Z]{3}\) - .*` until `Vietnamese Dong \(VND\) - ₫` → `Close sheet` → `Create trip`. Result: `Expenses, tab, 1 of 3` is `selected: true` and the trip name is visible.
 - **Enter the amount.** `Add expense` → the amount field (placeholder `0`) → wait for `id: number-pad` → `9`, then four `{text: "0", below: "Delete"}` → `Done`. Result: `90,000`.
 - **Add two people.** `Y, You paid` → `Add a person` → `Enter name` → `Ana` → Return → `Add to trip`; again with `Ben`; then `Y, You` → `id: sheet-close`. Result: the sheet closes with You as payer.
 - **Split equally.** `Equally`. Result: `₫30,000 each · 3 people`.

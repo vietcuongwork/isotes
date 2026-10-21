@@ -8,10 +8,10 @@ name: golden-path
 
 # Create the flow's own trip, in VND
 - tapOn: "Start your first trip"
-- tapOn: "Trip to Vegas"
+- tapOn: "Kyoto in spring"
 - inputText: ${output.tripName}
-# Return: name → Description → opens the currency sheet, which drops the keyboard.
-# (hideKeyboard's tap outside lands on the currency field instead.)
+# Return: name → note → opens the currency sheet, which drops the keyboard.
+# (hideKeyboard's tap outside lands on the currency button instead.)
 - pressKey: Enter
 - pressKey: Enter
 # VND is the wheel's last row; the wheel exposes only its selected row.
@@ -26,7 +26,7 @@ name: golden-path
           direction: UP
           duration: 200
 - tapOn: "Close sheet"
-- assertVisible: ".*Vietnamese Dong, VND"
+- assertVisible: "Currency, Vietnamese Dong, VND"
 - tapOn: "Create trip"
 
 # Lands on the new trip's expense tab
