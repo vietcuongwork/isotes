@@ -7,6 +7,7 @@ import {
   getTripSummary,
   groupExpensesByDay,
 } from "@/features/expense/helpers/tripHomeHelpers";
+import { useTripDrawerStore } from "@/stores/useTripDrawerStore";
 import { colors } from "@/themes/color";
 import { useIsFocused } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -23,6 +24,7 @@ function DaySeparator() {
 
 export default function ExpenseScreen() {
   const [isAddExpenseOpen, setAddExpenseOpen] = useState(false);
+  const openDrawer = useTripDrawerStore((state) => state.open);
   const {
     transformedTrip: trip,
     transformedExpenses,
@@ -47,6 +49,7 @@ export default function ExpenseScreen() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Open menu"
+          onPress={openDrawer}
           className="-ml-[10px] h-[44px] w-[44px] items-center justify-center"
         >
           <Menu size={24} color={colors.ink[900]} />

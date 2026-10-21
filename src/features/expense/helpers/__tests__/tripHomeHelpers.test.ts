@@ -3,6 +3,7 @@ import {
   formatDayHeader,
   formatExpenseCount,
   formatPeopleLabel,
+  formatSwitcherMeta,
   getTripSummary,
   groupExpensesByDay,
 } from "@/features/expense/helpers/tripHomeHelpers";
@@ -91,6 +92,18 @@ describe("formatExpenseCount", () => {
   it("is plural for none and for many", () => {
     expect(formatExpenseCount(0)).toBe("0 expenses");
     expect(formatExpenseCount(23)).toBe("23 expenses");
+  });
+});
+
+describe("formatSwitcherMeta", () => {
+  it("joins the currency, people and expenses with dots", () => {
+    expect(formatSwitcherMeta("JPY", 4, 23)).toBe(
+      "JPY · 4 people · 23 expenses",
+    );
+  });
+
+  it("is singular for one person and one expense", () => {
+    expect(formatSwitcherMeta("EUR", 1, 1)).toBe("EUR · 1 person · 1 expense");
   });
 });
 

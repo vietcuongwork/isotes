@@ -64,6 +64,15 @@ export function formatExpenseCount(count: number): string {
   return `${count} ${count === 1 ? "expense" : "expenses"}`;
 }
 
+export function formatSwitcherMeta(
+  currencyCode: string,
+  peopleCount: number,
+  expenseCount: number,
+): string {
+  const people = `${peopleCount} ${peopleCount === 1 ? "person" : "people"}`;
+  return `${currencyCode} · ${people} · ${formatExpenseCount(expenseCount)}`;
+}
+
 // The share is what you were split into, whoever paid
 export function getTripSummary(
   expenses: Expense[],
