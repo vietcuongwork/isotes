@@ -17,6 +17,8 @@ fail() { echo "!! $1"; problems=$((problems + 1)); }
 
 version=$(maestro --version 2>/dev/null | tail -1)
 [ "$version" = "$MAESTRO_VERSION" ] || fail "maestro is '${version:-missing}', want $MAESTRO_VERSION. Fix: upgrading is its own task; ask the user."
+# traits.sh reads header/selected/button through idb; Maestro's tree has no traits
+command -v idb >/dev/null || fail "idb isn't installed, so traits.sh can't read traits. Fix: ask the user before brew install facebook/fb/idb (its tap formulae need brew trust)."
 
 if ! xcrun simctl list devices booted | grep -q "$SIM"; then
   fail "simulator $SIM isn't booted. Fix: Launch step 1."

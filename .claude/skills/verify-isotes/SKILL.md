@@ -18,7 +18,7 @@ Teardown is under Cleanup.
 
 ## Doctor
 
-Run before driving, and whenever anything looks off: `.claude/skills/verify-isotes/scripts/doctor.sh` → `doctor: ok`. It's read-only and safe in any session: it makes no Maestro device call (each one starts a driver). It exits 1 with a reason and a fix when Maestro isn't 2.11.0, the simulator isn't booted, isotes isn't installed, another app is open on the simulator, nothing listens on 8081, any listener there isn't this checkout's Metro, or 8081 doesn't answer `packager-status:running`. It also lists, without failing, background shells a Claude session left running over 12 hours (the live Metro's excepted). Never stop what it names without asking the user.
+Run before driving, and whenever anything looks off: `.claude/skills/verify-isotes/scripts/doctor.sh` → `doctor: ok`. It's read-only and safe in any session: it makes no Maestro device call (each one starts a driver). It exits 1 with a reason and a fix when Maestro isn't 2.11.0, idb isn't installed, the simulator isn't booted, isotes isn't installed, another app is open on the simulator, nothing listens on 8081, any listener there isn't this checkout's Metro, or 8081 doesn't answer `packager-status:running`. It also lists, without failing, background shells a Claude session left running over 12 hours (the live Metro's excepted). Never stop what it names without asking the user.
 
 In an MCP session, also call MCP `list_devices`: `F074204A-…` should be `connected: true`. That only means booted; it answers even when the MCP driver is dead. A dead driver shows on the first `run` or `inspect_screen` as "Device became unreachable" → use the CLI for the rest of the session.
 
@@ -82,7 +82,7 @@ Prove the real user path: the action and the state it leaves, not just the last 
 
 - **Database** (side effects): `scripts/db.sh` (Helpers). Two runs in one minute share a trip name, so pick the newest by `created_at`.
 - **Screen:** one filtered tree value (Drive), or the flow's own `assertVisible` lines in its run output. Assert a value only the item under test has, such as its trip name; a total that two trips share doesn't prove which one opened.
-- **Roles and traits** (button, header, selected): Maestro's iOS tree has labels and bounds only, so check these in Accessibility Inspector, never Maestro. The user picks the simulator in its device dropdown (computer use can't open it); open Device Hub so the simulator has a window, hover the element with point-to-inspect on, then step with Inspector's Back / Forward buttons. The Element line reads `<label>, Button`.
+- **Roles and traits** (button, header, selected): Maestro's iOS tree has labels and bounds only, so read them with `scripts/traits.sh "<label regex>"` (idb), after a flow has reached the screen. Quote its line, e.g. `Expenses, tab, 1 of 3 | - | Selected`. An empty trait list prints `(none)`. Two elements with one label (the drawer's X and scrim) differ by testID. Accessibility Inspector is only for a trait idb doesn't report.
 - **Logs:** `.sim/cu.sh mark` before, `.sim/cu.sh show` after → list new WARN/ERROR lines, or "cu.sh → none".
 - **No flash while loading** (a state that lasts a few frames): record with `xcrun simctl io booted recordVideo <file>.mp4`, then `scripts/frames.sh <file>.mp4 [from to]` tiles the frames 12 per sheet and prints each cell's frame number and timestamp. Read the key first, then only the sheets around the change.
 - **Pixel facts** (glyph widths, a fade's timing, a color run): `scripts/pixels.sh` (Helpers) on a screenshot or recording, so numbers back the verdict instead of a look at the image.
@@ -108,6 +108,7 @@ Quote the values (rows, tree lines, log result) in the task's log in the vault's
   ```
 
 - `scripts/trip.sh "<name prefix>"` — the newest trip whose name starts with the prefix, as `id|name`; exits 1 when none matches. For a flow's `-e` variables (Drive).
+- `scripts/traits.sh "<label regex>"` — `label | testID | traits` for each matching element, read with `idb ui describe-all`; drops idb's blanket `Scrollable`. Needs `brew install facebook/fb/idb`.
 - `scripts/cleanup.sh [--dry-run]` — deletes flow trips (Cleanup, above). It stops the app, backs up `isotes.db` to `.sim/backup/`, deletes in one transaction, prints before and after counts and a restore command, then runs `cu.sh relaunch`. `--dry-run` prints per-flow counts only.
 - `scripts/green.sh mark | check` — fingerprints `src/` (tracked and untracked files) into `.sim/last-green` after a green Demo; `check` prints `same` (exit 0) when nothing in `src/` changed since, so autopilot's Preflight can skip the smoke flow.
 - `scripts/pixels.sh columns|luma <file> <x> <y> <w> <h>` — region in points (`PIXELS_SCALE=2` on a 2x device). `columns` prints a screenshot's ink column runs (two amounts with the decimal point in the same run are tabular); `luma` prints a recording's mean luma at each change (a fade's start, end and values).
