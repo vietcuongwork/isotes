@@ -1,5 +1,6 @@
 import { CURRENCY_OPTIONS } from "@/features/createTrip/constants";
 import {
+  filterCurrencies,
   getDefaultCurrency,
   getPinnedLetter,
   getRecentCurrencies,
@@ -173,5 +174,72 @@ describe("getPinnedLetter", () => {
     expect(getPinnedLetter(headers, 84)).toBe("A");
     expect(getPinnedLetter(headers, 250)).toBe("B");
     expect(getPinnedLetter(headers, 900)).toBe("C");
+  });
+});
+
+describe("filterCurrencies", () => {
+  it("gives every currency for an empty or blank query", () => {
+    expect(filterCurrencies(CURRENCY_OPTIONS, "")).toEqual(CURRENCY_OPTIONS);
+    expect(filterCurrencies(CURRENCY_OPTIONS, "   ")).toEqual(CURRENCY_OPTIONS);
+  });
+
+  it("matches the code, ignoring case", () => {
+    const codes = (query: string) =>
+      filterCurrencies(CURRENCY_OPTIONS, query).map((c) => c.code);
+
+    expect(codes("eur")).toEqual(["EUR"]);
+    // "US Dollar" doesn't contain "usd", so only the code matches
+    expect(codes("usd")).toEqual(["USD"]);
+  });
+
+  it("matches the name, ignoring accents and case", () => {
+    expect(
+      filterCurrencies(CURRENCY_OPTIONS, "zloty").map((c) => c.name),
+    ).toEqual(["Polish Złoty"]);
+    expect(
+      filterCurrencies(CURRENCY_OPTIONS, "ZLOTY").map((c) => c.name),
+    ).toEqual(["Polish Złoty"]);
+  });
+
+  it("trims spaces around the query", () => {
+    expect(
+      filterCurrencies(CURRENCY_OPTIONS, "  eur  ").map((c) => c.code),
+    ).toEqual(["EUR"]);
+  });
+
+  it("matches the symbol", () => {
+    const codes = (query: string) =>
+      filterCurrencies(CURRENCY_OPTIONS, query).map((c) => c.code);
+
+    expect(codes("¥")).toEqual(["CNY", "JPY"]);
+    // every dollar, plus the real's R$
+    expect(codes("$")).toEqual([
+      "AUD",
+      "BRL",
+      "CAD",
+      "HKD",
+      "MXN",
+      "NZD",
+      "SGD",
+      "TWD",
+      "USD",
+    ]);
+  });
+
+  it("matches a symbol typed with its accent", () => {
+    expect(filterCurrencies(CURRENCY_OPTIONS, "Kč").map((c) => c.code)).toEqual(
+      ["CZK"],
+    );
+  });
+
+  it("matches kr by symbol, code and name", () => {
+    // kroner by symbol, the won by its code KRW, the hryvnia by its name
+    expect(filterCurrencies(CURRENCY_OPTIONS, "kr").map((c) => c.code)).toEqual(
+      ["DKK", "NOK", "KRW", "SEK", "UAH"],
+    );
+  });
+
+  it("gives none when nothing matches", () => {
+    expect(filterCurrencies(CURRENCY_OPTIONS, "bitcoin")).toEqual([]);
   });
 });

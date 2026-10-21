@@ -14,12 +14,9 @@ name: golden-path
 # (hideKeyboard's tap outside lands on the currency button instead.)
 - pressKey: Enter
 - pressKey: Enter
-# VND is the list's last row; a row tap picks it and closes the sheet
-- scrollUntilVisible:
-    element:
-      text: "Vietnamese Dong, VND, ₫"
-    direction: DOWN
-    timeout: 20000
+# Search finds VND by its code; a row tap picks it and closes the sheet
+- tapOn: "Search currencies"
+- inputText: "vnd"
 - tapOn: "Vietnamese Dong, VND, ₫"
 - assertVisible: "Currency, Vietnamese Dong, VND"
 - tapOn: "Create trip"

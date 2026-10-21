@@ -14,9 +14,19 @@ const US_DOLLAR: Currency = {
   decimalDigits: 2,
 };
 
-// NFD splits "É" into "E" plus a combining accent (U+0300 to U+036F), which is dropped
+// NFD splits "É" into "E" plus a combining accent (U+0300 to U+036F), which is dropped.
+// "ł" has no NFD split (a stroke, not an accent), so it's mapped by hand
 function stripAccents(text: string): string {
-  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ł/g, "l")
+    .replace(/Ł/g, "L");
+}
+
+// Query and fields compare in the same form, so "Kč" and "kc" both find CZK
+function toSearchText(text: string): string {
+  return stripAccents(text).toLowerCase();
 }
 
 export function getDefaultCurrency(
@@ -56,6 +66,18 @@ export function getRecentCurrencies(
     if (recent.length === limit) break;
   }
   return recent;
+}
+
+export function filterCurrencies(
+  options: Currency[],
+  query: string,
+): Currency[] {
+  const needle = toSearchText(query.trim());
+  return options.filter((option) =>
+    [option.name, option.code, option.symbol].some((field) =>
+      toSearchText(field).includes(needle),
+    ),
+  );
 }
 
 export function getPinnedLetter(

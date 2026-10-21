@@ -6,7 +6,7 @@ A user starts a trip by naming it, optionally adding a note and choosing its cur
 
 - `ct-name-required` refuses an empty name with "Give the trip a name to continue." and creates nothing.
 - `ct-description` stores an optional note (the trip's description).
-- `ct-currency` keeps the default currency (the newest trip's, or US Dollar with no trips) or picks another in the currency sheet: a "From your trips" chip (newest trip first, at most 3) or a row of the A–Z list (golden-path picks VND).
+- `ct-currency` keeps the default currency (the newest trip's, or US Dollar with no trips) or picks another in the currency sheet: a "From your trips" chip (newest trip first, at most 3), a row of the A–Z list, or a row of the search results (golden-path types `vnd`).
 - `ct-create` creates the trip with one member, "You", and lands on its empty Expenses tab.
 
 ## How to get to it (user POV)
@@ -34,7 +34,8 @@ Preconditions:
 
 - `hideKeyboard` taps outside the keyboard and lands on the currency button, reopening its sheet. Use Return through the form instead.
 - Labels in the sheet: a row is `<name>, <code>, <symbol>` (`Australian Dollar, AUD, \\$` in YAML), a chip is `<name>, <code>`, and the current one of each reads Selected. A row or chip tap picks and closes the sheet.
-- The default follows the newest trip, so a flow that needs one currency taps its row (`add-expense` and `paid-by-split` tap AUD, the list's first row). A row further down needs `scrollUntilVisible` first (golden-path, VND).
+- The default follows the newest trip, so a flow that needs one currency taps its row (`add-expense` and `paid-by-split` tap AUD, the list's first row). For a row further down, type into `Search currencies` and tap the result (golden-path, `vnd`).
+- Search: `Search currencies` is the field; with a query, `Clear search` is both the field's X (`id: currency-search-clear`) and, with no matches, the text button (`id: currency-no-matches-clear`), so tap them by id. Results sit under `RESULTS` with the count; no matches reads `Nothing matches “<query>”`.
 - Close the sheet with `Close currency sheet`, not `Close sheet`: the scrim fills the screen, so a tap on its centre lands on the sheet's list and picks a row.
 - The pinned letter at the list's top is an overlay hidden from the tree; the in-list letters (`A`, `B`, …) are the headers.
 - The trip header shows `$0.00` in USD whatever the currency; don't assert it.
