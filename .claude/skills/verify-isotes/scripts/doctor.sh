@@ -7,6 +7,8 @@ set -uo pipefail
 SIM=F074204A-8DED-491A-9D45-3C6344EECCEB
 BUNDLE=com.anonymous.isotes
 MAESTRO_VERSION=2.11.0
+# 12 h, longer than any test session
+LEFTOVER_SECS=43200
 # System apps seen running in the background on an idle simulator; anything else is someone's foreground app.
 BACKGROUND_APPS='^(com\.apple\.Spotlight|com\.apple\.chrono\..*|com\.apple\.mobilecal)$'
 
@@ -53,5 +55,24 @@ else
   [ "$(curl -s -m 3 localhost:8081/status)" = "packager-status:running" ] \
     || fail ":8081 doesn't answer packager-status:running (Metro still starting, hung, or not Metro). Fix: wait and rerun, or ask the user."
 fi
+
+# Leftovers: listed, never counted as a problem. A background shell from any Claude
+# session runs until stopped, however long the session sits idle.
+metro=$(lsof -nP -iTCP:8081 -sTCP:LISTEN -t 2>/dev/null | head -1)
+ps -eo pid=,etime=,command= | grep -F shell-snapshots | grep -v grep \
+  | while read -r pid etime cmd; do
+      secs=$(awk -F'[-:]' '{ if (NF == 4) print $1*86400 + $2*3600 + $3*60 + $4; else if (NF == 3) print $1*3600 + $2*60 + $3; else print $1*60 + $2 }' <<<"$etime")
+      [ "$secs" -ge "$LEFTOVER_SECS" ] || continue
+      what=$(sed -E "s/.*eval '?//; s/'? < \/dev\/null.*//" <<<"$cmd")
+      # The shell that runs the live Metro is in use, not left over
+      live=no; p=$metro
+      for _ in 1 2 3 4 5; do
+        [ -z "$p" ] || [ "$p" = 1 ] && break
+        [ "$p" = "$pid" ] && { live=yes; break; }
+        p=$(ps -o ppid= -p "$p" | tr -d ' ')
+      done
+      [ "$live" = no ] || continue
+      echo "-- leftover from a Claude session, up $etime: pid $pid, ${what:0:70}. Fix: ask the user before stopping it."
+    done
 
 [ "$problems" -eq 0 ] && echo "doctor: ok" || exit 1

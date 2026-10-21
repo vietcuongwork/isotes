@@ -10,7 +10,7 @@ isotes is a mobile app: one dev build (`com.anonymous.isotes`) on the simulator 
 ## Launch
 
 1. Boot the simulator (no-op when booted): `xcrun simctl bootstatus F074204A-8DED-491A-9D45-3C6344EECCEB -b`
-2. Keep the Mac awake for the session, as a background task: `caffeinate -d`
+2. Keep the Mac awake for the session, as a background task: `caffeinate -d -t 14400`. It exits after 4 h, so a forgotten one can't leak; start another if the session runs longer.
 3. Metro, only if nothing listens on 8081 (`lsof -nP -iTCP:8081 -sTCP:LISTEN`), as a background task: `tail -f /dev/null | script -qF .sim/metro.log pnpm start` (add `--clear` after a package install). Ready when `curl -s localhost:8081/status` prints `packager-status:running`.
 4. Relaunch the app and mark the log: `.sim/cu.sh relaunch` → `ready (~Ns)`. It refuses on a shared simulator and says what to do.
 
@@ -18,7 +18,7 @@ Teardown is under Cleanup.
 
 ## Doctor
 
-Run before driving, and whenever anything looks off: `.claude/skills/verify-isotes/scripts/doctor.sh` → `doctor: ok`. It's read-only and safe in any session: it makes no Maestro device call (each one starts a driver). It exits 1 with a reason and a fix when Maestro isn't 2.11.0, the simulator isn't booted, isotes isn't installed, another app is open on the simulator, nothing listens on 8081, any listener there isn't this checkout's Metro, or 8081 doesn't answer `packager-status:running`. Never stop what it names without asking the user.
+Run before driving, and whenever anything looks off: `.claude/skills/verify-isotes/scripts/doctor.sh` → `doctor: ok`. It's read-only and safe in any session: it makes no Maestro device call (each one starts a driver). It exits 1 with a reason and a fix when Maestro isn't 2.11.0, the simulator isn't booted, isotes isn't installed, another app is open on the simulator, nothing listens on 8081, any listener there isn't this checkout's Metro, or 8081 doesn't answer `packager-status:running`. It also lists, without failing, background shells a Claude session left running over 12 hours (the live Metro's excepted). Never stop what it names without asking the user.
 
 In an MCP session, also call MCP `list_devices`: `F074204A-…` should be `connected: true`. That only means booted; it answers even when the MCP driver is dead. A dead driver shows on the first `run` or `inspect_screen` as "Device became unreachable" → use the CLI for the rest of the session.
 
