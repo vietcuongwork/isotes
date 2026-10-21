@@ -1,6 +1,7 @@
 allowBuilds:
   esbuild: true
   unrs-resolver: false
+minimumReleaseAgeStrict: true
 minimumReleaseAgeExclude:
   - "@expo/cli@57.0.14"
   - "@expo/fingerprint@0.20.7"
