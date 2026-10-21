@@ -1,4 +1,5 @@
 import { colors as tokens } from "@/themes/color";
+import { boxShadow } from "@/themes/spacing";
 import { textStyle } from "@/themes/typography";
 import { X } from "lucide-react-native";
 import React, {
@@ -45,6 +46,8 @@ import {
   viewportDelta,
 } from "./sheetMath";
 
+type SheetAppearance = "dark" | "light";
+
 export interface BottomSheetProps {
   /** Controlled. The sheet animates in and out, and unmounts once hidden. */
   visible: boolean;
@@ -73,6 +76,10 @@ export interface BottomSheetProps {
   closeOnBackdropPress?: boolean;
   /** An X at the end of the title row that closes the sheet, like a backdrop tap. Needs `title`. */
   showCloseButton?: boolean;
+  /** Ink & Shine light look (`sheet` in DESIGN.md). Default "dark" until the migration ends. */
+  appearance?: SheetAppearance;
+  /** VoiceOver label of the X (`showCloseButton`). The backdrop keeps "Close sheet". */
+  closeAccessibilityLabel?: string;
   /** Real insets (e.g. from react-native-safe-area-context). Skips the core SafeAreaView probe. */
   safeAreaInsets?: EdgeInsets;
 }
@@ -99,6 +106,8 @@ export function BottomSheet({
   topGap = 12,
   closeOnBackdropPress = true,
   showCloseButton = false,
+  appearance = "dark",
+  closeAccessibilityLabel = "Close",
   safeAreaInsets,
 }: BottomSheetProps) {
   const { height: windowHeight } = useWindowDimensions();
@@ -210,6 +219,8 @@ export function BottomSheet({
         <SheetLayout
           title={title}
           showCloseButton={showCloseButton}
+          appearance={appearance}
+          closeAccessibilityLabel={closeAccessibilityLabel}
           snapPoints={snapPoints}
           initialSnap={initialSnap}
           onSnapChange={onSnapChange}
@@ -232,6 +243,8 @@ export function BottomSheet({
 interface SheetLayoutProps {
   title?: string;
   showCloseButton: boolean;
+  appearance: SheetAppearance;
+  closeAccessibilityLabel: string;
   snapPoints?: readonly SnapPoint[];
   initialSnap: number;
   onSnapChange?: (index: number) => void;
@@ -250,6 +263,8 @@ interface SheetLayoutProps {
 function SheetLayout({
   title,
   showCloseButton,
+  appearance,
+  closeAccessibilityLabel,
   snapPoints,
   initialSnap,
   onSnapChange,
@@ -469,6 +484,7 @@ function SheetLayout({
   // adjustable (swipe up / down: expand / collapse).
   const adjustable = !!snaps && snaps.length > 1;
   const closeButton = showCloseButton && !!title;
+  const light = appearance === "light";
   const closeKeyboardOrSheet = () =>
     TextInput.State.currentlyFocusedInput()
       ? dismissKeyboard()
@@ -527,7 +543,13 @@ function SheetLayout({
 
   return (
     <View style={styles.fill}>
-      <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]}>
+      <Animated.View
+        style={[
+          styles.backdrop,
+          light && styles.backdropLight,
+          { opacity: backdropOpacity },
+        ]}
+      >
         <Pressable
           style={styles.fill}
           onPress={onBackdropPress}
@@ -551,6 +573,7 @@ function SheetLayout({
             }}
             style={[
               styles.surface,
+              light && styles.surfaceLight,
               {
                 height: surfaceHeight,
                 maxHeight: room,
@@ -594,11 +617,16 @@ function SheetLayout({
               onResponderTerminate={onResponderTerminate}
               onResponderTerminationRequest={() => false}
             >
-              <View style={styles.grabber} />
+              <View style={[styles.grabber, light && styles.grabberLight]} />
               {title ? (
                 <Text
                   accessibilityRole="header"
-                  style={[styles.title, closeButton && styles.titleBesideClose]}
+                  style={[
+                    styles.title,
+                    light && styles.titleLight,
+                    closeButton && styles.titleBesideClose,
+                    closeButton && light && styles.titleBesideCloseLight,
+                  ]}
                 >
                   {title}
                 </Text>
@@ -608,12 +636,15 @@ function SheetLayout({
               <Pressable
                 testID="sheet-close"
                 accessibilityRole="button"
-                accessibilityLabel="Close"
+                accessibilityLabel={closeAccessibilityLabel}
                 hitSlop={12}
                 onPress={onRequestClose}
-                style={styles.close}
+                style={[styles.close, light && styles.closeLight]}
               >
-                <X size={CLOSE_ICON} color={tokens.grey[200]} />
+                <X
+                  size={light ? CLOSE_ICON_LIGHT : CLOSE_ICON}
+                  color={light ? tokens.ink[900] : tokens.grey[200]}
+                />
               </Pressable>
             ) : null}
             <SheetContext.Provider value={sheetApi}>
@@ -629,8 +660,15 @@ function SheetLayout({
 const CLOSE_ICON = 24;
 // Title row's top: 12 header pad + 4 grabber + 10 gap; centred on its 16pt line
 const TITLE_ROW_CENTER = 12 + 4 + 10 + 16 / 2;
+// NOTE - no token for an icon size, falling back to 20 (DESIGN.md field icon)
+const CLOSE_ICON_LIGHT = 20;
+// NOTE - no token for the 44pt touch target, falling back to 44 (DESIGN.md text button height)
+const CLOSE_CIRCLE = 44;
+// Same top as above, centred on the `heading` role's 28pt line
+const TITLE_ROW_CENTER_LIGHT = 12 + 4 + 10 + 28 / 2;
 
-// isotes is dark-only: fixed tokens, matching the old components/bottomsheet look.
+// Dark: fixed tokens, matching the old components/bottomsheet look. Light (`appearance`):
+// the Ink & Shine `sheet` component; spacing.js stores px strings, so sizes are numbers here.
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   backdrop: {
@@ -673,5 +711,25 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: TITLE_ROW_CENTER - CLOSE_ICON / 2,
     right: 20, // = header px-5
+  },
+  backdropLight: { backgroundColor: tokens.scrim },
+  surfaceLight: {
+    backgroundColor: tokens.card,
+    borderTopLeftRadius: 28, // = rounded-xl token
+    borderTopRightRadius: 28,
+    boxShadow: boxShadow.lifted,
+  },
+  grabberLight: { backgroundColor: tokens.ink[200] },
+  titleLight: { ...textStyle("heading"), color: tokens.ink[900] },
+  titleBesideCloseLight: { paddingRight: CLOSE_CIRCLE + 12 }, // circle + gap
+  // Overrides `close`; its right: 20 is space-5 too
+  closeLight: {
+    top: TITLE_ROW_CENTER_LIGHT - CLOSE_CIRCLE / 2,
+    width: CLOSE_CIRCLE,
+    height: CLOSE_CIRCLE,
+    borderRadius: CLOSE_CIRCLE / 2,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: tokens.ink[100],
   },
 });
