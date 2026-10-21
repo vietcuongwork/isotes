@@ -10,7 +10,10 @@ import {
 } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CreateTripForm from "../components/CreateTripForm";
-import { useCreateTripScreen } from "../hooks/useCreateTripScreen";
+import {
+  useCreateTripForm,
+  useCreateTripScreen,
+} from "../hooks/useCreateTripScreen";
 
 // Create rests 40 above the bottom edge; with the keyboard up it moves by the
 // keyboard's height, and 24 more back down leaves it 16 (space-4) above the keyboard
@@ -18,7 +21,8 @@ const CREATE_STICKY_OFFSET = { closed: 0, opened: 40 - 16 };
 // A focused field stops above Create: 52 button + 16 under it + 16 over it
 const FIELD_BOTTOM_OFFSET = 52 + 16 + 16;
 
-export default function CreateTripScreen() {
+function CreateTripContent(props: { codes: string[]; onBack: () => void }) {
+  const { codes, onBack } = props;
   const {
     form,
     handleCurrencyChange,
@@ -26,18 +30,12 @@ export default function CreateTripScreen() {
     scrollViewRef,
     formRef,
     onInvalid,
-    onBack,
-  } = useCreateTripScreen();
-  // StatusBar props merge in mount order and the pushed trip keeps this
-  // screen mounted, so dark text is rendered only while Create trip is on top
-  const isFocused = useIsFocused();
+  } = useCreateTripForm(codes);
 
   const { control, handleSubmit, formState } = form;
 
   return (
-    <SafeAreaView className="flex-1 bg-ink-50" edges={["top"]}>
-      {isFocused && <StatusBar style="dark" />}
-
+    <>
       <KeyboardAwareScrollView
         keyboardShouldPersistTaps="handled"
         bottomOffset={FIELD_BOTTOM_OFFSET}
@@ -86,6 +84,22 @@ export default function CreateTripScreen() {
           />
         </KeyboardStickyView>
       </View>
+    </>
+  );
+}
+
+export default function CreateTripScreen() {
+  const { codes, onBack } = useCreateTripScreen();
+  // StatusBar props merge in mount order and the pushed trip keeps this
+  // screen mounted, so dark text is rendered only while Create trip is on top
+  const isFocused = useIsFocused();
+
+  return (
+    <SafeAreaView className="flex-1 bg-ink-50" edges={["top"]}>
+      {isFocused && <StatusBar style="dark" />}
+
+      {/* The bare ink-50 page until the trips' currency codes load */}
+      {codes && <CreateTripContent codes={codes} onBack={onBack} />}
     </SafeAreaView>
   );
 }

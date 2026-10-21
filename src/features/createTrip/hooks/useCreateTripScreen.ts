@@ -1,19 +1,38 @@
-import { insertTrip } from "@/db/trips";
+import { getTripCurrencyCodes, insertTrip } from "@/db/trips";
 import { EXPO_ROUTER } from "@/navigation/route";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FieldErrors, useForm } from "react-hook-form";
 import { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 import { CreateTripFormHandle } from "../components/CreateTripForm";
 import { PickerOption } from "../components/Picker";
 import { CURRENCY_OPTIONS } from "../constants";
+import { getDefaultCurrency } from "../helpers/currencyHelpers";
 import {
   CreateTripFormData,
   createTripFormSchema,
 } from "../validation/createTripFormSchema";
 
+// codes is null until the one-shot read resolves; the screen mounts the form
+// only then, so useForm's default currency is right on its first render
 export function useCreateTripScreen() {
+  const [codes, setCodes] = useState<string[] | null>(null);
+
+  const router = useRouter();
+
+  const onBack = () => {
+    router.back();
+  };
+
+  useEffect(() => {
+    getTripCurrencyCodes().then(setCodes);
+  }, []);
+
+  return { codes, onBack };
+}
+
+export function useCreateTripForm(codes: string[]) {
   const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null);
   const formRef = useRef<CreateTripFormHandle>(null);
 
@@ -23,9 +42,9 @@ export function useCreateTripScreen() {
     return {
       tripName: "",
       description: "",
-      currency: CURRENCY_OPTIONS[0],
+      currency: getDefaultCurrency(codes, CURRENCY_OPTIONS),
     };
-  }, []);
+  }, [codes]);
 
   const form = useForm<CreateTripFormData>({
     resolver: zodResolver(createTripFormSchema),
@@ -51,10 +70,6 @@ export function useCreateTripScreen() {
     formRef.current?.focusFirstErrorField(errors);
   };
 
-  const onBack = () => {
-    router.back();
-  };
-
   return {
     handleCurrencyChange,
     form,
@@ -62,6 +77,5 @@ export function useCreateTripScreen() {
     scrollViewRef,
     formRef,
     onInvalid,
-    onBack,
   };
 }

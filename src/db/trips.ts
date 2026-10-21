@@ -35,6 +35,15 @@ export function getAllTripsWithMembersAndExpenses() {
   });
 }
 
+// Codes only, newest trip first: Create trip's default currency and its chips
+export async function getTripCurrencyCodes(): Promise<string[]> {
+  const rows = await db
+    .select({ currencyCode: trips.currencyCode })
+    .from(trips)
+    .orderBy(desc(trips.createdAt));
+  return rows.map((row) => row.currencyCode);
+}
+
 export function getTripById(tripId: string) {
   return db.query.trips.findFirst({
     where: eq(trips.id, tripId),
