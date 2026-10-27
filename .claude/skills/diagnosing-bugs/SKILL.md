@@ -24,6 +24,7 @@ Most bugs here are obvious once the symptom is seen. Try up to two fixes before 
 3. **Try it.** Write the fix and repeat the same steps. Symptom gone → Phase 5, then Phase 6; the hypothesis whose prediction held is the cause on record.
 4. **Still there → revert the fix**, then try hypothesis 2 the same way. Each attempt runs on clean code, so its result belongs to one change.
 5. **Both fail → Phase 1.** Carry both hypotheses and what each attempt showed; Phase 3 starts with them ruled out.
+6. **Not on Opus → hand off.** In a session that isn't running Opus (feature implement sessions run on Sonnet), when both quick fixes miss, don't start Phase 1. Write the setback and both tries in the diary's `**Focus:**` line, stop, and tell the user to continue with `/recall <slug> debug`, which opens an Opus session.
 
 Skip straight to Phase 1 when the fix would need 3+ files or a choice between approaches: that's a Big bug from the start. A quick fix that works is a Small bug (`Debug_` note), even in a shared file.
 

@@ -18,7 +18,7 @@ Teardown is under Cleanup.
 
 ## Doctor
 
-Run before driving, and whenever anything looks off: `.claude/skills/verify-isotes/scripts/doctor.sh` → `doctor: ok`. It's read-only and safe in any session: it makes no Maestro device call (each one starts a driver). It exits 1 with a reason and a fix when Maestro isn't 2.11.0, idb isn't installed, the simulator isn't booted, isotes isn't installed, another app is open on the simulator, nothing listens on 8081, any listener there isn't this checkout's Metro, or 8081 doesn't answer `packager-status:running`. It also lists, without failing, background shells a Claude session left running over 12 hours (the live Metro's excepted). Never stop what it names without asking the user.
+Run before driving, and whenever anything looks off: `.claude/skills/verify-isotes/scripts/doctor.sh` → `doctor: ok`. It's read-only and safe in any session: it makes no Maestro device call (each one starts a driver). It exits 1 with a reason and a fix when Maestro isn't 2.11.0, idb isn't installed, the simulator isn't booted, isotes isn't installed, another app is open on the simulator, nothing listens on 8081, any listener there isn't this checkout's Metro, 8081 doesn't answer `packager-status:running`, or the native fingerprint differs from the installed build's (`.sim/last-native-build`). It also lists, without failing, background shells a Claude session left running over 12 hours (the live Metro's excepted). Never stop what it names without asking the user.
 
 In an MCP session, also call MCP `list_devices`: `F074204A-…` should be `connected: true`. That only means booted; it answers even when the MCP driver is dead. A dead driver shows on the first `run` or `inspect_screen` as "Device became unreachable" → use the CLI for the rest of the session.
 
@@ -28,10 +28,10 @@ Maestro **2.11.0** (`maestro --version`); an upgrade is its own task. `MAESTRO_C
 
 **One driver per session.** A session drives with the MCP server *or* the CLI, never both. The CLI and the MCP server each install their own XCTest driver and only one survives: a CLI run kills the MCP server's driver until a new session (the desktop app can't reconnect MCP). Need both → MCP steps first, then CLI.
 
-**Whole flow (CLI):** output goes to a fresh `.sim/maestro/<flow>-<time>/` (git-ignored), nothing to `~/.maestro/tests/`. For another flow, replace both `golden-path`s with its file name.
+**Whole flow (CLI):** output goes to a fresh `.sim/maestro/<flow>-<time>/` (git-ignored), nothing to `~/.maestro/tests/`. Maestro options such as `-e` go after the flow file.
 
 ```bash
-maestro test --device F074204A-8DED-491A-9D45-3C6344EECCEB --debug-output .sim/maestro/golden-path-$(date +%m%d-%H%M%S) .claude/skills/verify-isotes/flows/golden-path.yaml
+.claude/skills/verify-isotes/scripts/flow.sh .claude/skills/verify-isotes/flows/golden-path.yaml
 ```
 
 **Tree read (CLI):** `hierarchy` has no output flag and logs to `~/.maestro/tests/`, so its Java home moves to `.sim/maestro/home/` (keep that folder). Never read the raw tree (~150 KB); filter to labels and grep one value. Run it after a flow: the session's first CLI call starts Maestro's driver, which brings the iOS home screen forward, so a tree read first reads the home screen.
@@ -83,6 +83,7 @@ Prove the real user path: the action and the state it leaves, not just the last 
 - **Database** (side effects): `scripts/db.sh` (Helpers). Two runs in one minute share a trip name, so pick the newest by `created_at`.
 - **Screen:** one filtered tree value (Drive), or the flow's own `assertVisible` lines in its run output. Assert a value only the item under test has, such as its trip name; a total that two trips share doesn't prove which one opened.
 - **Roles and traits** (button, header, selected): Maestro's iOS tree has labels and bounds only, so read them with `scripts/traits.sh "<label regex>"` (idb), after a flow has reached the screen. Quote its line, e.g. `Expenses, tab, 1 of 3 | - | Selected`. An empty trait list prints `(none)`. Two elements with one label (the drawer's X and scrim) differ by testID. Accessibility Inspector is only for a trait idb doesn't report.
+- **Focus:** Maestro's `focused` attribute is always `false` on iOS, even mid-typing. Read focus from `traits.sh`: a focused field lists `IsEditing` (`Search trips | - | TextEntry, IsEditing, TextOperationsAvailable`).
 - **Logs:** `.sim/cu.sh mark` before, `.sim/cu.sh show` after → list new WARN/ERROR lines, or "cu.sh → none".
 - **No flash while loading** (a state that lasts a few frames): record with `xcrun simctl io booted recordVideo <file>.mp4`, then `scripts/frames.sh <file>.mp4 [from to]` tiles the frames 12 per sheet and prints each cell's frame number and timestamp. Read the key first, then only the sheets around the change.
 - **Pixel facts** (glyph widths, a fade's timing, a color run): `scripts/pixels.sh` (Helpers) on a screenshot or recording, so numbers back the verdict instead of a look at the image.
@@ -101,6 +102,7 @@ Quote the values (rows, tree lines, log result) in the task's log in the vault's
 ## Helpers
 
 - `scripts/doctor.sh` — Doctor, above.
+- `scripts/flow.sh <flow.yaml> [options]` — Whole flow, above. Retries once, after `simctl launch`, when a failed run started with another app in front (the runner log's first `Detected running apps`).
 - `scripts/db.sh "<sql>"` — one read-only `sqlite3` query on `isotes.db`; looks the container up on every call (its folder changes per install). Newest golden-path trip's splits:
 
   ```bash
@@ -111,6 +113,7 @@ Quote the values (rows, tree lines, log result) in the task's log in the vault's
 - `scripts/traits.sh "<label regex>"` — `label | testID | traits` for each matching element, read with `idb ui describe-all`; drops idb's blanket `Scrollable`. Needs `brew install facebook/fb/idb`.
 - `scripts/cleanup.sh [--dry-run]` — deletes flow trips (Cleanup, above). It stops the app, backs up `isotes.db` to `.sim/backup/`, deletes in one transaction, prints before and after counts and a restore command, then runs `cu.sh relaunch`. `--dry-run` prints per-flow counts only.
 - `scripts/fresh.sh [--shutdown]` — erases the spare simulator `isotes-fresh` (created on first use), installs the working simulator's build and prints its UDID; `--shutdown` stops it. One simulator, so the Claude app asks for device consent only once.
+- `scripts/build.sh` — builds and installs the dev build (`expo run:ios`, log in `.sim/build/`), then writes its native fingerprint to `.sim/last-native-build`; `scripts/fingerprint.sh` prints the current one. Doctor fails when they differ.
 - `scripts/green.sh mark | check` — fingerprints `src/` (tracked and untracked files) into `.sim/last-green` after a green Demo; `check` prints `same` (exit 0) when nothing in `src/` changed since, so autopilot's Preflight can skip the smoke flow.
 - `scripts/pixels.sh columns|luma <file> <x> <y> <w> <h>` — region in points (`PIXELS_SCALE=2` on a 2x device). `columns` prints a screenshot's ink column runs (two amounts with the decimal point in the same run are tabular); `luma` prints a recording's mean luma at each change (a fade's start, end and values).
 - `.sim/cu.sh relaunch | mark | show` — the project's launcher and Metro log reader (outside this skill).

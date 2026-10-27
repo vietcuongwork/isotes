@@ -4,6 +4,10 @@ name: golden-path
 ---
 # Cold start: only a relaunch leaves a trip screen for the start screen.
 - launchApp
+# The first bundle after a Metro restart takes up to 60 s; launchApp returns on a blank page.
+- extendedWaitUntil:
+    visible: "Start your first trip"
+    timeout: 60000
 - evalScript: ${const p = (n) => String(n).padStart(2, '0'); const d = new Date(); output.tripName = 'Flow golden-path ' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes())}
 
 # Create the flow's own trip, in VND

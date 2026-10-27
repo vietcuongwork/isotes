@@ -6,6 +6,8 @@ disable-model-invocation: true
 
 The user has asked for a **retrospective**. You are suggesting improvements to the coding agent's **environment** to improve future runs.
 
+With the argument `weekly`, or a prompt starting `[weekly-retro:scheduled]`, follow `weekly.md` in this folder instead of the steps below.
+
 ## Steps
 
 1. Call the Skill tool with `writing-for-agents` for the writing style guide.

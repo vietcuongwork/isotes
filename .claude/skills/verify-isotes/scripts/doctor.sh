@@ -24,7 +24,7 @@ if ! xcrun simctl list devices booted | grep -q "$SIM"; then
   fail "simulator $SIM isn't booted. Fix: Launch step 1."
 else
   xcrun simctl get_app_container "$SIM" "$BUNDLE" >/dev/null 2>&1 \
-    || fail "isotes isn't installed on $SIM. Fix: build it (expo run:ios), or ask the user."
+    || fail "isotes isn't installed on $SIM. Fix: scripts/build.sh as a background task, or ask the user."
 
   # Fail closed: an unreadable app list isn't a clean simulator.
   if apps=$(xcrun simctl spawn "$SIM" launchctl list 2>/dev/null); then
@@ -56,6 +56,18 @@ else
   done
   [ "$(curl -s -m 3 localhost:8081/status)" = "packager-status:running" ] \
     || fail ":8081 doesn't answer packager-status:running (Metro still starting, hung, or not Metro). Fix: wait and rerun, or ask the user."
+fi
+
+# A native change with no rebuild leaves the installed app on old native code.
+# build.sh records the fingerprint of the build it installs.
+built=$(cat "$repo/.sim/last-native-build" 2>/dev/null)
+now=$(cd "$repo" && .claude/skills/verify-isotes/scripts/fingerprint.sh 2>/dev/null)
+if [ -z "$now" ]; then
+  fail "couldn't compute the native fingerprint. Fix: run scripts/fingerprint.sh by hand to read its error."
+elif [ -z "$built" ]; then
+  fail "no record of the installed build's native fingerprint (.sim/last-native-build). Fix: scripts/build.sh writes it on its next build."
+elif [ "$now" != "$built" ]; then
+  fail "native inputs changed since the installed build (fingerprint ${built:0:8}, now ${now:0:8}). Why: a native module or the app config changed, and the app still runs the old native code. Fix: scripts/build.sh as a background task."
 fi
 
 # Leftovers: listed, never counted as a problem. A background shell from any Claude
