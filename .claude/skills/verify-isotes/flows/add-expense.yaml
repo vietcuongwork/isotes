@@ -102,7 +102,7 @@ name: add-expense
     retryTapIfNoChange: true
 - tapOn: "Done"
 - assertVisible: "7.25"
-- assertVisible: "Y, You paid"
+- assertVisible: "You paid"
 - tapOn: "Save expense"
 # A row is one VoiceOver element, so its payer and amount share one label
 - extendedWaitUntil:

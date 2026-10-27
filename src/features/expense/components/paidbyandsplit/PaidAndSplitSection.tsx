@@ -1,5 +1,5 @@
 import { ReactElement, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import PaidByBottomSheet from "./PaidByBottomSheet";
 import PayerRow from "./PayerRow";
 import PeopleSummaryRow from "./PeopleSummaryRow";
@@ -12,39 +12,24 @@ export default function PaidAndSplitSection(): ReactElement {
   const [isSplitOpen, setSplitOpen] = useState(false);
 
   return (
-    <View>
-      <Text className="mb-2 text-grey-200 text-legacy-label">Paid & Split</Text>
-
-      <View className="rounded-card border border-grey-825 bg-grey-960">
-        <PayerRow
-          onPress={() => {
-            setPaidByOpen(true);
-          }}
-        />
-        {/* Modal sheet: renders above everything, wherever it sits in the tree */}
-        <PaidByBottomSheet
-          visible={isPaidByOpen}
-          onClose={() => setPaidByOpen(false)}
-        />
-
-        <View className="p-3 pb-3.5">
-          <SplitMethodControl />
-
-          <View className="mt-3">
-            <PeopleSummaryRow
-              onPress={() => {
-                setSplitOpen(true);
-              }}
-            />
-            <SplitBottomSheet
-              visible={isSplitOpen}
-              onClose={() => setSplitOpen(false)}
-            />
-          </View>
-
-          <SplitSummary variant="section" />
-        </View>
+    <>
+      {/* Panel */}
+      <View className="gap-space-2 rounded-lg bg-ink-50 px-space-3 pb-space-3 pt-space-1">
+        <PayerRow onPress={() => setPaidByOpen(true)} />
+        <SplitMethodControl />
+        <PeopleSummaryRow onPress={() => setSplitOpen(true)} />
+        <SplitSummary variant="section" />
       </View>
-    </View>
+
+      {/* Modal sheets: outside the panel, so its gap doesn't count them */}
+      <PaidByBottomSheet
+        visible={isPaidByOpen}
+        onClose={() => setPaidByOpen(false)}
+      />
+      <SplitBottomSheet
+        visible={isSplitOpen}
+        onClose={() => setSplitOpen(false)}
+      />
+    </>
   );
 }

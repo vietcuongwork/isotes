@@ -10,20 +10,81 @@ import {
   formatDisplayAmount,
   parseAmountInput,
 } from "@/utils/currency";
+import { cn } from "@/utils/cn";
 import { CheckCircle2, CircleAlert } from "lucide-react-native";
-import { useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { Text, View } from "react-native";
 
+type SummaryVariant = "section" | "sheet";
+type ResultTone = "ok" | "error" | "muted";
+
 interface SplitSummaryProps {
-  variant: "section" | "sheet";
+  variant: SummaryVariant;
 }
 
-function NobodySelected() {
+// One result line for every split method. The section draws the light panel's
+// line; the sheet keeps today's dark look until its own restyle.
+function ResultLine(props: {
+  variant: SummaryVariant;
+  tone: ResultTone;
+  children: ReactNode;
+}) {
+  const { variant, tone, children } = props;
+
+  if (variant === "sheet") {
+    const isOk = tone === "ok";
+    return (
+      <View className="flex-row items-center justify-center gap-1.5">
+        {isOk ? (
+          <CheckCircle2 size={16} color={colors.green[400]} />
+        ) : (
+          <CircleAlert size={12} color={colors.red[400]} />
+        )}
+        <Text
+          className={cn(
+            "text-meta",
+            isOk ? "font-outfit-medium text-green-400" : "text-red-400",
+          )}
+        >
+          {children}
+        </Text>
+      </View>
+    );
+  }
+
+  const iconColor = tone === "ok" ? colors.get[600] : colors.owe[600];
   return (
-    <View className="flex-row items-center justify-center gap-1.5">
-      <CircleAlert size={12} color={colors.red[400]} />
-      <Text className="text-red-400 text-meta">Nobody selected</Text>
+    <View className="flex-row items-center justify-center gap-space-2">
+      {tone === "ok" && <CheckCircle2 size={16} color={iconColor} />}
+      {tone === "error" && <CircleAlert size={16} color={iconColor} />}
+      <Text
+        className={cn(
+          "text-center text-caption",
+          tone === "ok" && "text-get-600",
+          tone === "error" && "text-owe-600",
+          tone === "muted" && "text-ink-500",
+        )}
+      >
+        {children}
+      </Text>
     </View>
+  );
+}
+
+function NobodySelected(props: { variant: SummaryVariant }) {
+  return (
+    <ResultLine variant={props.variant} tone="error">
+      Nobody selected
+    </ResultLine>
+  );
+}
+
+// The panel has no split to show until there is an amount
+function EnterAmount(props: { variant: SummaryVariant }) {
+  return (
+    <ResultLine variant={props.variant} tone="muted">
+      Enter an amount to see the split
+    </ResultLine>
   );
 }
 
@@ -43,6 +104,7 @@ function TotalAmountRow(props: {
 }
 
 function EquallySummary(props: {
+  variant: SummaryVariant;
   members: Member[];
   selection: SplitSelection;
   paidByMemberId: string;
@@ -51,6 +113,7 @@ function EquallySummary(props: {
   decimalDigits: number;
 }) {
   const {
+    variant,
     members,
     selection,
     paidByMemberId,
@@ -61,7 +124,11 @@ function EquallySummary(props: {
   const count = selection.selectedMemberIds.length;
 
   if (count === 0) {
-    return <NobodySelected />;
+    return <NobodySelected variant={variant} />;
+  }
+
+  if (variant === "section" && parsedAmountInput === 0) {
+    return <EnterAmount variant={variant} />;
   }
 
   const { baseAmount, absorberId, remainder } = getRoundingRemainder(
@@ -74,20 +141,12 @@ function EquallySummary(props: {
   );
 
   return (
-    <View className="flex-row justify-center gap-1.5">
-      <CheckCircle2 size={16} color={colors.green[400]} />
-      <Text className="text-center text-green-400 text-meta">
-        {formatDisplayAmount(baseAmount, symbol, decimalDigits)} each ·{" "}
-        {remainder > 0 ? (
-          <Text>
-            {members.find((member) => member.id === absorberId)?.name} cover the
-            extra {formatDisplayAmount(remainder, symbol, decimalDigits)}
-          </Text>
-        ) : (
-          <Text>{count} people</Text>
-        )}
-      </Text>
-    </View>
+    <ResultLine variant={variant} tone="ok">
+      {formatDisplayAmount(baseAmount, symbol, decimalDigits)} each ·{" "}
+      {remainder > 0
+        ? `${members.find((member) => member.id === absorberId)?.name} cover the extra ${formatDisplayAmount(remainder, symbol, decimalDigits)}`
+        : `${count} people`}
+    </ResultLine>
   );
 }
 
@@ -95,6 +154,7 @@ function EquallySummary(props: {
 // it; an overage (remainder < 0) is always an error. See design_decisions.md
 // "Amounts split validates against an exact sum".
 function AmountsSummary(props: {
+  variant: SummaryVariant;
   totalAmount: string;
   members: Member[];
   splitAmounts: Record<string, string>;
@@ -104,6 +164,7 @@ function AmountsSummary(props: {
   decimalDigits: number;
 }) {
   const {
+    variant,
     totalAmount,
     members,
     splitAmounts,
@@ -122,17 +183,18 @@ function AmountsSummary(props: {
   );
 
   if (selectedMemberIds.length === 0) {
-    return <NobodySelected />;
+    return <NobodySelected variant={variant} />;
+  }
+
+  if (variant === "section" && parsedAmountInput === 0) {
+    return <EnterAmount variant={variant} />;
   }
 
   if (remainder < 0) {
     return (
-      <View className="flex-row items-center justify-center gap-1.5">
-        <CircleAlert size={12} color={colors.red[400]} />
-        <Text className="text-red-400 text-meta">
-          {`${formatDisplayAmount(Math.abs(remainder), symbol, decimalDigits)} too much assigned`}
-        </Text>
-      </View>
+      <ResultLine variant={variant} tone="error">
+        {`${formatDisplayAmount(Math.abs(remainder), symbol, decimalDigits)} too much assigned`}
+      </ResultLine>
     );
   }
 
@@ -142,26 +204,21 @@ function AmountsSummary(props: {
   // recomputes, so it's not "left to assign" yet.
   if (remainder > 0 && autoMembers.length === 0) {
     return (
-      <View className="flex-row items-center justify-center gap-1.5">
-        <CircleAlert size={12} color={colors.red[400]} />
-        <Text className="text-red-400 text-meta">
-          {`${formatDisplayAmount(remainder, symbol, decimalDigits)} left to assign`}
-        </Text>
-      </View>
+      <ResultLine variant={variant} tone="error">
+        {`${formatDisplayAmount(remainder, symbol, decimalDigits)} left to assign`}
+      </ResultLine>
     );
   }
 
   return (
-    <View className="flex-row items-center justify-center gap-1.5">
-      <CheckCircle2 size={16} color={colors.green[400]} />
-      <Text className="font-outfit-medium text-green-400 text-meta">
-        {`All ${formatDisplayAmount(parseAmountInput(totalAmount), symbol, decimalDigits)} assigned`}
-      </Text>
-    </View>
+    <ResultLine variant={variant} tone="ok">
+      {`All ${formatDisplayAmount(parseAmountInput(totalAmount), symbol, decimalDigits)} assigned`}
+    </ResultLine>
   );
 }
 
 function SharesSummary(props: {
+  variant: SummaryVariant;
   members: Member[];
   selection: SplitSelection;
   paidByMemberId: string;
@@ -170,6 +227,7 @@ function SharesSummary(props: {
   decimalDigits: number;
 }) {
   const {
+    variant,
     members,
     selection,
     paidByMemberId,
@@ -186,7 +244,11 @@ function SharesSummary(props: {
   );
 
   if (totalShares === 0) {
-    return <NobodySelected />;
+    return <NobodySelected variant={variant} />;
+  }
+
+  if (variant === "section" && parsedAmountInput === 0) {
+    return <EnterAmount variant={variant} />;
   }
 
   const perShareAmount = floorToDecimals(
@@ -203,18 +265,31 @@ function SharesSummary(props: {
   );
 
   return (
-    <View className="flex-row items-center justify-center gap-1.5">
-      <CheckCircle2 size={16} color={colors.green[400]} />
-      <Text className="font-outfit-medium text-green-400 text-meta">
-        {formatDisplayAmount(perShareAmount, symbol, decimalDigits)} per share ·{" "}
-        {remainder > 0 ? (
-          <Text>
-            {members.find((member) => member.id === absorberId)?.name} cover the
-            extra {formatDisplayAmount(remainder, symbol, decimalDigits)}
-          </Text>
-        ) : (
-          <Text>{totalShares} shares</Text>
-        )}
+    <ResultLine variant={variant} tone="ok">
+      {formatDisplayAmount(perShareAmount, symbol, decimalDigits)} per share ·{" "}
+      {remainder > 0
+        ? `${members.find((member) => member.id === absorberId)?.name} cover the extra ${formatDisplayAmount(remainder, symbol, decimalDigits)}`
+        : `${totalShares} shares`}
+    </ResultLine>
+  );
+}
+
+function SoloSummary(props: { variant: SummaryVariant }) {
+  if (props.variant === "section") {
+    return (
+      <ResultLine variant="section" tone="muted">
+        Nobody owes anything yet. Add people to split it.
+      </ResultLine>
+    );
+  }
+
+  return (
+    <View className="flex-row justify-center">
+      <Text className="text-grey-200 text-meta">
+        Nobody owes anything yet -{" "}
+      </Text>
+      <Text className="text-orange-400 text-legacy-label">
+        add people to the trip
       </Text>
     </View>
   );
@@ -245,20 +320,11 @@ export default function SplitSummary(props: SplitSummaryProps) {
   };
 
   if (members.length === 1) {
-    return (
-      <View className="flex-row justify-center">
-        <Text className="text-grey-200 text-meta">
-          Nobody owes anything yet -{" "}
-        </Text>
-        <Text className="text-orange-400 text-legacy-label">
-          add people to the trip
-        </Text>
-      </View>
-    );
+    return <SoloSummary variant={variant} />;
   }
 
   return (
-    <View className="gap-1">
+    <View className={variant === "sheet" ? "gap-1" : undefined}>
       {variant === "sheet" && (
         <TotalAmountRow
           amount={totalAmount}
@@ -269,6 +335,7 @@ export default function SplitSummary(props: SplitSummaryProps) {
 
       {splitMethod === "equally" && (
         <EquallySummary
+          variant={variant}
           members={members}
           selection={selection}
           paidByMemberId={paidByMemberId}
@@ -280,6 +347,7 @@ export default function SplitSummary(props: SplitSummaryProps) {
 
       {splitMethod === "amounts" && (
         <AmountsSummary
+          variant={variant}
           totalAmount={totalAmount}
           members={members}
           splitAmounts={splitAmounts}
@@ -292,6 +360,7 @@ export default function SplitSummary(props: SplitSummaryProps) {
 
       {splitMethod === "shares" && (
         <SharesSummary
+          variant={variant}
           members={members}
           selection={selection}
           paidByMemberId={paidByMemberId}

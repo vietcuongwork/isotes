@@ -101,11 +101,11 @@ function AddExpenseContent(props: { onClose: () => void }): ReactElement {
           />
 
           {/* Paid by Field */}
-          <View className="p-5">
+          <View className="px-space-5 pt-space-4">
             <PaidAndSplitSection />
           </View>
 
-          <View className="px-space-5 pb-space-5">
+          <View className="px-space-5 pb-space-5 pt-space-4">
             <PrimaryButton label="Save expense" onPress={handleSubmit} />
           </View>
         </View>

@@ -41,7 +41,7 @@ name: paid-by-split
 - assertVisible: "60"
 
 # Ana (added from Paid by) pays
-- tapOn: "Y, You paid"
+- tapOn: "You paid"
 - tapOn: "Add a person"
 - tapOn: "Enter name"
 - inputText: "Ana"
@@ -52,12 +52,12 @@ name: paid-by-split
 - tapOn: "A, Ana"
 - tapOn:
     id: "sheet-close"
-- assertVisible: "A, Ana paid"
+- assertVisible: "Ana paid"
 
 # Amounts: Ben added from the split sheet; Ana 10, Ben 20, You auto 30
 - tapOn: "Amounts"
-# The people row's label carries the avatar initials ("2 people, Y, A").
-- tapOn: "2 people.*"
+# The people row reads "Split between 2 people, Y, A" (the label carries the avatar initials).
+- tapOn: ".*2 people.*"
 - tapOn: "Add a person"
 - tapOn: "Enter name"
 - inputText: "Ben"
@@ -113,13 +113,13 @@ name: paid-by-split
     below: "Delete"
     retryTapIfNoChange: true
 - tapOn: "Done"
-- tapOn: "Y, You paid"
+- tapOn: "You paid"
 - tapOn: "B, Ben"
 - tapOn:
     id: "sheet-close"
-- assertVisible: "B, Ben paid"
+- assertVisible: "Ben paid"
 - tapOn: "Shares"
-- tapOn: "3 people.*"
+- tapOn: ".*3 people.*"
 - tapOn: "Add a share for Ana"
 # Up and back down: Ben 2, then 1
 - tapOn: "Add a share for Ben"

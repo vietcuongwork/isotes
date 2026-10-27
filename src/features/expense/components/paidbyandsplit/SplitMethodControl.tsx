@@ -15,7 +15,11 @@ export default function SplitMethodControl(): ReactElement {
   const setSplitMethod = useExpenseSheetStore((s) => s.setSplitMethod);
 
   return (
-    <View className="flex-row gap-0.5 rounded-seg bg-grey-975 p-1">
+    <View
+      accessibilityRole="tablist"
+      accessibilityLabel="Split method"
+      className="flex-row rounded-md bg-ink-100 p-space-1"
+    >
       {SPLIT_METHODS.map((method) => {
         const isSelected = method.id === splitMethod;
 
@@ -23,16 +27,19 @@ export default function SplitMethodControl(): ReactElement {
           <Pressable
             key={method.id}
             onPress={() => setSplitMethod(method.id)}
-            className={`flex-1 rounded-seg-item py-2 ${
-              isSelected ? "bg-orange-400" : ""
-            }`}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: isSelected }}
+            //NOTE - no token, h-[36px] is the board's segment height
+            className={cn(
+              "h-[36px] flex-1 items-center justify-center rounded-sm",
+              isSelected && "bg-ink-900",
+            )}
           >
+            {/* NOTE - the board draws the selected label at 14/20 weight 600, which has no role: snapped to label (weight 500) */}
             <Text
               className={cn(
-                "text-center",
-                isSelected
-                  ? "text-orange-900 text-seg"
-                  : "text-grey-200 text-seg-idle",
+                "text-label",
+                isSelected ? "text-card" : "text-ink-700",
               )}
             >
               {method.label}

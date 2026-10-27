@@ -58,7 +58,7 @@ name: golden-path
 - assertVisible: "90,000"
 
 # Return drops the keyboard, which otherwise covers "Add to trip".
-- tapOn: "Y, You paid"
+- tapOn: "You paid"
 - tapOn: "Add a person"
 - tapOn: "Enter name"
 - inputText: "Ana"

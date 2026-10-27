@@ -32,7 +32,7 @@ Preconditions:
 - **Restore.** `Add expense`. Result: `Picked up where you left off` and `Flow draft`.
 - **Start over.** The chip `Start over` → `Start over\?` → the dialog's `{text: "Start over", rightOf: "Keep editing"}`. Result: neither the banner nor `Flow draft` is visible.
 - **Pick activity and date.** `Activity, Lodging` → `What was it for\?` (tap outside: the popover closes, `Activity, Lodging` stays) → `Activity, Lodging` → `Food` (a pick closes it; `Activity, Food`). Then `Date, .*` → `Yesterday` → `id: sheet-close` (the sheet's Done). Result: `Previous month` is gone and the date field reads yesterday.
-- **Save.** The amount field → `7`, `Decimal point`, `2`, `5` → `Done` (`7.25`, `Y, You paid`) → `Save expense`. Result: one row labelled `.*, You paid, \$7\.25` (a row is one VoiceOver element), and `No expenses yet` is gone.
+- **Save.** The amount field → `7`, `Decimal point`, `2`, `5` → `Done` (`7.25`, `You paid`) → `Save expense`. Result: one row labelled `.*, You paid, \$7\.25` (a row is one VoiceOver element), and `No expenses yet` is gone.
 - **Proof: stored expense.** Run `.claude/skills/verify-isotes/scripts/db.sh "SELECT e.amount, m.name, coalesce(e.description, '<none>'), e.split_method, e.activity_id, e.date = date('now', 'localtime', '-1 day') FROM expenses e JOIN members m ON m.id = e.paid_by_member_id WHERE e.trip_id = (SELECT id FROM trips WHERE name LIKE 'Flow add-expense %' ORDER BY created_at DESC LIMIT 1)"`. Output: exactly one row, `7.25|You|<none>|equally|food|1` (the draft's description was not saved; `1` means the date is yesterday).
 
 ## Gotchas
