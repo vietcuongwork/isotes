@@ -1,43 +1,31 @@
 import Raven from "@/components/Raven";
-import TripCard from "@/features/trips/components/TripCard";
 import TripsEmpty from "@/features/trips/components/TripsEmpty";
 import TripsNoMatches from "@/features/trips/components/TripsNoMatches";
-import { matchesTripSearch } from "@/features/trips/helpers/tripsHelpers";
 import { useTrips } from "@/features/trips/hooks/useTrips";
 import { EXPO_ROUTER } from "@/navigation/route";
 import { colors } from "@/themes/color";
 import { textStyle } from "@/themes/typography";
-import { TripCardData } from "@/types/TTrips";
-import { useIsFocused, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Plus, Search } from "lucide-react-native";
-import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import TripsList from "../components/TripList";
 
 // NOTE - no token for body without its line height, falling back to body's
 // font and size: iOS draws single-line TextInput text low when lineHeight is
 // set ([[Learn_react-native_textinput-lineheight-ios]])
 const body = textStyle("body");
-const searchTextStyle = {
-  fontFamily: body.fontFamily,
-  fontSize: body.fontSize,
-};
 
 export default function TripsScreen() {
-  const router = useRouter();
-  const trips = useTrips();
-  // StatusBar props merge in mount order and a pushed screen keeps this one
-  // mounted, so dark text is rendered only while Trips is on top.
-  const isFocused = useIsFocused();
-  // Kept in this screen, which stays mounted under a pushed trip, so the
-  // query survives the trip and back
-  const [query, setQuery] = useState("");
-  const listedTrips = trips?.filter((data) =>
-    matchesTripSearch(data.trip.name, query),
-  );
-  // Still null while loading, so the empty state can't flash
-  const hasNoTrips = trips?.length === 0;
+  const {
+    router,
+    isFocused,
+    query,
+    setQuery,
+    searchRef,
+    listedTrips,
+    hasNoTrips,
+  } = useTrips();
 
   return (
     <SafeAreaView className="flex-1 bg-ink-50" edges={["top"]}>
@@ -67,6 +55,7 @@ export default function TripsScreen() {
           <View className="mx-space-5 mt-space-6 h-space-12 flex-row items-center gap-space-2 rounded-md bg-ink-100 px-space-4">
             <Search size={20} color={colors.ink[500]} />
             <TextInput
+              ref={searchRef}
               value={query}
               onChangeText={setQuery}
               placeholder="Search trips"
@@ -76,7 +65,7 @@ export default function TripsScreen() {
               returnKeyType="search"
               autoCorrect={false}
               className="h-full flex-1 text-ink-900"
-              style={searchTextStyle}
+              style={styles.searchTextStyle}
             />
           </View>
 
@@ -108,38 +97,9 @@ export default function TripsScreen() {
   );
 }
 
-interface TripsListProps {
-  trips: TripCardData[];
-}
-
-// The "ONGOING" row stays pinned while only the cards scroll
-function TripsList(props: TripsListProps) {
-  const router = useRouter();
-  const { trips } = props;
-
-  return (
-    <>
-      <View className="flex-row justify-between px-space-5 pb-space-3 pt-space-6">
-        <Text className="text-ink-500 text-micro">Ongoing</Text>
-        <Text className="text-ink-500 text-micro">
-          {trips.length} {trips.length === 1 ? "trip" : "trips"}
-        </Text>
-      </View>
-
-      <ScrollView
-        className="flex-1"
-        // NOTE - no token for 120 (56 pill + 40 bottom offset + 24 space-6), falling back to pb-[120px]
-        contentContainerClassName="gap-space-3 px-space-5 pb-[120px]"
-        showsVerticalScrollIndicator={false}
-      >
-        {trips.map((data) => (
-          <TripCard
-            key={data.trip.id}
-            data={data}
-            onPress={() => router.push(EXPO_ROUTER.EXPENSE(data.trip.id))}
-          />
-        ))}
-      </ScrollView>
-    </>
-  );
-}
+const styles = StyleSheet.create({
+  searchTextStyle: {
+    fontFamily: body.fontFamily,
+    fontSize: body.fontSize,
+  },
+});

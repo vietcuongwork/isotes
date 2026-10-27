@@ -9,6 +9,13 @@ import { cn } from "@/utils/cn";
 import { formatDisplayAmount } from "@/utils/currency";
 import { Text, View } from "react-native";
 
+// get, owe and square are flat tints; empty is a plain card, so it doesn't read as settled
+const POSITION_CLASSES = {
+  get: { tile: "bg-get-100", text: "text-get-600" },
+  owe: { tile: "bg-owe-100", text: "text-owe-600" },
+  square: { tile: "bg-shine-100", text: "text-shine-700" },
+  empty: { tile: "bg-card shadow-card", text: "text-ink-500" },
+} satisfies Record<TripCardState, { tile: string; text: string }>;
 interface TripSummaryTilesProps {
   summary: TripSummary;
   currency: Currency;
@@ -21,14 +28,6 @@ interface AmountTileProps {
   labelClassName: string;
   valueClassName: string;
 }
-
-// get, owe and square are flat tints; empty is a plain card, so it doesn't read as settled
-const POSITION_CLASSES = {
-  get: { tile: "bg-get-100", text: "text-get-600" },
-  owe: { tile: "bg-owe-100", text: "text-owe-600" },
-  square: { tile: "bg-shine-100", text: "text-shine-700" },
-  empty: { tile: "bg-card shadow-card", text: "text-ink-500" },
-} satisfies Record<TripCardState, { tile: string; text: string }>;
 
 function getPositionLabel(state: TripCardState): string {
   switch (state) {

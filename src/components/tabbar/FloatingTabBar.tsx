@@ -6,6 +6,9 @@ import type {
 } from "expo-router/js-tabs";
 import { Pressable, Text, View } from "react-native";
 
+// ExpenseScreen draws the docked FAB in the space this route leaves free
+const FAB_ROUTE = "expense";
+
 interface TabButtonProps {
   label: string;
   accessibilityLabel: string;
@@ -13,9 +16,6 @@ interface TabButtonProps {
   renderIcon: BottomTabNavigationOptions["tabBarIcon"];
   onPress: () => void;
 }
-
-// ExpenseScreen draws the docked FAB in the space this route leaves free
-const FAB_ROUTE = "expense";
 
 function TabButton(props: TabButtonProps) {
   const { label, accessibilityLabel, focused, renderIcon, onPress } = props;

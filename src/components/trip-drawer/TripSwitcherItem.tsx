@@ -11,6 +11,12 @@ import { formatDisplayAmount } from "@/utils/currency";
 import { Check } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
 
+const POSITION_TEXT_CLASSES = {
+  get: "text-get-600",
+  owe: "text-owe-600",
+  square: "text-shine-700",
+} satisfies Record<PositionState, string>;
+
 interface TripSwitcherItemProps {
   data: TripCardData;
   isCurrent: boolean;
@@ -18,12 +24,6 @@ interface TripSwitcherItemProps {
 }
 
 type PositionState = Exclude<TripCardState, "empty">;
-
-const POSITION_TEXT_CLASSES = {
-  get: "text-get-600",
-  owe: "text-owe-600",
-  square: "text-shine-700",
-} satisfies Record<PositionState, string>;
 
 function getPositionText(state: PositionState, amount: string): string {
   switch (state) {

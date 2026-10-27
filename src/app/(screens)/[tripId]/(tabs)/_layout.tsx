@@ -1,5 +1,5 @@
 import FloatingTabBar from "@/components/tabbar/FloatingTabBar";
-import TripDrawer from "@/features/trips/components/TripDrawer";
+import TripDrawer from "@/components/trip-drawer/TripDrawer";
 import { useTripDrawerStore } from "@/stores/useTripDrawerStore";
 import { Tabs } from "expo-router";
 import { ChartNoAxesColumn, ReceiptText, Scale } from "lucide-react-native";

@@ -1,4 +1,4 @@
-import TripSwitcherItem from "@/features/trips/components/TripSwitcherItem";
+import TripSwitcherItem from "@/components/trip-drawer/TripSwitcherItem";
 import { useTripSwitcher } from "@/features/trips/hooks/useTripSwitcher";
 import { EXPO_ROUTER } from "@/navigation/route";
 import { useTripDrawerStore } from "@/stores/useTripDrawerStore";
@@ -27,13 +27,13 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+const DURATION_MS = 250;
+
 interface DrawerActionProps {
   icon: LucideIcon;
   label: string;
   onPress: () => void;
 }
-
-const DURATION_MS = 250;
 
 function DrawerAction(props: DrawerActionProps) {
   const { icon: Icon, label, onPress } = props;
@@ -65,6 +65,7 @@ export default function TripDrawer() {
   const route = useRoute();
   const rootNavigation = useNavigation("/");
   const router = useRouter();
+
   // NOTE - no token in a style sum, falling back to 64 (space-16) peek, 360 max (DESIGN.md Sizing)
   const panelWidth = Math.min(width - 64, 360);
 

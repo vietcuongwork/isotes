@@ -27,6 +27,9 @@ const body = textStyle("body");
 const noteTextStyle = {
   fontFamily: body.fontFamily,
   fontSize: body.fontSize,
+  // A recycled view can carry the name's kern; an explicit 0 replaces it, and
+  // turns off the font's kerning pairs (~1% wider). why: [[Investigate_textinput-recycled-placeholder]]
+  letterSpacing: 0,
   height: body.lineHeight, // 24: body's line height, back as the box's height
 };
 
@@ -104,6 +107,9 @@ function NoteField(
             onBlur={onBlur}
             placeholder="Dates, the occasion, who's coming"
             placeholderTextColor={colors.ink[400]}
+            // A recycled view can carry the name's line height; this sends a
+            // paragraph style without one (react-native#59132)
+            lineBreakModeIOS="tail"
             submitBehavior="submit"
             returnKeyType="next"
             onSubmitEditing={onNoteSubmit}
