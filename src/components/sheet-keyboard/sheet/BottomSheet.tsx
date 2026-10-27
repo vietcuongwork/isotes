@@ -613,7 +613,13 @@ function SheetLayout({
               testID="sheet-handle"
               accessible
               accessibilityRole={adjustable ? "adjustable" : "button"}
-              accessibilityLabel={title ?? "Sheet"}
+              accessibilityLabel={
+                title
+                  ? light && titleAccent
+                    ? `${title} ${titleAccent}`
+                    : title
+                  : "Sheet"
+              }
               accessibilityHint={
                 adjustable
                   ? "Swipe up or down to resize. Double-tap to close the keyboard or the sheet."

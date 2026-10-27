@@ -1,13 +1,10 @@
-import Button from "@/components/Button";
-import PickerField from "@/components/formfield/PickerField";
+import PrimaryButton from "@/components/PrimaryButton";
 import {
   BottomSheet,
   BottomSheetScrollView,
 } from "@/components/sheet-keyboard";
-import { colors } from "@/themes/color";
-import { Camera } from "lucide-react-native";
 import { ReactElement, useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAddExpenseBottomSheet from "../hooks/useAddExpenseBottomSheet";
 import ActivityAndDateSection from "./ActivityAndDateSection";
@@ -17,6 +14,9 @@ import DescriptionField from "./description/DescriptionField";
 import PaidAndSplitSection from "./paidbyandsplit/PaidAndSplitSection";
 import RestoredDraftBanner from "./RestoredDraftBanner";
 import StartOverDialog from "./StartOverDialog";
+
+// The board's sheet top; BottomSheet clamps the height under the safe area
+const SHEET_TOP = 56;
 
 interface AddExpenseBottomSheetProps {
   visible: boolean;
@@ -29,14 +29,18 @@ export default function AddExpenseBottomSheet(
   const { visible, onClose } = props;
 
   const safeAreaInsets = useSafeAreaInsets();
+  const { height: windowHeight } = useWindowDimensions();
 
   return (
     <BottomSheet
       visible={visible}
       onClose={onClose}
-      title="New expense"
+      title="New"
+      titleAccent="expense"
+      titleSize="title"
+      appearance="light"
       showCloseButton
-      snapPoints={["80%"]}
+      snapPoints={[windowHeight - SHEET_TOP]}
       safeAreaInsets={safeAreaInsets}
     >
       <AddExpenseContent onClose={onClose} />
@@ -81,18 +85,13 @@ function AddExpenseContent(props: { onClose: () => void }): ReactElement {
             <RestoredDraftBanner onStartOver={handleStartOver} />
           )}
 
-          {/* Amount Field */}
-          <AmountField
-            error={amountError}
-            onFocus={() => setActivityPickerOpen(false)}
-          />
-
-          {/* Description Field */}
-          <View className="flex-row gap-2.5 px-5 pt-4">
+          {/* Amount and description */}
+          <View className="gap-space-4 px-space-5 pt-space-4">
+            <AmountField
+              error={amountError}
+              onFocus={() => setActivityPickerOpen(false)}
+            />
             <DescriptionField />
-            <PickerField onPress={() => {}}>
-              <Camera size={20} color={colors.grey[200]} />
-            </PickerField>
           </View>
 
           <ActivityAndDateSection
@@ -106,8 +105,8 @@ function AddExpenseContent(props: { onClose: () => void }): ReactElement {
             <PaidAndSplitSection />
           </View>
 
-          <View className="px-5">
-            <Button buttonText="Save expense" onPress={handleSubmit} />
+          <View className="px-space-5 pb-space-5">
+            <PrimaryButton label="Save expense" onPress={handleSubmit} />
           </View>
         </View>
         {isActivityPickerOpen && (
