@@ -3,7 +3,7 @@ import {
   BottomSheetScrollView,
 } from "@/components/sheet-keyboard";
 import { ReactElement } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAddDateBottomSheet from "@/features/expense/hooks/useAddDateBottomSheet";
 import DateCalendar from "./DateCalendar";
@@ -26,6 +26,11 @@ export default function AddDateBottomSheet(
     <BottomSheet
       visible={visible}
       onClose={onClose}
+      title="Date"
+      titleSize="title"
+      appearance="light"
+      showCloseButton
+      closeVariant="done"
       safeAreaInsets={safeAreaInsets}
     >
       <AddDateContent today={today} />
@@ -43,20 +48,14 @@ function AddDateContent(props: { today: string }): ReactElement {
     <>
       {/* Dynamic mode sizes the sheet from this scroll view's content */}
       <BottomSheetScrollView>
-        <View className="items-center px-5 pb-3.5">
-          <Text className="tracking-[0.08em] text-grey-200 text-legacy-label">
-            EXPENSE DATE
-          </Text>
-        </View>
+        <View className="gap-space-4 px-space-5 pb-space-5">
+          <QuickPickPills
+            pills={pills}
+            selectedDate={selectedDate}
+            onSelect={handleSelectDate}
+          />
 
-        <QuickPickPills
-          pills={pills}
-          selectedDate={selectedDate}
-          onSelect={handleSelectDate}
-        />
-
-        {/* Month grid */}
-        <View className="pt-4.5 px-5">
+          {/* Month grid */}
           <DateCalendar
             calendarMonthId={monthId}
             selectedDateId={selectedDate}

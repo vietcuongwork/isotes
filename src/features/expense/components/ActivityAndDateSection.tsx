@@ -1,4 +1,5 @@
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
+import { Activity } from "@/types/TExpense";
 import { ReactElement } from "react";
 import { View } from "react-native";
 import ActivityField from "./activity/ActivityField";
@@ -21,22 +22,28 @@ export default function ActivityAndDateSection(
   const setActivity = useExpenseSheetStore((s) => s.setActivity);
   const date = useExpenseSheetStore((s) => s.date);
 
+  // A pick closes the popover. It is open here, so the toggle closes it.
+  const handleSelect = (picked: Activity) => {
+    setActivity(picked);
+    onToggleActivityPicker();
+  };
+
   return (
-    <View className="flex-row gap-2.5 px-5 pt-3.5">
-      <ActivityField
-        selected={activity}
-        open={isActivityPickerOpen}
-        onPress={onToggleActivityPicker}
-      />
-      <DateField onPress={onDateFieldPress} selected={date} />
-      {isActivityPickerOpen && (
-        // NOTE - top-full = parent's content-box bottom, which is paddingTop
-        //  short of the real edge → mt = 14 (parent pt-3.5) + 8 gap.
-        //  why: encountered_errors_ii.md (2026-09-10)
-        <View className="absolute left-5 right-5 top-full z-20 mt-6">
-          <ActivityPicker selected={activity} onSelect={setActivity} />
-        </View>
-      )}
+    // Outer view pads; the row has none, so the popover's top-full is the row's real bottom
+    <View className="px-space-5 pt-space-4">
+      <View className="flex-row gap-space-2">
+        <ActivityField
+          selected={activity}
+          open={isActivityPickerOpen}
+          onPress={onToggleActivityPicker}
+        />
+        <DateField onPress={onDateFieldPress} selected={date} />
+        {isActivityPickerOpen && (
+          <View className="absolute left-0 right-0 top-full z-20 mt-space-2">
+            <ActivityPicker selected={activity} onSelect={handleSelect} />
+          </View>
+        )}
+      </View>
     </View>
   );
 }

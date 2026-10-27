@@ -1,4 +1,5 @@
 import { colors } from "@/themes/color";
+import { textStyle } from "@/themes/typography";
 import {
   Calendar,
   fromDateId,
@@ -10,62 +11,76 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
 
-// 44px cell, 38px circle → 3px padding each side (the library's own default
-// padding is 6px, too tight for the 38px circle in the design).
+// 44 pt cell, 40 pt disc: a 2 pt margin each side (the library's own padding is 6).
 const DAY_HEIGHT = 44;
+const DAY_INSET = 2;
 const DAY_CIRCLE_RADIUS = 999;
+const RING = 1.5;
+
+const micro = textStyle("micro");
+const body = textStyle("body");
+// weight 600 is a family on this font setup, not fontWeight
+const semibold = micro.fontFamily;
 
 const theme: CalendarTheme = {
   itemWeekName: {
-    content: {
-      fontSize: 11,
-      fontWeight: "500",
-      color: colors.grey[400],
-      letterSpacing: 0.6,
-    },
+    content: { ...micro, color: colors.ink[500] },
   },
   itemDay: {
-    idle: ({ isDifferentMonth, isPressed }) => ({
+    idle: ({ isDifferentMonth }) => ({
       container: {
         aspectRatio: 1,
-        backgroundColor: isPressed ? colors.grey[900] : "transparent",
+        margin: DAY_INSET,
+        borderWidth: RING,
+        borderColor: "transparent",
+        backgroundColor: "transparent",
       },
       content: {
-        fontSize: 15,
-        fontWeight: "400",
-        color: isDifferentMonth ? colors.grey[500] : colors.grey[100],
+        ...body,
+        fontVariant: ["tabular-nums"],
+        color: isDifferentMonth ? colors.ink[300] : colors.ink[900],
       },
     }),
-    today: ({ isPressed }) => ({
+    today: () => ({
       container: {
         aspectRatio: 1,
+        margin: DAY_INSET,
         borderRadius: DAY_CIRCLE_RADIUS,
         borderTopLeftRadius: DAY_CIRCLE_RADIUS,
         borderTopRightRadius: DAY_CIRCLE_RADIUS,
         borderBottomLeftRadius: DAY_CIRCLE_RADIUS,
         borderBottomRightRadius: DAY_CIRCLE_RADIUS,
-        borderWidth: 1,
-        borderColor: colors.orange[700],
-        backgroundColor: isPressed ? colors.grey[900] : "transparent",
+        borderWidth: RING,
+        borderColor: colors.ink[900],
+        backgroundColor: "transparent",
       },
-      content: { fontSize: 15, fontWeight: "500", color: colors.orange[400] },
+      content: {
+        ...body,
+        fontFamily: semibold,
+        fontVariant: ["tabular-nums"],
+        color: colors.ink[900],
+      },
     }),
-    active: () => ({
+    // today keeps its ring when it is also the selected day
+    active: ({ isToday }) => ({
       container: {
         aspectRatio: 1,
+        margin: DAY_INSET,
+        borderWidth: RING,
+        borderColor: isToday ? colors.ink[900] : "transparent",
         borderRadius: DAY_CIRCLE_RADIUS,
-        backgroundColor: colors.orange[400],
-        // same value as the `shadow-selected` Tailwind token (ActivityPicker)
-        shadowColor: colors.orange[400],
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 6,
-        shadowOpacity: 0.12,
         borderTopLeftRadius: DAY_CIRCLE_RADIUS,
         borderTopRightRadius: DAY_CIRCLE_RADIUS,
         borderBottomLeftRadius: DAY_CIRCLE_RADIUS,
         borderBottomRightRadius: DAY_CIRCLE_RADIUS,
+        backgroundColor: colors.shine[100],
       },
-      content: { fontSize: 15, fontWeight: "500", color: colors.orange[900] },
+      content: {
+        ...body,
+        fontFamily: semibold,
+        fontVariant: ["tabular-nums"],
+        color: colors.shine[700],
+      },
     }),
   },
 };
@@ -108,34 +123,40 @@ export default function DateCalendar(props: DateCalendarProps) {
   };
 
   return (
-    <View className="items-center">
-      {/* Month Row */}
-      <View className="w-full flex-row items-center justify-between pt-4">
-        <Text className="text-grey-50 text-body-lg-medium">
-          {calendarRowMonth}
-        </Text>
-        <View className="flex-row gap-4">
+    <View className="items-center gap-space-1">
+      {/* Month row */}
+      <View className="w-full flex-row items-center justify-between">
+        <Text className="text-ink-900 text-heading">{calendarRowMonth}</Text>
+        {/* //NOTE - no token, -mr-[10px] is the board's pull so the chevron ink lines up with the sheet edge */}
+        <View className="-mr-[10px] flex-row">
+          {/* //NOTE - no token, h-[44px] w-[44px] is the board's tap target size */}
           <Pressable
             onPress={() => goToMonth(-1)}
-            className="h-8 w-8 items-center justify-center"
+            accessibilityRole="button"
+            accessibilityLabel="Previous month"
+            className="h-[44px] w-[44px] items-center justify-center"
           >
-            <ChevronLeft size={20} color={colors.grey[200]} />
+            <ChevronLeft size={20} color={colors.ink[900]} />
           </Pressable>
+          {/* //NOTE - no token, h-[44px] w-[44px] is the board's tap target size */}
           <Pressable
             onPress={() => goToMonth(1)}
-            className="h-8 w-8 items-center justify-center"
+            accessibilityRole="button"
+            accessibilityLabel="Next month"
+            className="h-[44px] w-[44px] items-center justify-center"
           >
-            <ChevronRight size={20} color={colors.grey[100]} />
+            <ChevronRight size={20} color={colors.ink[900]} />
           </Pressable>
         </View>
       </View>
 
-      <View className="w-full pt-2.5">
+      {/* Weekdays and days */}
+      <View className="w-full">
         <Calendar.Row.Week>
           {weekDaysList.map((weekDay, i) => (
             <Calendar.Item.WeekName
               key={i}
-              height={24}
+              height={32}
               theme={theme.itemWeekName}
             >
               {weekDay}

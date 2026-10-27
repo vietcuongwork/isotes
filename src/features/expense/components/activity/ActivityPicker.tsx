@@ -1,9 +1,9 @@
+import { ACTIVITIES } from "@/features/expense/constants";
 import { colors } from "@/themes/color";
 import { Activity } from "@/types/TExpense";
 import { cn } from "@/utils/cn";
 import { Check } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
-import { ACTIVITIES } from "@/features/expense/constants";
 
 interface ActivityPickerProps {
   selected: Activity;
@@ -14,37 +14,31 @@ export default function ActivityPicker(props: ActivityPickerProps) {
   const { selected, onSelect } = props;
 
   return (
-    <View className="rounded-card border border-grey-800 bg-grey-900 p-2.5 shadow-popover">
+    <View className="rounded-lg bg-card p-space-2 shadow-lifted">
       <View className="flex-row flex-wrap">
         {ACTIVITIES.map((activity) => {
           const isSelected = activity.id === selected.id;
           const { Icon } = activity;
           return (
-            <View key={activity.id} className="w-1/2 p-1">
+            // NOTE - no token, p-[2px] is half of the board's space-1 gap between rows
+            <View key={activity.id} className="w-1/2 p-[2px]">
               <Pressable
                 onPress={() => onSelect(activity)}
+                role="option"
+                accessibilityState={{ selected: isSelected }}
                 className={cn(
-                  "flex-row items-center gap-2.5 rounded-row p-3",
-                  isSelected
-                    ? "border border-orange-700 bg-orange-800 shadow-selected"
-                    : "bg-grey-950 shadow-none",
+                  "h-[44px] flex-row items-center gap-space-2 rounded-md px-space-3",
+                  isSelected && "bg-shine-100",
                 )}
               >
-                <Icon
-                  size={18}
-                  color={isSelected ? colors.orange[400] : colors.grey[200]}
-                />
+                <Icon size={20} color={colors.ink[900]} />
                 <Text
-                  className={cn(
-                    "flex-1 text-row",
-                    isSelected
-                      ? "text-grey-50 text-row-medium"
-                      : "text-grey-100",
-                  )}
+                  className="flex-1 text-ink-900 text-body"
+                  numberOfLines={1}
                 >
                   {activity.label}
                 </Text>
-                {isSelected && <Check size={16} color={colors.orange[400]} />}
+                {isSelected && <Check size={20} color={colors.shine[700]} />}
               </Pressable>
             </View>
           );

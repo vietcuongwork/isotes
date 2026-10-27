@@ -1,8 +1,7 @@
-import PickerField from "@/components/formfield/PickerField";
 import { colors } from "@/themes/color";
 import { formatDateLabel } from "@/utils/date";
 import { Calendar } from "lucide-react-native";
-import { Text, View } from "react-native";
+import { Pressable, Text } from "react-native";
 
 interface DateFieldProps {
   selected: string;
@@ -10,19 +9,18 @@ interface DateFieldProps {
 }
 export default function DateField(props: DateFieldProps) {
   const { onPress, selected } = props;
+  const label = formatDateLabel(selected);
   return (
-    <PickerField
-      label="Date"
+    <Pressable
       onPress={onPress}
-      className="flex-1"
-      boxClassName="px-4 py-3"
+      accessibilityRole="button"
+      accessibilityLabel={`Date, ${label}`}
+      className="h-space-12 flex-1 flex-row items-center gap-space-2 rounded-md bg-ink-100 px-space-3"
     >
-      <View className="flex-row items-center gap-2">
-        <Calendar size={18} color={colors.grey[500]} />
-        <Text className="text-grey-50 text-row">
-          {formatDateLabel(selected)}
-        </Text>
-      </View>
-    </PickerField>
+      <Calendar size={20} color={colors.ink[500]} />
+      <Text className="flex-1 text-ink-900 text-body" numberOfLines={1}>
+        {label}
+      </Text>
+    </Pressable>
   );
 }
