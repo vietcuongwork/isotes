@@ -1,4 +1,5 @@
 import { Currency } from "@/types/TCreateTrip";
+import { foldForSearch } from "@/utils/text";
 
 export interface CurrencyLetterGroup {
   letter: string;
@@ -22,11 +23,6 @@ function stripAccents(text: string): string {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/ł/g, "l")
     .replace(/Ł/g, "L");
-}
-
-// Query and fields compare in the same form, so "Kč" and "kc" both find CZK
-function toSearchText(text: string): string {
-  return stripAccents(text).toLowerCase();
 }
 
 export function getDefaultCurrency(
@@ -72,10 +68,11 @@ export function filterCurrencies(
   options: Currency[],
   query: string,
 ): Currency[] {
-  const needle = toSearchText(query.trim());
+  // Query and fields compare in the same form, so "Kč" and "kc" both find CZK
+  const needle = foldForSearch(query);
   return options.filter((option) =>
     [option.name, option.code, option.symbol].some((field) =>
-      toSearchText(field).includes(needle),
+      foldForSearch(field).includes(needle),
     ),
   );
 }

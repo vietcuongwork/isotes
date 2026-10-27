@@ -47,6 +47,8 @@ import {
 } from "./sheetMath";
 
 type SheetAppearance = "dark" | "light";
+type CloseVariant = "x" | "done";
+type TitleSize = "heading" | "title";
 
 export interface BottomSheetProps {
   /** Controlled. The sheet animates in and out, and unmounts once hidden. */
@@ -80,6 +82,15 @@ export interface BottomSheetProps {
   appearance?: SheetAppearance;
   /** VoiceOver label of the X (`showCloseButton`). The backdrop keeps "Close sheet". */
   closeAccessibilityLabel?: string;
+  /**
+   * Light only. "done" draws a "Done" text button where the X sits. It keeps `testID="sheet-close"`
+   * and, like the X, needs `showCloseButton` and `title`. Its label is always "Done".
+   */
+  closeVariant?: CloseVariant;
+  /** Light only. A trailing word after `title` in ink-400. VoiceOver reads both as one header. */
+  titleAccent?: string;
+  /** Light only. The title's type role: "heading" (20/28, the default) or "title" (28/32). */
+  titleSize?: TitleSize;
   /** Real insets (e.g. from react-native-safe-area-context). Skips the core SafeAreaView probe. */
   safeAreaInsets?: EdgeInsets;
 }
@@ -108,6 +119,9 @@ export function BottomSheet({
   showCloseButton = false,
   appearance = "dark",
   closeAccessibilityLabel = "Close",
+  closeVariant = "x",
+  titleAccent,
+  titleSize = "heading",
   safeAreaInsets,
 }: BottomSheetProps) {
   const { height: windowHeight } = useWindowDimensions();
@@ -221,6 +235,9 @@ export function BottomSheet({
           showCloseButton={showCloseButton}
           appearance={appearance}
           closeAccessibilityLabel={closeAccessibilityLabel}
+          closeVariant={closeVariant}
+          titleAccent={titleAccent}
+          titleSize={titleSize}
           snapPoints={snapPoints}
           initialSnap={initialSnap}
           onSnapChange={onSnapChange}
@@ -245,6 +262,9 @@ interface SheetLayoutProps {
   showCloseButton: boolean;
   appearance: SheetAppearance;
   closeAccessibilityLabel: string;
+  closeVariant: CloseVariant;
+  titleAccent?: string;
+  titleSize: TitleSize;
   snapPoints?: readonly SnapPoint[];
   initialSnap: number;
   onSnapChange?: (index: number) => void;
@@ -265,6 +285,9 @@ function SheetLayout({
   showCloseButton,
   appearance,
   closeAccessibilityLabel,
+  closeVariant,
+  titleAccent,
+  titleSize,
   snapPoints,
   initialSnap,
   onSnapChange,
@@ -485,6 +508,11 @@ function SheetLayout({
   const adjustable = !!snaps && snaps.length > 1;
   const closeButton = showCloseButton && !!title;
   const light = appearance === "light";
+  const doneButton = closeButton && light && closeVariant === "done";
+  const largeTitle = light && titleSize === "title";
+  // Centre the X circle or Done on the title's own line
+  const closeTop =
+    TITLE_ROW_TOP + (largeTitle ? TITLE_LINE.title : TITLE_LINE.heading) / 2;
   const closeKeyboardOrSheet = () =>
     TextInput.State.currentlyFocusedInput()
       ? dismissKeyboard()
@@ -624,22 +652,41 @@ function SheetLayout({
                   style={[
                     styles.title,
                     light && styles.titleLight,
+                    largeTitle && styles.titleLargeLight,
                     closeButton && styles.titleBesideClose,
                     closeButton && light && styles.titleBesideCloseLight,
+                    doneButton && styles.titleBesideDone,
                   ]}
                 >
                   {title}
+                  {light && titleAccent ? (
+                    <Text style={styles.titleAccentLight}> {titleAccent}</Text>
+                  ) : null}
                 </Text>
               ) : null}
             </View>
-            {closeButton ? (
+            {doneButton ? (
+              <Pressable
+                testID="sheet-close"
+                accessibilityRole="button"
+                accessibilityLabel="Done"
+                onPress={onRequestClose}
+                style={[styles.done, { top: closeTop - DONE_HEIGHT / 2 }]}
+              >
+                <Text style={styles.doneText}>Done</Text>
+              </Pressable>
+            ) : closeButton ? (
               <Pressable
                 testID="sheet-close"
                 accessibilityRole="button"
                 accessibilityLabel={closeAccessibilityLabel}
                 hitSlop={12}
                 onPress={onRequestClose}
-                style={[styles.close, light && styles.closeLight]}
+                style={[
+                  styles.close,
+                  light && styles.closeLight,
+                  light && { top: closeTop - CLOSE_CIRCLE / 2 },
+                ]}
               >
                 <X
                   size={light ? CLOSE_ICON_LIGHT : CLOSE_ICON}
@@ -664,8 +711,13 @@ const TITLE_ROW_CENTER = 12 + 4 + 10 + 16 / 2;
 const CLOSE_ICON_LIGHT = 20;
 // NOTE - no token for the 44pt touch target, falling back to 44 (DESIGN.md text button height)
 const CLOSE_CIRCLE = 44;
-// Same top as above, centred on the `heading` role's 28pt line
-const TITLE_ROW_CENTER_LIGHT = 12 + 4 + 10 + 28 / 2;
+// NOTE - no token for the 44pt Done touch target, falling back to 44 (DESIGN.md text button height)
+const DONE_HEIGHT = 44;
+// NOTE - no token for the Done width, falling back to 64 (~42 text + 12 gap + 10 spare)
+const DONE_RESERVE = 64;
+// Light title row's top: the same 12 + 4 + 10, then centred on the role's own line
+const TITLE_ROW_TOP = 12 + 4 + 10;
+const TITLE_LINE = { heading: 28, title: 32 } as const; // line heights of the two roles
 
 // Dark: fixed tokens, matching the old components/bottomsheet look. Light (`appearance`):
 // the Ink & Shine `sheet` component; spacing.js stores px strings, so sizes are numbers here.
@@ -721,10 +773,21 @@ const styles = StyleSheet.create({
   },
   grabberLight: { backgroundColor: tokens.ink[200] },
   titleLight: { ...textStyle("heading"), color: tokens.ink[900] },
+  titleLargeLight: textStyle("title"),
+  titleAccentLight: { color: tokens.ink[400] },
   titleBesideCloseLight: { paddingRight: CLOSE_CIRCLE + 12 }, // circle + gap
-  // Overrides `close`; its right: 20 is space-5 too
+  titleBesideDone: { paddingRight: DONE_RESERVE },
+  // right 8 + 12 side padding puts the text's end at space-5, like the X's edge
+  done: {
+    position: "absolute",
+    right: 8,
+    height: DONE_HEIGHT,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+  },
+  doneText: { ...textStyle("amount"), color: tokens.ink[900] },
+  // Overrides `close`; its right: 20 is space-5 too. `top` is set inline from the title's size
   closeLight: {
-    top: TITLE_ROW_CENTER_LIGHT - CLOSE_CIRCLE / 2,
     width: CLOSE_CIRCLE,
     height: CLOSE_CIRCLE,
     borderRadius: CLOSE_CIRCLE / 2,
