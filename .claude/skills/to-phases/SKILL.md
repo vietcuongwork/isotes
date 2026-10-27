@@ -49,13 +49,15 @@ Iterate until the user approves the phase list.
 
 Inside each approved phase, write the tasks by CLAUDE.md Step 2's task rules: smallest, non-breaking, revertible, tagged `[TDD]` or `[Live]`, with a **Verify** line and `Blocked by` where needed. Tasks may be one file each; the phase carries the vertical slice. A `[TDD]` task names its seam from the phase's **Seams**.
 
+Tag a task `[Live, checked in T{n}]` only when it draws something and changes no behaviour: no tap handler, no state change, no navigation. A task that adds an interaction, such as a popover that opens and closes, keeps its own short Verify and runs it on the simulator at that task.
+
 A task that renames, removes or replaces a labelled element, or puts a new screen in a flow's path, names the flows that select it (`grep -ln '<label>' .claude/skills/verify-isotes/flows/*.yaml`). Its **Verify** line runs them, and the task updates them by the upkeep rule in `verify-isotes/features/README.md`.
 
 An `accessible` row or card exposes one joined label, so wrapping texts in one replaces their labels. Its flows and **Verify** lines match the whole label by regex (`".*, You paid, \\$7\\.25"`), and a size inside it is measured from a screenshot.
 
 A UI task's board check compares bounds with the board's HTML, as the vault's `Ref_claude-design.md` → "In the feature workflow" describes. Its **Verify** line says so; a rendered picture of the board is used only when the user asks for one.
 
-Done when every acceptance criterion in the spec traces to a task — write that task's number into the criterion's `verified by` (`Live (T12)`) — and every phase's last task ends on its Demo.
+Done when every acceptance criterion in the spec traces to a task — write that task's number into the criterion's `verified by` (`Live (T12)`) — and every phase's last task ends on its Demo. Then read each criterion and each Demo Verify line for behaviours (a tap that changes state, a close, a save) and check that each one appears in the body of the task that builds it, not only in the task that checks it.
 
 ## 5. Write the planning note
 

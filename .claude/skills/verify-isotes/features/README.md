@@ -32,6 +32,6 @@ Each feature file starts with an H1 title and one paragraph on the user-visible 
 
 - [Golden path](./golden-path.md): create a VND trip, add a 90,000 expense paid by You, split equally three ways, and check the saved row and its splits.
 - [Create trip](./create-trip.md): the empty-name refusal, name, description and default currency, landing on an empty Expenses tab.
-- [Add expense](./add-expense.md): a decimal amount and description, the restored draft and Start over, and saving an expense paid by You.
+- [Add expense](./add-expense.md): a decimal amount and description, an activity and a date pick, the restored draft and Start over, and saving an expense paid by You.
 - [Paid by & split](./paid-by-split.md): a payer other than You, Add person from both sheets, custom amounts and shares, with the stored splits summing to each amount.
 - [Trips](./trips.md): open Trips from Welcome, a query that matches nothing and its message, and the clear button listing every trip again; read-only.

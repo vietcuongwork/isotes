@@ -1,6 +1,6 @@
 ---
 name: review-two-axis
-description: "Two-axis review — Standards (isotes rules, design decisions, smell baseline) and Spec (the vault note the work implements) — run as parallel sub-agents and reported side by side. Use after a non-trivial implementation task (Feat_ Step 3, Fix_ Step 5), or when the user asks to review changes since X. Not for trivial edits."
+description: "Two-axis review — Standards (isotes rules, design decisions, smell baseline) and Spec (the vault note the work implements) — run as parallel sub-agents and reported side by side. Use once at the end of a feature, before its acceptance checks (Feat_ Step 3), after a non-trivial Fix_ task (Fix_ Step 5), or when the user asks to review changes since X. Not for trivial edits."
 ---
 
 Two-axis review of the changes pinned in step 1:
@@ -16,6 +16,7 @@ Both axes run as **parallel sub-agents** so they don't pollute each other's cont
 
 - **Default (a task under review):** the uncommitted changes to that task's files — `git diff HEAD -- <task files>`, plus any new untracked task files (`git status --porcelain -- <task files>`). `main` usually carries unrelated work in progress, so never review the whole working tree.
 - **A fixed point the user names** (commit SHA, branch, tag, `HEAD~5`): `git diff <fixed-point>...HEAD` and `git log <fixed-point>..HEAD --oneline`.
+- **A feature at its end** (the baseline commit T1 recorded): `git diff <baseline> -- <files the feature's tasks name>`, plus new untracked files among them. `git diff <baseline>` runs to the working tree, so it covers the last phase's uncommitted changes, which `...HEAD` leaves out.
 
 Confirm the diff is non-empty before going further. An empty diff should fail here, not inside two parallel sub-agents.
 
@@ -24,12 +25,12 @@ Confirm the diff is non-empty before going further. An empty diff should fail he
 The spec is the vault note the work implements, under `/Users/admin/repository/vault/isotes/`:
 
 1. A note the user names.
-2. The current task's entry in `Feat_{slug}_planning.md` plus `Feat_{slug}_spec.md`, or the task in `Fix_{slug}.md` plus `Solution_{slug}.md`.
+2. The current task's entry in `Feat_{slug}_planning.md` (for a feature at its end, the whole note) plus `Feat_{slug}_spec.md`, or the task in `Fix_{slug}.md` plus `Solution_{slug}.md`.
 3. If none is clear, ask. If there isn't one (e.g. a small task), the **Spec** sub-agent skips and reports "no spec available".
 
 Read the note(s) with the Obsidian MCP tools and paste the relevant contents into the Spec sub-agent's prompt.
 
-For a task under review, also paste the task's planned **Verify** line and its draft Verify results from this conversation: review runs before the task is logged, so the note doesn't have them yet.
+For a task under review, also paste the task's planned **Verify** line and its draft Verify results from this conversation: review runs before the task is logged, so the note doesn't have them yet. For a feature at its end, paste the spec's acceptance criteria and the implementation note's Open checks and Deviation lines instead, since every task is already logged there.
 
 ### 3. Identify the standards sources
 

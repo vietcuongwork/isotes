@@ -64,6 +64,24 @@ name: add-expense
 - assertNotVisible: "Picked up where you left off"
 - assertNotVisible: "Flow draft"
 
+# Activity: a tap outside closes the popover and keeps the pick; a pick closes it
+- tapOn: "Activity, Lodging"
+- tapOn: "What was it for\\?"
+- assertVisible: "Activity, Lodging"
+- assertNotVisible: "Transport"
+- tapOn: "Activity, Lodging"
+- tapOn: "Food"
+- assertVisible: "Activity, Food"
+- assertNotVisible: "Transport"
+- waitForAnimationToEnd
+# Date: Yesterday from the quick picks, then Done
+- tapOn:
+    text: "Date, .*"
+- tapOn: "Yesterday"
+- tapOn:
+    id: "sheet-close"
+- assertNotVisible: "Previous month"
+
 # The real expense: 7.25 paid by You, saved
 - tapOn: "0.00"
 - extendedWaitUntil:

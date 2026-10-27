@@ -6,6 +6,8 @@ A user adds an expense from a trip's Expenses tab: they type the amount on the a
 
 - `ae-amount` types an amount on the number pad, including the decimal point for two-decimal currencies.
 - `ae-description` stores an optional description ("What was it for?").
+- `ae-activity` the activity field opens a two-column popover; a pick or a tap outside closes it.
+- `ae-date` the date field opens the Date sheet: Today, Yesterday, the selected date's own pill and a Monday-first month; Done closes it.
 - `ae-draft-restore` closing without saving keeps a draft; reopening shows "Picked up where you left off" with its values.
 - `ae-start-over` "Start over", confirmed in its dialog, clears the draft back to a blank expense.
 - `ae-save` saves the expense paid by You, split equally, and lists it on the Expenses tab.
@@ -14,6 +16,7 @@ A user adds an expense from a trip's Expenses tab: they type the amount on the a
 
 - A trip's Expenses tab: the `+` button ("Add expense").
 - In New expense: the amount field opens the number pad; "Done" closes it. The sheet's close button keeps the draft.
+- In New expense: the activity field ("Activity, Lodging") and the date field ("Date, 27 Oct 2026") sit side by side. The date field opens the Date sheet, closed by its Done.
 - The draft banner's "Start over" chip opens a "Start over?" dialog: "Keep editing" or "Start over".
 
 ## Driving it with Maestro
@@ -28,8 +31,9 @@ Preconditions:
 - **Leave a draft.** `Add expense` → the amount field (placeholder `0.00`) → wait for `id: number-pad` → `1`, `2`, `Decimal point`, `5` → `Done`. Result: `12.5`. Then `What was it for\?` → `Flow draft` → Return → `id: sheet-close`.
 - **Restore.** `Add expense`. Result: `Picked up where you left off` and `Flow draft`.
 - **Start over.** The chip `Start over` → `Start over\?` → the dialog's `{text: "Start over", rightOf: "Keep editing"}`. Result: neither the banner nor `Flow draft` is visible.
+- **Pick activity and date.** `Activity, Lodging` → `What was it for\?` (tap outside: the popover closes, `Activity, Lodging` stays) → `Activity, Lodging` → `Food` (a pick closes it; `Activity, Food`). Then `Date, .*` → `Yesterday` → `id: sheet-close` (the sheet's Done). Result: `Previous month` is gone and the date field reads yesterday.
 - **Save.** The amount field → `7`, `Decimal point`, `2`, `5` → `Done` (`7.25`, `Y, You paid`) → `Save expense`. Result: one row labelled `.*, You paid, \$7\.25` (a row is one VoiceOver element), and `No expenses yet` is gone.
-- **Proof: stored expense.** Run `.claude/skills/verify-isotes/scripts/db.sh "SELECT e.amount, m.name, coalesce(e.description, '<none>'), e.split_method FROM expenses e JOIN members m ON m.id = e.paid_by_member_id WHERE e.trip_id = (SELECT id FROM trips WHERE name LIKE 'Flow add-expense %' ORDER BY created_at DESC LIMIT 1)"`. Output: exactly one row, `7.25|You|<none>|equally` (the draft's description was not saved).
+- **Proof: stored expense.** Run `.claude/skills/verify-isotes/scripts/db.sh "SELECT e.amount, m.name, coalesce(e.description, '<none>'), e.split_method, e.activity_id, e.date = date('now', 'localtime', '-1 day') FROM expenses e JOIN members m ON m.id = e.paid_by_member_id WHERE e.trip_id = (SELECT id FROM trips WHERE name LIKE 'Flow add-expense %' ORDER BY created_at DESC LIMIT 1)"`. Output: exactly one row, `7.25|You|<none>|equally|food|1` (the draft's description was not saved; `1` means the date is yesterday).
 
 ## Gotchas
 
@@ -38,3 +42,6 @@ Preconditions:
 - The amount field has no label: its placeholder is `0.00` for two-decimal currencies and `0` for VND. The field shows what was typed (`12.5`), not a padded value.
 - The pad's keys are labelled by digit; the decimal key is `Decimal point`, the delete key `Delete`. Pad taps use `retryTapIfNoChange` (a dropped tap was seen once).
 - Text selectors are regex: escape `?` and `$`.
+- A pick closes the activity popover. While it is open, a full-screen scrim sits over the sheet, so a tap on the date field only closes the popover and the Date sheet never opens.
+- The date label reads `d MMM yyyy` (`27 Oct 2026`), never "Today". Select it with `Date, .*`.
+- Day cells are plain numbers; the `1` and `28` to `30` that outside days repeat are ambiguous, `31` is not. The quick picks and the activity rows show no radio or option trait in the idb tree, only `Selected` on the chosen row.
