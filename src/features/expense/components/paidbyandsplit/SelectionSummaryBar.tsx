@@ -53,7 +53,7 @@ export default function SelectionSummaryBar(props: SelectionSummaryBarProps) {
         actions: [
           ...selectionActions,
           {
-            label: "Reset",
+            label: "Reset to 1 each",
             onPress: () => {
               setSplitShares(
                 Object.fromEntries(members.map((member) => [member.id, 1])),

@@ -78,6 +78,10 @@ name: paid-by-split
     text: "0"
     below: "Delete"
     retryTapIfNoChange: true
+# The taller light sheet leaves Ben's row under the pad: scroll it up first
+- swipe:
+    start: 50%, 50%
+    end: 50%, 25%
 - tapOn: "Amount for Ben"
 - tapOn:
     text: "2"
@@ -88,7 +92,10 @@ name: paid-by-split
     text: "0"
     below: "Delete"
     retryTapIfNoChange: true
-- tapOn: "Done"
+# The sheet has its own Done now; the pad's sits below its Delete key
+- tapOn:
+    text: "Done"
+    below: "Delete"
 - assertVisible: "All \\$60.00 assigned"
 - tapOn:
     id: "sheet-close"
@@ -120,11 +127,11 @@ name: paid-by-split
 - assertVisible: "Ben paid"
 - tapOn: "Shares"
 - tapOn: ".*3 people.*"
-- tapOn: "Add a share for Ana"
+- tapOn: "One share more for Ana"
 # Up and back down: Ben 2, then 1
-- tapOn: "Add a share for Ben"
+- tapOn: "One share more for Ben"
 - assertVisible: "\\$8.00 per share · 5 shares"
-- tapOn: "Remove a share for Ben"
+- tapOn: "One share less for Ben"
 - assertVisible: "\\$10.00 per share · 4 shares"
 # A member's name toggles them: You out (3 shares), then back in with 1
 - tapOn: "You"

@@ -22,35 +22,9 @@ interface SplitSummaryProps {
   variant: SummaryVariant;
 }
 
-// One result line for every split method. The section draws the light panel's
-// line; the sheet keeps today's dark look until its own restyle.
-function ResultLine(props: {
-  variant: SummaryVariant;
-  tone: ResultTone;
-  children: ReactNode;
-}) {
-  const { variant, tone, children } = props;
-
-  if (variant === "sheet") {
-    const isOk = tone === "ok";
-    return (
-      <View className="flex-row items-center justify-center gap-1.5">
-        {isOk ? (
-          <CheckCircle2 size={16} color={colors.green[400]} />
-        ) : (
-          <CircleAlert size={12} color={colors.red[400]} />
-        )}
-        <Text
-          className={cn(
-            "text-meta",
-            isOk ? "font-outfit-medium text-green-400" : "text-red-400",
-          )}
-        >
-          {children}
-        </Text>
-      </View>
-    );
-  }
+// One result line for every split method, in the light design
+function ResultLine(props: { tone: ResultTone; children: ReactNode }) {
+  const { tone, children } = props;
 
   const iconColor = tone === "ok" ? colors.get[600] : colors.owe[600];
   return (
@@ -71,21 +45,13 @@ function ResultLine(props: {
   );
 }
 
-function NobodySelected(props: { variant: SummaryVariant }) {
-  return (
-    <ResultLine variant={props.variant} tone="error">
-      Nobody selected
-    </ResultLine>
-  );
+function NobodySelected() {
+  return <ResultLine tone="error">Nobody selected</ResultLine>;
 }
 
 // The panel has no split to show until there is an amount
-function EnterAmount(props: { variant: SummaryVariant }) {
-  return (
-    <ResultLine variant={props.variant} tone="muted">
-      Enter an amount to see the split
-    </ResultLine>
-  );
+function EnterAmount() {
+  return <ResultLine tone="muted">Enter an amount to see the split</ResultLine>;
 }
 
 function TotalAmountRow(props: {
@@ -96,9 +62,9 @@ function TotalAmountRow(props: {
   const { amount, symbol, decimalDigits } = props;
   const placeholder = decimalDigits === 0 ? "0" : "0.00";
   return (
-    <View className="flex-row items-baseline justify-center gap-2">
-      <Text className="text-grey-50 text-amount-regular">{`${symbol} ${amount ? amount : placeholder}`}</Text>
-      <Text className="text-grey-200 text-meta">to split</Text>
+    <View className="flex-row items-baseline justify-center gap-space-2">
+      <Text className="text-ink-900 text-title">{`${symbol} ${amount ? amount : placeholder}`}</Text>
+      <Text className="text-ink-500 text-caption">to split</Text>
     </View>
   );
 }
@@ -124,11 +90,11 @@ function EquallySummary(props: {
   const count = selection.selectedMemberIds.length;
 
   if (count === 0) {
-    return <NobodySelected variant={variant} />;
+    return <NobodySelected />;
   }
 
   if (variant === "section" && parsedAmountInput === 0) {
-    return <EnterAmount variant={variant} />;
+    return <EnterAmount />;
   }
 
   const { baseAmount, absorberId, remainder } = getRoundingRemainder(
@@ -141,10 +107,10 @@ function EquallySummary(props: {
   );
 
   return (
-    <ResultLine variant={variant} tone="ok">
+    <ResultLine tone="ok">
       {formatDisplayAmount(baseAmount, symbol, decimalDigits)} each ·{" "}
       {remainder > 0
-        ? `${members.find((member) => member.id === absorberId)?.name} cover the extra ${formatDisplayAmount(remainder, symbol, decimalDigits)}`
+        ? `${members.find((member) => member.id === absorberId)?.name} covers the extra ${formatDisplayAmount(remainder, symbol, decimalDigits)}`
         : `${count} people`}
     </ResultLine>
   );
@@ -183,16 +149,16 @@ function AmountsSummary(props: {
   );
 
   if (selectedMemberIds.length === 0) {
-    return <NobodySelected variant={variant} />;
+    return <NobodySelected />;
   }
 
   if (variant === "section" && parsedAmountInput === 0) {
-    return <EnterAmount variant={variant} />;
+    return <EnterAmount />;
   }
 
   if (remainder < 0) {
     return (
-      <ResultLine variant={variant} tone="error">
+      <ResultLine tone="error">
         {`${formatDisplayAmount(Math.abs(remainder), symbol, decimalDigits)} too much assigned`}
       </ResultLine>
     );
@@ -204,14 +170,14 @@ function AmountsSummary(props: {
   // recomputes, so it's not "left to assign" yet.
   if (remainder > 0 && autoMembers.length === 0) {
     return (
-      <ResultLine variant={variant} tone="error">
+      <ResultLine tone="error">
         {`${formatDisplayAmount(remainder, symbol, decimalDigits)} left to assign`}
       </ResultLine>
     );
   }
 
   return (
-    <ResultLine variant={variant} tone="ok">
+    <ResultLine tone="ok">
       {`All ${formatDisplayAmount(parseAmountInput(totalAmount), symbol, decimalDigits)} assigned`}
     </ResultLine>
   );
@@ -244,11 +210,11 @@ function SharesSummary(props: {
   );
 
   if (totalShares === 0) {
-    return <NobodySelected variant={variant} />;
+    return <NobodySelected />;
   }
 
   if (variant === "section" && parsedAmountInput === 0) {
-    return <EnterAmount variant={variant} />;
+    return <EnterAmount />;
   }
 
   const perShareAmount = floorToDecimals(
@@ -265,33 +231,20 @@ function SharesSummary(props: {
   );
 
   return (
-    <ResultLine variant={variant} tone="ok">
+    <ResultLine tone="ok">
       {formatDisplayAmount(perShareAmount, symbol, decimalDigits)} per share ·{" "}
       {remainder > 0
-        ? `${members.find((member) => member.id === absorberId)?.name} cover the extra ${formatDisplayAmount(remainder, symbol, decimalDigits)}`
+        ? `${members.find((member) => member.id === absorberId)?.name} covers the extra ${formatDisplayAmount(remainder, symbol, decimalDigits)}`
         : `${totalShares} shares`}
     </ResultLine>
   );
 }
 
-function SoloSummary(props: { variant: SummaryVariant }) {
-  if (props.variant === "section") {
-    return (
-      <ResultLine variant="section" tone="muted">
-        Nobody owes anything yet. Add people to split it.
-      </ResultLine>
-    );
-  }
-
+function SoloSummary() {
   return (
-    <View className="flex-row justify-center">
-      <Text className="text-grey-200 text-meta">
-        Nobody owes anything yet -{" "}
-      </Text>
-      <Text className="text-orange-400 text-legacy-label">
-        add people to the trip
-      </Text>
-    </View>
+    <ResultLine tone="muted">
+      Nobody owes anything yet. Add people to split it.
+    </ResultLine>
   );
 }
 
@@ -320,11 +273,11 @@ export default function SplitSummary(props: SplitSummaryProps) {
   };
 
   if (members.length === 1) {
-    return <SoloSummary variant={variant} />;
+    return <SoloSummary />;
   }
 
   return (
-    <View className={variant === "sheet" ? "gap-1" : undefined}>
+    <View className={variant === "sheet" ? "gap-space-1" : undefined}>
       {variant === "sheet" && (
         <TotalAmountRow
           amount={totalAmount}

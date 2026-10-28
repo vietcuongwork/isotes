@@ -1,6 +1,7 @@
 import Avatar, { AvatarProps } from "@/components/Avatar";
 import { NumberPadInput } from "@/components/sheet-keyboard";
 import { colors } from "@/themes/color";
+import { textStyle } from "@/themes/typography";
 import { Currency } from "@/types/TCreateTrip";
 import { cn } from "@/utils/cn";
 import { formatAmountInput, MAX_INTEGER_DIGITS } from "@/utils/currency";
@@ -13,7 +14,13 @@ type MemberListRowProps =
       variant: "equally";
       name: string;
       avatar: AvatarProps;
-      state: { selected: boolean; amount: string; onPress: () => void };
+      state: {
+        selected: boolean;
+        amount: string;
+        // "+$0.01" on the remainder's absorber, else absent
+        extra?: string;
+        onPress: () => void;
+      };
     }
   | {
       variant: "amounts";
@@ -26,6 +33,8 @@ type MemberListRowProps =
         amount: string;
         autoAmount: string;
         selected: boolean;
+        // Typed amounts pass the total: every field turns red
+        overAssigned: boolean;
         onChangeAmount: (amount: string) => void;
         onPress: () => void;
       };
@@ -37,6 +46,7 @@ type MemberListRowProps =
       state: {
         shares: number;
         amount: string;
+        extra?: string;
         selected: boolean;
         onIncrement: () => void;
         onDecrement: () => void;
@@ -69,18 +79,48 @@ function SelectionIndicator(props: { selected: boolean }) {
   );
 }
 
+// font and size only: iOS draws single-line TextInput text low when lineHeight is
+// set ([[Learn_react-native_textinput-lineheight-ios]]); the field's height carries it
+const amountText = textStyle("amount");
+const amountInputStyle = {
+  fontFamily: amountText.fontFamily,
+  fontSize: amountText.fontSize,
+  fontVariant: amountText.fontVariant,
+};
+
 function AmountsInput(props: {
   name: string;
   amount: string;
   autoAmount: string;
+  selected: boolean;
+  overAssigned: boolean;
   onChangeAmount: (amount: string) => void;
   currency: Currency;
 }) {
-  const { name, amount, autoAmount, onChangeAmount, currency } = props;
+  const {
+    name,
+    amount,
+    autoAmount,
+    selected,
+    overAssigned,
+    onChangeAmount,
+    currency,
+  } = props;
   const { decimalDigits } = currency;
 
   return (
-    <View className="w-[40%] flex-row items-center justify-end gap-1 rounded-seg-item border border-grey-815 bg-grey-965 px-3 py-2">
+    // NOTE - no token for the 112x40 field and the 1.5pt border, falling back to h-[40px] w-[112px] and border-[1.5px] (this field's own size)
+    <View
+      className={cn(
+        "h-[40px] w-[112px] justify-center rounded-sm border-[1.5px] px-space-3",
+        selected ? "bg-card" : "bg-transparent",
+        overAssigned
+          ? "border-owe-600"
+          : selected
+            ? "border-transparent"
+            : "border-ink-200",
+      )}
+    >
       {/* Number pad from the sheet's KeyboardHost; groups "1,234.5" as you type */}
       <NumberPadInput
         accessibilityLabel={`Amount for ${name}`}
@@ -96,11 +136,12 @@ function AmountsInput(props: {
               ? "0"
               : "0.00"
         }
-        placeholderTextColor={colors.grey[400]}
-        cursorColor={colors.orange[400]}
-        selectionColor={colors.orange[400]}
+        placeholderTextColor={colors.ink[500]}
+        cursorColor={colors.ink[900]}
+        selectionColor={colors.ink[900]}
         textAlign="right"
-        className="flex-1 text-grey-50 text-body-tight-flat"
+        className="h-full text-ink-900"
+        style={amountInputStyle}
       />
     </View>
   );
@@ -109,28 +150,46 @@ function AmountsInput(props: {
 function SharesStepper(props: {
   name: string;
   shares: number;
+  selected: boolean;
   onIncrement: () => void;
   onDecrement: () => void;
 }) {
-  const { name, shares, onIncrement, onDecrement } = props;
+  const { name, shares, selected, onIncrement, onDecrement } = props;
+  // NOTE - no token for the 44pt target and the 32pt disc, falling back to h-[44px] w-[44px] and h-[32px] w-[32px]
+  const buttonClass = "h-[44px] w-[44px] items-center justify-center";
+  const discClass = cn(
+    "h-[32px] w-[32px] items-center justify-center rounded-full",
+    selected ? "bg-ink-100" : "bg-ink-50",
+  );
+
   return (
-    <View className="flex-row items-center gap-2.5 rounded-[10px] bg-grey-965 px-1.5 py-1">
+    <View className="flex-row items-center">
       <Pressable
         onPress={onDecrement}
-        hitSlop={8}
-        accessibilityLabel={`Remove a share for ${name}`}
+        accessibilityRole="button"
+        accessibilityLabel={`One share less for ${name}`}
+        className={buttonClass}
       >
-        <Minus size={17} color={colors.grey[200]} />
+        <View className={discClass}>
+          <Minus
+            size={16}
+            color={shares === 0 ? colors.ink[300] : colors.ink[900]}
+          />
+        </View>
       </Pressable>
-      <Text className="w-3 text-center font-outfit-medium text-base text-grey-50">
+      {/* NOTE - the board draws the count at weight 600, which has no role: amount with font-outfit-semibold */}
+      <Text className="min-w-[20px] text-center font-outfit-semibold text-ink-900 text-amount">
         {shares}
       </Text>
       <Pressable
         onPress={onIncrement}
-        hitSlop={8}
-        accessibilityLabel={`Add a share for ${name}`}
+        accessibilityRole="button"
+        accessibilityLabel={`One share more for ${name}`}
+        className={buttonClass}
       >
-        <Plus size={17} color={colors.orange[400]} />
+        <View className={discClass}>
+          <Plus size={16} color={colors.ink[900]} />
+        </View>
       </Pressable>
     </View>
   );
@@ -188,7 +247,15 @@ export default function MemberListRow(props: MemberListRowProps): ReactElement {
             {name}
           </Text>
           {(variant === "shares" || variant === "equally") && (
-            <Text className="text-ink-500 text-caption">{state.amount}</Text>
+            <Text className="text-ink-500 text-caption">
+              {state.amount}
+              {state.extra && (
+                // NOTE - the board draws the extra at weight 600, which has no role: caption with font-outfit-semibold
+                <Text className="font-outfit-semibold text-shine-700">
+                  {` ${state.extra}`}
+                </Text>
+              )}
+            </Text>
           )}
         </View>
       </View>
@@ -198,6 +265,8 @@ export default function MemberListRow(props: MemberListRowProps): ReactElement {
           name={name}
           amount={state.amount}
           autoAmount={state.autoAmount}
+          selected={selected}
+          overAssigned={state.overAssigned}
           onChangeAmount={state.onChangeAmount}
           currency={props.currency}
         />
@@ -207,6 +276,7 @@ export default function MemberListRow(props: MemberListRowProps): ReactElement {
         <SharesStepper
           name={name}
           shares={state.shares}
+          selected={selected}
           onIncrement={state.onIncrement}
           onDecrement={state.onDecrement}
         />

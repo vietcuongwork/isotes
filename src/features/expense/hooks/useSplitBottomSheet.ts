@@ -1,8 +1,10 @@
+import { filterMembers } from "@/features/expense/helpers/memberHelpers";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { Member, SplitSelection } from "@/types/TExpense";
 import { formatDisplayAmount, parseAmountInput } from "@/utils/currency";
 import { useMemo, useState } from "react";
 import {
+  getAmountsRemainder,
   getEffectiveSplitAmounts,
   getRoundingRemainder,
   resolveSplitAmounts,
@@ -12,19 +14,10 @@ import useChangeSplitAmount from "./useChangeSplitAmount";
 
 type RemainderInfo = ReturnType<typeof getRoundingRemainder>;
 
-function formatWithRemainder(
-  base: number,
-  remainder: number,
-  symbol: string,
-  decimalDigits: number,
-): string {
-  return `${formatDisplayAmount(base, symbol, decimalDigits)} + ${formatDisplayAmount(remainder, symbol, decimalDigits)}`;
-}
-
 // Fills in "0" (formatted) for a member with no row — filtered out of
 // "shares"'s persisted rows entirely when they have 0 shares. The absorber
-// (if remainder > 0) shows "$33.33 + $0.01" instead of the plain final
-// amount, so their row explains why it differs from everyone else's.
+// (if remainder > 0) shows the base share here; their extra is in
+// toDisplayExtras, so their row explains why it differs from everyone else's.
 function toDisplayAmounts(
   members: Member[],
   rows: SplitRow[],
@@ -40,12 +33,7 @@ function toDisplayAmounts(
       ) {
         return [
           member.id,
-          formatWithRemainder(
-            remainderInfo.baseAmount,
-            remainderInfo.remainder,
-            symbol,
-            decimalDigits,
-          ),
+          formatDisplayAmount(remainderInfo.baseAmount, symbol, decimalDigits),
         ];
       }
       const row = rows.find((r) => r.memberId === member.id);
@@ -57,6 +45,18 @@ function toDisplayAmounts(
   );
 }
 
+// Only the remainder's absorber has an extra: "+$0.01" after their share
+function toDisplayExtras(
+  remainderInfo: RemainderInfo,
+  symbol: string,
+  decimalDigits: number,
+): Record<string, string> {
+  if (remainderInfo.remainder <= 0) return {};
+  return {
+    [remainderInfo.absorberId]: `+${formatDisplayAmount(remainderInfo.remainder, symbol, decimalDigits)}`,
+  };
+}
+
 function getEffectiveDisplayAmounts(
   splitMethod: "equally" | "shares",
   members: Member[],
@@ -65,28 +65,32 @@ function getEffectiveDisplayAmounts(
   selection: SplitSelection,
   paidByMemberId: string,
   symbol: string,
-): Record<string, string> {
-  return toDisplayAmounts(
+): { amounts: Record<string, string>; extras: Record<string, string> } {
+  const remainderInfo = getRoundingRemainder(
     members,
-    resolveSplitAmounts(
-      members,
-      splitMethod,
-      totalAmount,
-      decimalDigits,
-      selection,
-      paidByMemberId,
-    ),
-    getRoundingRemainder(
-      members,
-      splitMethod,
-      totalAmount,
-      decimalDigits,
-      selection,
-      paidByMemberId,
-    ),
-    symbol,
+    splitMethod,
+    totalAmount,
     decimalDigits,
+    selection,
+    paidByMemberId,
   );
+  return {
+    amounts: toDisplayAmounts(
+      members,
+      resolveSplitAmounts(
+        members,
+        splitMethod,
+        totalAmount,
+        decimalDigits,
+        selection,
+        paidByMemberId,
+      ),
+      remainderInfo,
+      symbol,
+      decimalDigits,
+    ),
+    extras: toDisplayExtras(remainderInfo, symbol, decimalDigits),
+  };
 }
 
 export default function useSplitBottomSheet() {
@@ -106,11 +110,11 @@ export default function useSplitBottomSheet() {
 
   const { symbol, decimalDigits } = currency;
 
-  const filteredMembers = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return members;
-    return members.filter((member) => member.name.toLowerCase().includes(q));
-  }, [members, query]);
+  // Hides rows only: selection, amounts and shares stay as they are (ADR 0010)
+  const filteredMembers = useMemo(
+    () => filterMembers(members, query),
+    [members, query],
+  );
 
   const selection: SplitSelection = useMemo(
     () => ({
@@ -145,7 +149,7 @@ export default function useSplitBottomSheet() {
 
   // Read-only displays — safe to mirror resolveSplitAmounts exactly.
   // why: encountered_errors_iv.md (2026-09-25).
-  const effectiveEquallyAmounts = useMemo<Record<string, string>>(
+  const equallyDisplay = useMemo(
     () =>
       getEffectiveDisplayAmounts(
         "equally",
@@ -159,7 +163,7 @@ export default function useSplitBottomSheet() {
     [members, selection, totalAmount, decimalDigits, paidByMemberId, symbol],
   );
 
-  const effectiveShareAmounts = useMemo<Record<string, string>>(
+  const sharesDisplay = useMemo(
     () =>
       getEffectiveDisplayAmounts(
         "shares",
@@ -171,6 +175,19 @@ export default function useSplitBottomSheet() {
         symbol,
       ),
     [members, selection, totalAmount, decimalDigits, paidByMemberId, symbol],
+  );
+
+  // Every field turns red together once the typed amounts pass the total
+  const isOverAssigned = useMemo(
+    () =>
+      getAmountsRemainder(
+        members,
+        selectedAmounts,
+        selectedMemberIds,
+        totalAmount,
+        decimalDigits,
+      ).remainder < 0,
+    [members, selectedAmounts, selectedMemberIds, totalAmount, decimalDigits],
   );
 
   // A deselected member always reads as 0 shares, whatever's stored.
@@ -218,8 +235,11 @@ export default function useSplitBottomSheet() {
     // field's value, so typing never edits the auto figure
     typedAmounts: selectedAmounts,
     effectiveAmounts,
-    effectiveEquallyAmounts,
-    effectiveShareAmounts,
+    effectiveEquallyAmounts: equallyDisplay.amounts,
+    equallyExtras: equallyDisplay.extras,
+    effectiveShareAmounts: sharesDisplay.amounts,
+    shareExtras: sharesDisplay.extras,
+    isOverAssigned,
     handleToggleMember,
     handleChangeAmount,
     handleChangeShares,
