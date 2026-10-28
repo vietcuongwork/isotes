@@ -1,3 +1,4 @@
+import { filterMembers } from "@/features/expense/helpers/memberHelpers";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { useMemo, useState } from "react";
 
@@ -8,11 +9,10 @@ export default function usePaidByBottomSheet() {
   const onSelectPayer = useExpenseSheetStore((s) => s.setPaidByMemberId);
   const members = useExpenseSheetStore((s) => s.members);
 
-  const filteredMembers = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return members;
-    return members.filter((member) => member.name.toLowerCase().includes(q));
-  }, [members, query]);
+  const filteredMembers = useMemo(
+    () => filterMembers(members, query),
+    [members, query],
+  );
 
   return {
     query,

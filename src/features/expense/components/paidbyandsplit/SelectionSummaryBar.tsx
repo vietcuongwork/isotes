@@ -1,6 +1,5 @@
-import Chip from "@/components/Chip";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 interface SelectionSummaryBarProps {
   context: "split" | "paidBy";
@@ -74,16 +73,21 @@ export default function SelectionSummaryBar(props: SelectionSummaryBarProps) {
   })();
 
   return (
-    <View className="flex-row items-center justify-between pb-3">
-      <Text className="text-grey-200 text-meta">{label}</Text>
+    // NOTE - no token for the 32pt row height, falling back to min-h-[32px] (the board's)
+    <View className="min-h-[32px] flex-row items-center justify-between">
+      <Text className="text-ink-500 text-micro">{label}</Text>
       {actions.length > 0 && (
-        <View className="flex-row gap-2">
+        <View className="flex-row gap-space-4">
           {actions.map((action) => (
-            <Chip
+            // NOTE - no token for the 32pt action height, falling back to h-[32px]
+            <Pressable
               key={action.label}
-              label={action.label}
+              accessibilityRole="button"
               onPress={action.onPress}
-            />
+              className="h-[32px] justify-center"
+            >
+              <Text className="text-ink-900 text-label">{action.label}</Text>
+            </Pressable>
           ))}
         </View>
       )}

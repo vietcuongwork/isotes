@@ -14,8 +14,8 @@ A user picks who paid an expense and how it's split. The payer sheet and the spl
 
 ## How to get to it (user POV)
 
-- In New expense: the payer row (`You paid` by default) opens the payer sheet, which has `Add a person`.
-- The `Equally` / `Amounts` / `Shares` control sets the method; the people row below it (`Split between <n> people`) opens the split sheet, which has the same control, `Add a person`, and one row per member.
+- In New expense: the payer row (`You paid` by default) opens the payer sheet, which has `Add person`.
+- The `Equally` / `Amounts` / `Shares` control sets the method; the people row below it (`Split between <n> people`) opens the split sheet, which has the same control, `Add person`, and one row per member.
 - In the split sheet: `Amount for <name>` fields in Amounts, and `Remove a share for <name>` / `Add a share for <name>` steppers in Shares.
 
 ## Driving it with Maestro
@@ -28,8 +28,8 @@ Preconditions:
 - **Run it.** Run SKILL.md's "Whole flow" command with `paid-by-split` (`flows/paid-by-split.yaml`). Exit code `0`; the last step waits for the row `.*, Ben paid, .*, you owe \$10\.00`.
 - **Trip.** Creates `Flow paid-by-split <MM-DD HH:mm>` in AUD: Return twice opens the currency sheet, then `Australian Dollar, AUD, \$` (the row picks and closes it). Result: `Currency, Australian Dollar, AUD` (see `create-trip.md`).
 - **Amount.** `Add expense` → the amount field (placeholder `0.00`) → wait for `id: number-pad` → `6`, `{text: "0", below: "Delete"}` → `Done`. Result: `60`.
-- **Payer, adding Ana.** `You paid` → `Add a person` → `Enter name` → `Ana` → Return → `Add to trip` → `A, Ana` → `id: sheet-close`. Result: `Ana paid`.
-- **Amounts, adding Ben.** `Amounts` → `.*2 people.*` → `Add a person` → `Enter name` → `Ben` → Return → `Add to trip`. Then `Amount for Ana` → `1`, `0`; `Amount for Ben` → `2`, `0` → `Done`. Result: `id: number-pad` stays visible between keys; `All \$60.00 assigned`.
+- **Payer, adding Ana.** `You paid` → `Add person` → `Enter name` → `Ana` → Return → `Add to trip` → `A, Ana` → `id: sheet-close`. Result: `Ana paid`.
+- **Amounts, adding Ben.** `Amounts` → `.*2 people.*` → `Add person` → `Enter name` → `Ben` → Return → `Add to trip`. Then `Amount for Ana` → `1`, `0`; `Amount for Ben` → `2`, `0` → `Done`. Result: `id: number-pad` stays visible between keys; `All \$60.00 assigned`.
 - **Save.** `id: sheet-close` → `Save expense`. Result: a row labelled `.*, Ana paid, .*, you owe \$30\.00` (a row is one VoiceOver element).
 - **Shares.** A second expense: `4`, `0` → `Done` → `You paid` → `B, Ben` → `id: sheet-close` (`Ben paid`) → `Shares` → `.*3 people.*` → `Add a share for Ana` → `Add a share for Ben` (`\$8.00 per share · 5 shares`) → `Remove a share for Ben`. Result: `\$10.00 per share · 4 shares`.
 - **Toggle a member.** `You` (`\$13.33 per share · .*`) → `You` again. Result: `\$10.00 per share · 4 shares`.

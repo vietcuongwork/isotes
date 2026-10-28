@@ -4,7 +4,7 @@ import { colors } from "@/themes/color";
 import { Currency } from "@/types/TCreateTrip";
 import { cn } from "@/utils/cn";
 import { formatAmountInput, MAX_INTEGER_DIGITS } from "@/utils/currency";
-import { CheckCircle2, Circle, Minus, Plus } from "lucide-react-native";
+import { Check, Minus, Plus } from "lucide-react-native";
 import { ReactElement } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -50,11 +50,22 @@ type MemberListRowProps =
       state: { selected: boolean; onPress: () => void };
     };
 
+// NOTE - no token for the 24pt disc and the 44pt tap target, falling back to h-[24px] w-[24px] and h-[44px] w-[44px]
 function SelectionIndicator(props: { selected: boolean }) {
-  return props.selected ? (
-    <CheckCircle2 size={20} color={colors.orange[400]} />
-  ) : (
-    <Circle size={20} color={colors.grey[700]} />
+  return (
+    <View
+      importantForAccessibility="no-hide-descendants"
+      className="-mr-space-2 h-[44px] w-[44px] items-center justify-center"
+    >
+      {props.selected ? (
+        <View className="h-[24px] w-[24px] items-center justify-center rounded-full bg-ink-900">
+          <Check size={16} strokeWidth={2.5} color={colors.card} />
+        </View>
+      ) : (
+        // NOTE - no token for the 1.5pt ring, falling back to border-[1.5px]
+        <View className="h-[24px] w-[24px] rounded-full border-[1.5px] border-ink-300" />
+      )}
+    </View>
   );
 }
 
@@ -125,14 +136,13 @@ function SharesStepper(props: {
   );
 }
 
-// paidBy is a single-select "who's the payer" row, so a selected row is
-// called out in orange rather than the plain checklist grey the other three
-// variants use.
-function getRowBackgroundClass(props: MemberListRowProps): string {
-  if (props.variant === "paidBy") {
-    return props.state.selected ? "bg-orange-800" : "bg-grey-810";
+// In Paid by every row is a raised option; in the split a row left out drops to
+// an outline, so the roster reads as in or out at a glance
+function getRowClass(props: MemberListRowProps): string {
+  if (props.variant === "paidBy" || props.state.selected) {
+    return "bg-ink-50";
   }
-  return props.state.selected ? "bg-grey-810" : "bg-grey-950";
+  return "border border-ink-100";
 }
 
 export default function MemberListRow(props: MemberListRowProps): ReactElement {
@@ -142,24 +152,43 @@ export default function MemberListRow(props: MemberListRowProps): ReactElement {
   // input / steppers from VoiceOver and Maestro; let them be reached
   const hasNestedControls = variant === "amounts" || variant === "shares";
 
+  const rowRole = variant === "paidBy" ? "radio" : "checkbox";
+  const rowInSplit = variant === "paidBy" || selected;
+
   return (
     <Pressable
       onPress={state.onPress}
       accessible={!hasNestedControls}
+      accessibilityRole={rowRole}
+      accessibilityState={{ checked: selected }}
+      // NOTE - no token for the 56pt row height, falling back to min-h-[56px]
       className={cn(
-        "flex-row items-center justify-between rounded-btn px-3.5 py-2.5",
-        getRowBackgroundClass(props),
+        "min-h-[56px] flex-row items-center justify-between gap-space-3 rounded-md pl-space-1 pr-space-3",
+        getRowClass(props),
       )}
     >
-      <View className="flex-row items-center gap-3">
-        {variant !== "paidBy" && <SelectionIndicator selected={selected} />}
-        <Avatar label={avatar.label} color={avatar.color} />
-        <View>
-          <Text className="text-grey-50 text-row">{name}</Text>
+      <View className="flex-1 flex-row items-center gap-space-3">
+        <SelectionIndicator selected={selected} />
+        {/* NOTE - no token for the avatar's 2pt ring and 12/600 initial, falling back to p-[2px] and text-initial-md (TripAvatarStack's) */}
+        <Avatar
+          label={avatar.label}
+          color={avatar.color}
+          ringClassName={cn("p-[2px]", rowInSplit ? "bg-ink-50" : "bg-card")}
+          innerViewClassName="h-space-8 w-space-8"
+          textClassName="text-initial-md"
+        />
+        <View className="flex-1">
+          <Text
+            className={cn(
+              "text-amount",
+              rowInSplit ? "text-ink-900" : "text-ink-500",
+            )}
+            numberOfLines={1}
+          >
+            {name}
+          </Text>
           {(variant === "shares" || variant === "equally") && (
-            <Text className="text-grey-400 text-legacy-micro">
-              {state.amount}
-            </Text>
+            <Text className="text-ink-500 text-caption">{state.amount}</Text>
           )}
         </View>
       </View>
@@ -182,8 +211,6 @@ export default function MemberListRow(props: MemberListRowProps): ReactElement {
           onDecrement={state.onDecrement}
         />
       )}
-
-      {variant === "paidBy" && <SelectionIndicator selected={selected} />}
     </Pressable>
   );
 }
