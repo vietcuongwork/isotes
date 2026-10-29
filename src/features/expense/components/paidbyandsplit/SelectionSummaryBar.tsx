@@ -24,7 +24,10 @@ export default function SelectionSummaryBar(props: SelectionSummaryBarProps) {
       label: "Everyone",
       onPress: () => selectMembers(members.map((member) => member.id)),
     },
-    { label: "None", onPress: () => setSelectedMemberIds([]) },
+    // "None" only makes sense while someone is selected
+    ...(selectedCount > 0
+      ? [{ label: "None", onPress: () => setSelectedMemberIds([]) }]
+      : []),
   ];
 
   const { label, actions } = (() => {

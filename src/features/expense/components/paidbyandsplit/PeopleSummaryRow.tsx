@@ -21,12 +21,12 @@ export default function PeopleSummaryRow(
   );
 
   const label =
-    members.length === 1
-      ? "Just you"
-      : displayMembers.length === members.length
-        ? `${members.length} people`
-        : displayMembers.length === 0
-          ? "Nobody selected"
+    displayMembers.length === 0
+      ? "Nobody selected"
+      : members.length === 1
+        ? "Just you"
+        : displayMembers.length === members.length
+          ? `${members.length} people`
           : `${displayMembers.length} of ${members.length} people`;
 
   return (

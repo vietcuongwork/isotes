@@ -60,6 +60,15 @@ type MemberListRowProps =
       state: { selected: boolean; onPress: () => void };
     };
 
+// font and size only: iOS draws single-line TextInput text low when lineHeight is
+// set ([[Learn_react-native_textinput-lineheight-ios]]); the field's height carries it
+const amountText = textStyle("amount");
+const amountInputStyle = {
+  fontFamily: amountText.fontFamily,
+  fontSize: amountText.fontSize,
+  fontVariant: amountText.fontVariant,
+};
+
 // NOTE - no token for the 24pt disc and the 44pt tap target, falling back to h-[24px] w-[24px] and h-[44px] w-[44px]
 function SelectionIndicator(props: { selected: boolean }) {
   return (
@@ -78,15 +87,6 @@ function SelectionIndicator(props: { selected: boolean }) {
     </View>
   );
 }
-
-// font and size only: iOS draws single-line TextInput text low when lineHeight is
-// set ([[Learn_react-native_textinput-lineheight-ios]]); the field's height carries it
-const amountText = textStyle("amount");
-const amountInputStyle = {
-  fontFamily: amountText.fontFamily,
-  fontSize: amountText.fontSize,
-  fontVariant: amountText.fontVariant,
-};
 
 function AmountsInput(props: {
   name: string;
@@ -178,6 +178,7 @@ function SharesStepper(props: {
         </View>
       </Pressable>
       {/* NOTE - the board draws the count at weight 600, which has no role: amount with font-outfit-semibold */}
+      {/* NOTE - no token for the 20pt count width, falling back to min-w-[20px] */}
       <Text className="min-w-[20px] text-center font-outfit-semibold text-ink-900 text-amount">
         {shares}
       </Text>

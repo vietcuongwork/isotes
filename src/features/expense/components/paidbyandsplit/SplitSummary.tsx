@@ -55,18 +55,25 @@ function EnterAmount() {
 }
 
 function TotalAmountRow(props: {
-  amount: string;
+  parsedAmountInput: number;
   symbol: string;
   decimalDigits: number;
 }) {
-  const { amount, symbol, decimalDigits } = props;
-  const placeholder = decimalDigits === 0 ? "0" : "0.00";
+  const { parsedAmountInput, symbol, decimalDigits } = props;
   return (
     <View className="flex-row items-baseline justify-center gap-space-2">
-      <Text className="text-ink-900 text-title">{`${symbol} ${amount ? amount : placeholder}`}</Text>
+      <Text className="text-ink-900 text-title">
+        {formatDisplayAmount(parsedAmountInput, symbol, decimalDigits)}
+      </Text>
       <Text className="text-ink-500 text-caption">to split</Text>
     </View>
   );
+}
+
+// "You cover" for the owner, "Ana covers" for anyone else
+function coversTheExtra(absorber: Member | undefined, extra: string): string {
+  const who = absorber?.isOwner ? "You cover" : `${absorber?.name} covers`;
+  return `${who} the extra ${extra}`;
 }
 
 function EquallySummary(props: {
@@ -110,7 +117,10 @@ function EquallySummary(props: {
     <ResultLine tone="ok">
       {formatDisplayAmount(baseAmount, symbol, decimalDigits)} each ·{" "}
       {remainder > 0
-        ? `${members.find((member) => member.id === absorberId)?.name} covers the extra ${formatDisplayAmount(remainder, symbol, decimalDigits)}`
+        ? coversTheExtra(
+            members.find((member) => member.id === absorberId),
+            formatDisplayAmount(remainder, symbol, decimalDigits),
+          )
         : `${count} people`}
     </ResultLine>
   );
@@ -234,7 +244,10 @@ function SharesSummary(props: {
     <ResultLine tone="ok">
       {formatDisplayAmount(perShareAmount, symbol, decimalDigits)} per share ·{" "}
       {remainder > 0
-        ? `${members.find((member) => member.id === absorberId)?.name} covers the extra ${formatDisplayAmount(remainder, symbol, decimalDigits)}`
+        ? coversTheExtra(
+            members.find((member) => member.id === absorberId),
+            formatDisplayAmount(remainder, symbol, decimalDigits),
+          )
         : `${totalShares} shares`}
     </ResultLine>
   );
@@ -280,7 +293,7 @@ export default function SplitSummary(props: SplitSummaryProps) {
     <View className={variant === "sheet" ? "gap-space-1" : undefined}>
       {variant === "sheet" && (
         <TotalAmountRow
-          amount={totalAmount}
+          parsedAmountInput={parsedAmountInput}
           symbol={symbol}
           decimalDigits={decimalDigits}
         />

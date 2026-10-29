@@ -26,6 +26,7 @@ export default function ActivityPicker(props: ActivityPickerProps) {
                 onPress={() => onSelect(activity)}
                 role="option"
                 accessibilityState={{ selected: isSelected }}
+                // NOTE - no token for the 44pt row height, falling back to h-[44px] (the board's tap target)
                 className={cn(
                   "h-[44px] flex-row items-center gap-space-2 rounded-md px-space-3",
                   isSelected && "bg-shine-100",

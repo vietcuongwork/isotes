@@ -1,5 +1,5 @@
 import { colors } from "@/themes/color";
-import { textStyle } from "@/themes/typography";
+import { fontFamily, textStyle } from "@/themes/typography";
 import {
   Calendar,
   fromDateId,
@@ -11,7 +11,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
 
-// 44 pt cell, 40 pt disc: a 2 pt margin each side (the library's own padding is 6).
+// NOTE - no token for the day grid (44 pt cell, 2 pt inset, 1.5 pt ring), falling back to constants; a 40 pt disc leaves a 2 pt margin each side (the library's own padding is 6)
 const DAY_HEIGHT = 44;
 const DAY_INSET = 2;
 const DAY_CIRCLE_RADIUS = 999;
@@ -20,7 +20,7 @@ const RING = 1.5;
 const micro = textStyle("micro");
 const body = textStyle("body");
 // weight 600 is a family on this font setup, not fontWeight
-const semibold = micro.fontFamily;
+const semibold = fontFamily["outfit-semibold"];
 
 const theme: CalendarTheme = {
   itemWeekName: {
@@ -56,7 +56,6 @@ const theme: CalendarTheme = {
       },
       content: {
         ...body,
-        fontFamily: semibold,
         fontVariant: ["tabular-nums"],
         color: colors.ink[900],
       },
@@ -156,6 +155,7 @@ export default function DateCalendar(props: DateCalendarProps) {
           {weekDaysList.map((weekDay, i) => (
             <Calendar.Item.WeekName
               key={i}
+              // NOTE - no token for the 32pt weekday row height, falling back to height={32} (the board's)
               height={32}
               theme={theme.itemWeekName}
             >

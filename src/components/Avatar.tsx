@@ -1,7 +1,6 @@
 import { colors } from "@/themes/color";
-import { Member, MemberColor } from "@/types/TExpense";
+import { MemberColor } from "@/types/TExpense";
 import { cn } from "@/utils/cn";
-import { getInitial } from "@/utils/utils";
 import { Text, View } from "react-native";
 
 export interface AvatarProps {
@@ -10,11 +9,6 @@ export interface AvatarProps {
   ringClassName?: string;
   innerViewClassName?: string;
   textClassName?: string;
-}
-
-interface AvatarStackProps {
-  members: Member[];
-  maxVisible: number;
 }
 
 function Avatar(props: AvatarProps) {
@@ -39,44 +33,6 @@ function Avatar(props: AvatarProps) {
       </View>
     </View>
   );
-}
-
-namespace Avatar {
-  export function Stack(props: AvatarStackProps) {
-    const { members, maxVisible = members.length } = props;
-
-    const visibleMembers = members.slice(0, maxVisible);
-    const overflow = members.length - visibleMembers.length;
-
-    return (
-      <View className="flex-row">
-        {visibleMembers.map((member, index) => (
-          <View
-            key={`${member.name}-${index}`}
-            className={index === 0 ? "" : "-ml-2"}
-            style={{ zIndex: visibleMembers.length - index }}
-          >
-            <Avatar
-              label={getInitial(member.name)}
-              color={member.memberColor}
-            />
-          </View>
-        ))}
-
-        {overflow > 0 && (
-          <View className="-ml-2">
-            <View className="rounded-full bg-grey-900 p-0.5">
-              <View className="h-7 w-7 items-center justify-center rounded-pill bg-grey-800">
-                <Text className="text-center text-grey-200 text-initial-loose">
-                  +{overflow}
-                </Text>
-              </View>
-            </View>
-          </View>
-        )}
-      </View>
-    );
-  }
 }
 
 export default Avatar;

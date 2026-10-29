@@ -1,6 +1,6 @@
 import { colors as tokens } from "@/themes/color";
 import { boxShadow } from "@/themes/spacing";
-import { textStyle } from "@/themes/typography";
+import { roles, textStyle } from "@/themes/typography";
 import { X } from "lucide-react-native";
 import React, {
   ReactNode,
@@ -723,7 +723,10 @@ const DONE_HEIGHT = 44;
 const DONE_RESERVE = 64;
 // Light title row's top: the same 12 + 4 + 10, then centred on the role's own line
 const TITLE_ROW_TOP = 12 + 4 + 10;
-const TITLE_LINE = { heading: 28, title: 32 } as const; // line heights of the two roles
+const TITLE_LINE = {
+  heading: roles.heading.line,
+  title: roles.title.line,
+} as const;
 
 // Dark: fixed tokens, matching the old components/bottomsheet look. Light (`appearance`):
 // the Ink & Shine `sheet` component; spacing.js stores px strings, so sizes are numbers here.

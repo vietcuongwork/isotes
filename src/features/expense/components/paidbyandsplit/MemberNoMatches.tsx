@@ -27,7 +27,9 @@ export default function MemberNoMatches(
         Nobody on this trip is called “{query.trim()}”
       </Text>
       <Text className="text-ink-700 text-body">
-        Clear the search to see all {memberCount} people.
+        {memberCount === 1
+          ? "Clear the search to see everyone."
+          : `Clear the search to see all ${memberCount} people.`}
       </Text>
     </View>
   );

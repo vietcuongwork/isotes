@@ -4,7 +4,7 @@ import {
   BottomSheetScrollView,
 } from "@/components/sheet-keyboard";
 import { ReactElement, useState } from "react";
-import { Pressable, useWindowDimensions, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAddExpenseBottomSheet from "../hooks/useAddExpenseBottomSheet";
 import ActivityAndDateSection from "./ActivityAndDateSection";
@@ -14,9 +14,6 @@ import DescriptionField from "./description/DescriptionField";
 import PaidAndSplitSection from "./paidbyandsplit/PaidAndSplitSection";
 import RestoredDraftBanner from "./RestoredDraftBanner";
 import StartOverDialog from "./StartOverDialog";
-
-// The board's sheet top; BottomSheet clamps the height under the safe area
-const SHEET_TOP = 56;
 
 interface AddExpenseBottomSheetProps {
   visible: boolean;
@@ -29,7 +26,6 @@ export default function AddExpenseBottomSheet(
   const { visible, onClose } = props;
 
   const safeAreaInsets = useSafeAreaInsets();
-  const { height: windowHeight } = useWindowDimensions();
 
   return (
     <BottomSheet
@@ -40,7 +36,6 @@ export default function AddExpenseBottomSheet(
       titleSize="title"
       appearance="light"
       showCloseButton
-      snapPoints={[windowHeight - SHEET_TOP]}
       safeAreaInsets={safeAreaInsets}
     >
       <AddExpenseContent onClose={onClose} />

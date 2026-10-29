@@ -47,6 +47,9 @@ export default function PaidByBottomSheet(
 // Its own component so the search resets on every open: the sheet unmounts
 // its children while hidden, but PaidByBottomSheet itself stays mounted
 function PaidByContent(): ReactElement {
+  const amount = useExpenseSheetStore((s) => s.amount);
+  const { symbol, decimalDigits } = useExpenseSheetStore((s) => s.currency);
+
   const {
     query,
     setQuery,
@@ -55,9 +58,6 @@ function PaidByContent(): ReactElement {
     selectedPayerId,
     onSelectPayer,
   } = usePaidByBottomSheet();
-
-  const amount = useExpenseSheetStore((s) => s.amount);
-  const { symbol, decimalDigits } = useExpenseSheetStore((s) => s.currency);
 
   return (
     <BottomSheetScrollView>
