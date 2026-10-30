@@ -54,8 +54,8 @@ export function NumberPadInput({
   onBlur,
   onSelectionChange,
   ref,
-  // Same dark default as BottomSheetTextInput (app.json userInterfaceStyle is "automatic")
-  keyboardAppearance = "dark",
+  // Light, to match the light number pad; BottomSheetTextInput stays dark until the Add person sheet is restyled
+  keyboardAppearance = "light",
   ...rest
 }: NumberPadInputProps) {
   const options = { maxDecimals, maxLength, maxIntegerDigits, grouping };
