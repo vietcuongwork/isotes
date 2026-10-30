@@ -2,8 +2,7 @@
 // Plain React JSX, not NativeWind's: css-interop's Pressable wrapper drops a
 // function `style` (the keys' pressed state), and nothing here uses className
 import { colors as tokens } from "@/themes/color";
-import { textStyle } from "@/themes/typography";
-import { Delete } from "lucide-react-native";
+import { CornerDownLeft, Delete } from "lucide-react-native";
 import React, { memo, ReactNode, useEffect, useRef } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { NumberPadKey } from "./numberPadLogic";
@@ -29,6 +28,19 @@ const A11Y_LABEL: Partial<Record<NumberPadKey, string>> = {
   backspace: "Delete",
 };
 
+const DIGIT_KEYS = new Set<NumberPadKey>([
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "0",
+]);
+
 const KEY_HEIGHT = 48;
 const GAP = 6;
 const REPEAT_DELAY_MS = 450;
@@ -47,10 +59,7 @@ export const NumberPadKeyboard = memo(function NumberPadKeyboard({
   return (
     <View
       testID="number-pad"
-      style={[
-        styles.pad,
-        { backgroundColor: colors.pad, paddingBottom: GAP + bottomInset },
-      ]}
+      style={[styles.pad, { paddingBottom: GAP + bottomInset }]}
     >
       <View style={styles.grid}>
         {ROWS.map((row) => (
@@ -62,7 +71,7 @@ export const NumberPadKeyboard = memo(function NumberPadKeyboard({
                 a11yLabel={A11Y_LABEL[key] ?? key}
                 disabled={key === "." && !decimalEnabled}
                 onPress={() => onKey(key)}
-                tone={key === "." ? "faint" : "plain"}
+                tone={DIGIT_KEYS.has(key) ? "digit" : "function"}
               />
             ))}
           </View>
@@ -73,8 +82,11 @@ export const NumberPadKeyboard = memo(function NumberPadKeyboard({
         <KeyButton
           label="Done"
           a11yLabel="Done"
+          icon={
+            <CornerDownLeft size={24} strokeWidth={1.75} color={colors.text} />
+          }
           onPress={onDone}
-          tone="accent"
+          tone="function"
           tall
         />
       </View>
@@ -82,21 +94,7 @@ export const NumberPadKeyboard = memo(function NumberPadKeyboard({
   );
 });
 
-// isotes is dark-only: fixed tokens, no light branch.
-// Pressed = one step lighter (color.js convention).
-const colors = {
-  pad: tokens.grey[975],
-  key: tokens.grey[850],
-  keyPressed: tokens.grey[825],
-  muted: tokens.grey[900],
-  mutedPressed: tokens.grey[850],
-  text: tokens.grey[50],
-  faintText: tokens.grey[400],
-  accent: tokens.orange[400],
-  //NOTE - no token for a pressed orange-400, falling back to orange-300
-  accentPressed: tokens.orange[300],
-  accentText: tokens.orange[900],
-};
+const colors = tokens.numberPad;
 
 interface KeyButtonProps {
   label: string;
@@ -107,8 +105,8 @@ interface KeyButtonProps {
   onPressIn?: () => void;
   onPressOut?: () => void;
   disabled?: boolean;
-  /** `faint` is a plain key with a dimmed label (the "." key, as on the old isotes pad). */
-  tone?: "plain" | "faint" | "muted" | "accent";
+  /** `digit` is the white key; `function` is the grey one (".", "000", delete, Done). */
+  tone?: "digit" | "function";
   tall?: boolean;
 }
 
@@ -120,21 +118,13 @@ function KeyButton({
   onPressIn,
   onPressOut,
   disabled,
-  tone = "plain",
+  tone = "digit",
   tall,
 }: KeyButtonProps) {
   const [idle, active] =
-    tone === "accent"
-      ? [colors.accent, colors.accentPressed]
-      : tone === "muted"
-        ? [colors.muted, colors.mutedPressed]
-        : [colors.key, colors.keyPressed];
-  const textColor =
-    tone === "accent"
-      ? colors.accentText
-      : tone === "faint"
-        ? colors.faintText
-        : colors.text;
+    tone === "function"
+      ? [colors.fnKey, colors.fnKeyPressed]
+      : [colors.key, colors.keyPressed];
   return (
     <Pressable
       accessibilityRole="button"
@@ -149,6 +139,7 @@ function KeyButton({
         tall && styles.tallKey,
         {
           backgroundColor: pressed ? active : idle,
+          //NOTE - no token for a disabled key, falling back to opacity 0.35
           opacity: disabled ? 0.35 : 1,
         },
       ]}
@@ -156,8 +147,8 @@ function KeyButton({
       {icon ?? (
         <Text
           style={[
-            tone === "accent" ? styles.accentLabel : styles.label,
-            { color: textColor },
+            label === "000" ? styles.tripleZeroLabel : styles.label,
+            { color: colors.text },
           ]}
         >
           {label}
@@ -191,10 +182,10 @@ function DeleteKey({ onKey }: { onKey: (key: NumberPadKey) => void }) {
     <KeyButton
       label="⌫"
       a11yLabel="Delete"
-      icon={<Delete size={22} color={colors.text} />}
+      icon={<Delete size={24} strokeWidth={1.75} color={colors.text} />}
       onPressIn={start}
       onPressOut={stop}
-      tone="muted"
+      tone="function"
     />
   );
 }
@@ -205,7 +196,7 @@ const styles = StyleSheet.create({
     gap: GAP,
     paddingTop: GAP,
     paddingHorizontal: GAP,
-    backgroundColor: colors.pad,
+    backgroundColor: colors.bg,
   },
   grid: { flex: 3, gap: GAP },
   row: { flexDirection: "row", gap: GAP },
@@ -218,6 +209,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   tallKey: { flex: 0, height: KEY_HEIGHT * 3 + GAP * 2 },
-  label: textStyle("legacy-amount"),
-  accentLabel: textStyle("body-semibold"),
+  // System font (no fontFamily) to match the iOS decimal pad, not Outfit
+  label: { fontSize: 22, fontWeight: "400" },
+  //NOTE - no token, 20 is the system pad's "000" size
+  tripleZeroLabel: { fontSize: 20, fontWeight: "400" },
 });

@@ -140,5 +140,14 @@ module.exports = {
     lavender: "#B79BE0",
     flame: "#5B9BD5",
     ember: "#E07A5F",
+    // number pad only: iOS 26 system greys, not Themis tokens (DESIGN.md components.number-pad)
+    numberPad: {
+      bg: "#E2E4E8",
+      key: "#FFFFFF",
+      keyPressed: "#D1D4DA",
+      fnKey: "#CDD0D6",
+      fnKeyPressed: "#B9BDC5",
+      text: "#000000",
+    },
   },
 };
