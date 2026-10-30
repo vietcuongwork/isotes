@@ -43,6 +43,8 @@ const DIGIT_KEYS = new Set<NumberPadKey>([
 
 const KEY_HEIGHT = 48;
 const GAP = 6;
+//NOTE - no token, 40 is the system pad's space under the keys beyond the safe area
+const BOTTOM_EXTRA = 40;
 const REPEAT_DELAY_MS = 450;
 const REPEAT_EVERY_MS = 75;
 
@@ -59,7 +61,7 @@ export const NumberPadKeyboard = memo(function NumberPadKeyboard({
   return (
     <View
       testID="number-pad"
-      style={[styles.pad, { paddingBottom: GAP + bottomInset }]}
+      style={[styles.pad, { paddingBottom: bottomInset + BOTTOM_EXTRA }]}
     >
       <View style={styles.grid}>
         {ROWS.map((row) => (
@@ -194,17 +196,19 @@ const styles = StyleSheet.create({
   pad: {
     flexDirection: "row",
     gap: GAP,
-    paddingTop: GAP,
-    paddingHorizontal: GAP,
+    paddingTop: 23,
+    paddingHorizontal: 5,
+    borderTopLeftRadius: 28, // = rounded-xl token
+    borderTopRightRadius: 28,
     backgroundColor: colors.bg,
   },
-  grid: { flex: 3, gap: GAP },
+  grid: { flex: 1, gap: GAP },
   row: { flexDirection: "row", gap: GAP },
-  side: { flex: 1, gap: GAP },
+  side: { width: 80, gap: GAP },
   key: {
     flex: 1,
     height: KEY_HEIGHT,
-    borderRadius: 12, // = rounded-xl on the old isotes pad
+    borderRadius: 12, // = rounded-md token
     alignItems: "center",
     justifyContent: "center",
   },
