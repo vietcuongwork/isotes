@@ -40,6 +40,7 @@ Preconditions:
 
 - The people row's label is `Split between 2 people, Y, A` (it carries the avatar initials): match it with `.*2 people.*`.
 - Payer rows in the sheet are labelled `<initial>, <name>`; the sheet stays open after a pick, so close it with `id: sheet-close`.
+- Equally rows in the split sheet also carry the share and any remainder (`B, Ben, ₫0`, `Y, You, ₫3,333 +₫1`), so match them with a trailing `.*` (`B, Ben.*`). A bare `B, Ben` finds nothing there.
 - The pad must stay up between keys in the split sheet (a sheet opened from another sheet); the flow asserts `id: number-pad` after each field's first key.
 - In Amounts and Shares, a member's fields and steppers are reached by their `Amount for <name>` / `One share more for <name>` / `One share less for <name>` labels; the member's name is a separate element, and tapping it toggles the member.
 - The pad's `0` key is selected `{text: "0", below: "Delete"}`: a bare `"0"` also matches amount placeholders and typed values.

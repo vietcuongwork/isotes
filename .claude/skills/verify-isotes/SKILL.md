@@ -28,7 +28,7 @@ Maestro **2.11.0** (`maestro --version`); an upgrade is its own task. `MAESTRO_C
 
 **One driver per session.** A session drives with the MCP server *or* the CLI, never both. The CLI and the MCP server each install their own XCTest driver and only one survives: a CLI run kills the MCP server's driver until a new session (the desktop app can't reconnect MCP). Need both → MCP steps first, then CLI.
 
-**Whole flow (CLI):** output goes to a fresh `.sim/maestro/<flow>-<time>/` (git-ignored), nothing to `~/.maestro/tests/`. Maestro options such as `-e` go after the flow file.
+**Whole flow (CLI):** output goes to a fresh `.sim/maestro/<flow>-<time>/` (git-ignored), nothing to `~/.maestro/tests/`; a flow's screenshots land in its `shots/` folder. Maestro options such as `-e` go after the flow file. `flow.sh` exits 2 and names the variable when the flow uses `${NAME}` without `-e NAME=<value>`.
 
 ```bash
 .claude/skills/verify-isotes/scripts/flow.sh .claude/skills/verify-isotes/flows/golden-path.yaml
@@ -65,7 +65,7 @@ appId: com.anonymous.isotes
 
 ```bash
 IFS='|' read -r A_ID A < <(.claude/skills/verify-isotes/scripts/trip.sh "Flow paid-by-split")
-maestro test --device F074204A-8DED-491A-9D45-3C6344EECCEB --debug-output .sim/maestro/switch-$(date +%m%d-%H%M%S) -e A="$A" -e A_ID="$A_ID" <flow>.yaml
+.claude/skills/verify-isotes/scripts/flow.sh <flow>.yaml -e A="$A" -e A_ID="$A_ID"
 ```
 
 **Selectors:** accessibility label, `testID` (`id:`) or visible text, never `point:`. Stable handles: `Add expense` (the `+`), `id: number-pad`, `id: sheet-close`, `Expenses, tab, 1 of 3` (`selected: true` when open). Trip cards' labels are compound (`<name>, +₫9,666, 5 expenses · …`): match them by regex. Per-feature selectors and gotchas: `features/`.
@@ -88,7 +88,7 @@ Prove the real user path: the action and the state it leaves, not just the last 
 - **No flash while loading** (a state that lasts a few frames): record with `xcrun simctl io booted recordVideo <file>.mp4`, then `scripts/frames.sh <file>.mp4 [from to]` tiles the frames 12 per sheet and prints each cell's frame number and timestamp. Read the key first, then only the sheets around the change.
 - **Pixel facts** (glyph widths, a fade's timing, a color run): `scripts/pixels.sh` (Helpers) on a screenshot or recording, so numbers back the verdict instead of a look at the image.
 - **Screenshots** only for a visual check (layout, color, spacing) or a failed check. A failed flow leaves exactly one in its run folder (`find .sim/maestro/<run> -name '*.png'`); read that one, nothing else.
-  - A flow's own `takeScreenshot` takes a bare name, never a path: Maestro rejects an absolute path. Run it with both `--debug-output .sim/maestro/<run>` and `--test-output-dir .sim/maestro/<run>/shots`: without `--debug-output`, Maestro writes its log to `~/.maestro/tests`. The image lands at `shots/<time>/<flow name>/takeScreenshot/<name>.png`. Copy it out from there.
+  - A flow's own `takeScreenshot` takes a bare name, never a path: Maestro rejects an absolute path. Run the flow with `flow.sh`, which sets `--debug-output` and `--test-output-dir` itself. The image lands at `.sim/maestro/<run>/shots/<time>/<flow name>/takeScreenshot/<name>.png`. Copy it out from there. A raw `maestro test` needs both flags, or its log goes to `~/.maestro/tests`.
 
 Quote the values (rows, tree lines, log result) in the task's log in the vault's implementation note. That note is where evidence lives; run folders are scratch.
 

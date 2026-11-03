@@ -13,9 +13,17 @@ BUNDLE=com.anonymous.isotes
 flow=$1
 shift
 
+# A variable left out of -e reaches the app as the text "undefined"; stop before the run.
+for name in $(grep -oE '\$\{[A-Za-z_][A-Za-z0-9_]*\}' "$flow" | tr -d '${}' | sort -u); do
+  case " $* " in
+    *" $name="*) ;;
+    *) echo "flow.sh: $flow uses \${$name}; pass -e $name=<value>" >&2; exit 2 ;;
+  esac
+done
+
 run() {
   out=.sim/maestro/$(basename "$flow" .yaml)-$(date +%m%d-%H%M%S)
-  maestro test --device "$SIM" --debug-output "$out" "$@" "$flow"
+  maestro test --device "$SIM" --debug-output "$out" --test-output-dir "$out/shots" "$@" "$flow"
 }
 
 run "$@" && exit 0

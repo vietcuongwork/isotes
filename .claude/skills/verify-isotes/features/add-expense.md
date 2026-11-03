@@ -15,7 +15,7 @@ A user adds an expense from a trip's Expenses tab: they type the amount on the a
 ## How to get to it (user POV)
 
 - A trip's Expenses tab: the `+` button ("Add expense").
-- In New expense: the amount field opens the number pad; "Done" closes it. The sheet's close button keeps the draft.
+- In New expense: the amount field opens the number pad; "Done" closes it. The sheet's X ("Close", `id: sheet-close`) keeps the draft.
 - In New expense: the activity field ("Activity, Lodging") and the date field ("Date, 27 Oct 2026") sit side by side. The date field opens the Date sheet, closed by its Done.
 - The draft banner's "Start over" chip opens a "Start over?" dialog: "Keep editing" or "Start over".
 
@@ -41,7 +41,10 @@ Preconditions:
 - "Start over" is both the banner chip and the dialog's confirm button; select the button by `rightOf: "Keep editing"`.
 - The amount field has no label: its placeholder is `0.00` for two-decimal currencies and `0` for VND. The field shows what was typed (`12.5`), not a padded value.
 - The pad's keys are labelled by digit; the decimal key is `Decimal point`, the delete key `Delete`. Pad taps use `retryTapIfNoChange` (a dropped tap was seen once).
+- With a VND trip the field's `0` placeholder and the pad's `0` key both match `text: "0"`. Tap the pad's with `below: "Delete"`. Digits 1 to 9 take no `below`, since they sit above and left of Delete and the match fails. The `000` key is drawn but `text: "000"` finds nothing, so tap `0` three times.
 - Text selectors are regex: escape `?` and `$`.
 - A pick closes the activity popover. While it is open, a full-screen scrim sits over the sheet, so a tap on the date field only closes the popover and the Date sheet never opens.
+- The Date, Paid by and Split sheets close with a text button "Done" that keeps `id: sheet-close`. On Paid by and Split with the pad open, "Done" matches both that button and the pad's; select the pad's as `{text: "Done", below: "Delete"}` (`childOf: number-pad` doesn't find the key). The New expense sheet itself has an X, so a plain "Done" there is the pad's.
+- The currency chip is not a button: "Currency, {name}, the trip currency" in the tree, nothing to tap.
 - The date label reads `d MMM yyyy` (`27 Oct 2026`), never "Today". Select it with `Date, .*`.
 - Day cells are plain numbers; the `1` and `28` to `30` that outside days repeat are ambiguous, `31` is not. The quick picks and the activity rows show no radio or option trait in the idb tree, only `Selected` on the chosen row.

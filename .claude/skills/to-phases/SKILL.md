@@ -24,7 +24,7 @@ Done when, for every user story, you can name the modules it touches, from where
 - **Prefactoring first**: Phase 0 holds the prefactors. Its Demo is "behaviour unchanged": a regression check of what it touches. It also proves readiness: the baseline is committed, and every seam a later phase names has at least one passing example test.
 - **One session**: a phase fits one fresh context window.
 - **Wide refactors and migrations run expand–contract**: Expand (the new form beside the old, nothing using it yet; Demo = behaviour unchanged), then one Migrate phase per consumer or batch, each with its own Demo and blocked by Expand, then Contract (delete the old form), blocked by every Migrate.
-- **Acceptance closes the spec**: the last phase ends with an acceptance task (`[Live]`) that first runs `pnpm check` (the feature's one tsc, lint and Prettier run), then re-runs every criterion's check on the final build — a pass logged by an earlier task doesn't count — and ticks only what passes in full. A partly checked criterion stays unticked with a note on what's missing; a dropped one is marked `descoped: {reason} (user, YYYY-MM-DD)` only with the user's OK. Then it sets the spec's `status` to `done`. For a feature that changes the app (`src/`), the same task runs the vault's `Test_golden-path.md` on that build, so a regression outside the feature's own criteria still shows. Last, it greps `Tasks_backlog.md` for open items that link to this feature (`[[Feat_{slug}_…]]`) and lists them. The user names which ones the feature fixed, and the task ticks those in the vault note: `- [x]` moved under `## Done` with `· done {today}`. `doodle.md` is left for the next `/doodle`. With no linked items, it writes "backlog: none linked".
+- **Acceptance closes the spec**: the last phase ends with an acceptance task (`[Live]`) that first runs `pnpm check` (the feature's one tsc, lint and Prettier run), then re-runs every criterion's check on the final build — a pass logged by an earlier task doesn't count — and ticks only what passes in full. A partly checked criterion stays unticked with a note on what's missing; a dropped one is marked `descoped: {reason} (user, YYYY-MM-DD)` only with the user's OK. Then it sets the spec's `status` to `done`. For a feature that changes the app (`src/`), the same task runs the vault's `Test_golden-path.md` on that build, so a regression outside the feature's own criteria still shows. Last, it greps `Tasks_backlog.md` for open items that link to this feature (`[[Feat_{slug}_…]]`) or carry one of its `screen/` or `area/` tags (`Ref_tag-pool`), and lists them beside the criteria they might satisfy. The user names which ones the feature fixed, and the task ticks those in the vault note: `- [x]` moved under `## Done` with `· done {today}`. It also sets `status: done` on the feature's spec, planning and implementation notes. With no matching items, it writes "backlog: none linked or tagged". Then, if the feature changed a rule or a screen path, it updates the `Flow_{area}` note for that user job from `templates/Flow_template.md`, creating the note if needed and covering only what this feature touched. Otherwise it logs "flow: no change".
 
 </phase-rules>
 
@@ -43,7 +43,10 @@ Present the phase list only, no tasks yet: number, title, Demo, Covers, Blocked 
 2. Blocked by: does each phase depend only on phases that genuinely gate it?
 3. Coverage: does every user story land in exactly one phase?
 
-Iterate until the user approves the phase list.
+Iterate until the user approves the phase list. Then ask: "Companion, or should I write the tasks myself?"
+
+- **Write them yourself:** go to step 4.
+- **Companion:** follow [`companion.md`](companion.md), then go to step 4, which adds the tags, **Verify** lines and criterion numbers to what the rounds produced.
 
 ## 4. Break each phase into tasks
 
@@ -61,7 +64,7 @@ Done when every acceptance criterion in the spec traces to a task — write that
 
 ## 5. Write the planning note
 
-Write `Feat_{slug}_planning.md` from `templates/Tasks_template.md`. Each phase is a section under **Task List**:
+Write `Feat_{slug}_planning.md` from `templates/Tasks_template.md`, and copy the spec's `screen/` and `area/` tags into its frontmatter `tags`. Each phase is a section under **Task List**:
 
     ### Phase 2: <title>
 

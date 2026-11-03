@@ -17,7 +17,7 @@ The user hands you one **phase** of `Feat_{slug}_planning.md` to run without per
 - The phase starts in a session that hasn't run one yet. If this session already ran a phase to its Demo, run `/preserve` and hand over its `/recall` line: a phase needs the room for its Demo and report.
 - Record `git status --porcelain` as the baseline, so the end report separates this phase's changes from work already in progress. If it covers an earlier phase, ask whether to commit that first: a phase should start from a committed Demo.
 - If the phase has `[Live]` tasks that change `src/`, smoke-test first with `verify-isotes` (CLI): Doctor → `doctor: ok`, then `scripts/green.sh check`. `same`: the last green Demo ran on this `src`, so it stands in for the flow. `changed`: `.sim/cu.sh mark`, the golden-path flow (that skill's Drive command) green, then `.sim/cu.sh show` with no ERROR lines. Broken → stop and report before task 1. When the flow was skipped and the first `[Live]` Verify fails, run golden-path before blaming the task.
-- Read the spec, this phase, and `Feat_{slug}_implementation.md`. Also read the `verify-isotes/features/` note for each screen the phase touches (`features/README.md` maps them), so a check starts from the saved labels and selectors.
+- Read the spec, this phase, `Feat_{slug}_implementation.md`, and the `implementing-tasks` skill (Deviation labels, Plan drift, Setbacks). Also read the `verify-isotes/features/` note for each screen the phase touches (`features/README.md` maps them), so a check starts from the saved labels and selectors.
 
 Done when the phase is identified, its blockers are done, the session is fresh, and the baseline is recorded.
 
@@ -28,16 +28,16 @@ Done when the phase is identified, its blockers are done, the session is fresh, 
 - After each file: the task's own test file, when there is one.
 - Run the task's **Verify** line.
 - The acceptance task: put each of its checks on the task list as its own step (`pnpm check`, the saved check flows, the golden path, each group of criteria, cleanup), so the user sees progress during a run of 20 minutes or more.
-- Review: read each task's diff inline against AGENTS.md before logging it. In the feature's last phase, before the acceptance task runs its checks, run `review-two-axis` once on the feature's whole diff (from the baseline commit T1 recorded to the working tree). Fix hard violations; record judgement calls in the log. Invoking `/autopilot` is the user's standing OK to spawn the review's sub-agents, for this one run.
+- Review: read each task's diff inline against AGENTS.md before logging it. In the feature's last phase, before the acceptance task runs its checks, run `review-two-axis` once on the feature's whole diff (from the baseline commit T1 recorded to the working tree) and record it in the implementation note using `Feat_review_template`. Fix hard violations; record judgement calls in the log. Invoking `/autopilot` is the user's standing OK to spawn the review's sub-agents, for this one run.
 - Log the task in the implementation note per CLAUDE.md Step 3 (Change, Verify, Design choices, Deviation), and tick it in the planning note.
 
 ## 2. Hand back early
 
 Stop, report where you are, and wait for the user when:
 
-- A Verify fails and two fix attempts don't turn it green. Report both attempts and why each failed, and write the setback note per CLAUDE.md Step 3.
+- A Verify fails and two fix attempts don't turn it green. Report both attempts and why each failed, and write the setback note per `implementing-tasks`.
 - The plan or spec leaves a decision open (No Assumptions Policy).
-- A finding changes what later tasks build (plan drift): record it per CLAUDE.md Step 3.
+- A finding changes what later tasks build (plan drift): record it per `implementing-tasks`.
 - The next change touches a file no task in this phase names, or installs a package the phase doesn't list.
 - A Verify line, acceptance criterion, or existing test assertion looks wrong: changing it needs the user's OK (CLAUDE.md "Frozen targets").
 
