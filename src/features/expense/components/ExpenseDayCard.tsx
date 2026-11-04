@@ -1,4 +1,4 @@
-import { getViewerNetForExpense } from "@/features/expense/helpers/expenseHelpers";
+import { getViewerNetForExpense } from "@/domain/tripBalance";
 import {
   ExpenseDay,
   formatDayHeader,

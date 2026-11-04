@@ -1,17 +1,17 @@
 import { getExpensesWithSplitsByTripId } from "@/db/expenses";
 import { getMembersByTripId } from "@/db/members";
 import { getTripById } from "@/db/trips";
-import { CURRENCY_OPTIONS } from "@/features/createTrip/constants";
+import { CURRENCY_OPTIONS } from "@/domain/currencies";
+import { getDefaultExpenseSplit } from "@/domain/defaultSplit";
+import {
+  transformExpenseRow,
+  transformMemberRow,
+  transformTripRow,
+} from "@/domain/transforms";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo } from "react";
-import {
-  getDefaultExpenseSplit,
-  transformExpenseRow,
-  transformMemberRow,
-  transformTripRow,
-} from "../helpers/expenseHelpers";
 
 export default function useExpenseScreen() {
   const { tripId } = useLocalSearchParams<{ tripId: string }>();

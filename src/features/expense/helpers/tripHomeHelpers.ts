@@ -2,7 +2,8 @@ import {
   computeTripBalance,
   getTripCardState,
   TripCardState,
-} from "@/features/trips/helpers/tripsHelpers";
+} from "@/domain/tripBalance";
+import { formatExpenseCount } from "@/domain/tripFormat";
 import { Expense } from "@/types/TExpense";
 import { roundToDecimals } from "@/utils/currency";
 
@@ -58,10 +59,6 @@ export function formatPeopleLabel(count: number): string {
   const others = count - 1;
   if (others === 0) return "Just you";
   return `You and ${others} ${others === 1 ? "other" : "others"}`;
-}
-
-export function formatExpenseCount(count: number): string {
-  return `${count} ${count === 1 ? "expense" : "expenses"}`;
 }
 
 export function formatSwitcherMeta(

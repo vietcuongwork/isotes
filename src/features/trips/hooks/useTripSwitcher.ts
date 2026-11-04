@@ -1,5 +1,5 @@
 import { getAllTripsWithMembersAndExpenses } from "@/db/trips";
-import { transformTripWithRelationsRow } from "@/features/expense/helpers/expenseHelpers";
+import { transformTripWithRelationsRow } from "@/domain/transforms";
 import { getTripCardData } from "@/features/trips/helpers/tripsHelpers";
 import { TripCardData } from "@/types/TTrips";
 import { useEffect, useState } from "react";

@@ -1,4 +1,4 @@
-import { CURRENCY_OPTIONS } from "@/features/createTrip/constants";
+import { CURRENCY_OPTIONS } from "@/domain/currencies";
 import {
   filterCurrencies,
   getDefaultCurrency,

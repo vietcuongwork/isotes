@@ -119,6 +119,7 @@ module.exports = defineConfig([
     files: [
       "src/db/**",
       "src/types/**",
+      "src/domain/transforms.ts",
       "src/features/expense/helpers/expenseHelpers.ts",
     ],
     rules: {

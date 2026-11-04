@@ -1,4 +1,4 @@
-import { ACTIVITIES } from "@/features/expense/constants";
+import { ACTIVITIES } from "@/domain/activities";
 import { colors } from "@/themes/color";
 import { Activity } from "@/types/TExpense";
 import { cn } from "@/utils/cn";

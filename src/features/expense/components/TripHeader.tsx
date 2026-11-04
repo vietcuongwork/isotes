@@ -1,4 +1,4 @@
-import { formatTripDateLine } from "@/features/trips/helpers/tripsHelpers";
+import { formatTripDateLine } from "@/domain/tripFormat";
 import { Trip } from "@/types/TCreateTrip";
 import { Text, View } from "react-native";
 

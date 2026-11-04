@@ -17,7 +17,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { CURRENCY_OPTIONS } from "../constants";
+import { CURRENCY_OPTIONS } from "@/domain/currencies";
 import {
   filterCurrencies,
   getPinnedLetter,

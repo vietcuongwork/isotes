@@ -1,19 +1,10 @@
-import {
-  ExpenseRow,
-  ExpenseSplitRow,
-  MemberRow,
-  NewExpenseSplit,
-  TripRow,
-} from "@/db/schema";
-import { CURRENCY_OPTIONS } from "@/features/createTrip/constants";
+import { NewExpenseSplit } from "@/db/schema";
+import { getDefaultExpenseSplit } from "@/domain/defaultSplit";
 import { draftInitialState } from "@/stores/useExpenseSheetStore";
-import { Trip } from "@/types/TCreateTrip";
 import {
-  Expense,
   ExpenseDraft,
   ExpenseSheetErrors,
   Member,
-  Split,
   SplitMethod,
   SplitSelection,
 } from "@/types/TExpense";
@@ -22,7 +13,6 @@ import {
   parseAmountInput,
   roundToDecimals,
 } from "@/utils/currency";
-import { ACTIVITIES } from "../constants";
 
 // Minimal shape shared by every split-row computation below — a narrowing of
 // Omit<NewExpenseSplit, "id" | "expenseId">, which additionally carries
@@ -30,74 +20,6 @@ import { ACTIVITIES } from "../constants";
 // computeSplitRows's return type both point at one definition instead of
 // repeating the object-literal shape.
 export type SplitRow = { memberId: string; individualAmount: number };
-
-export const transformTripRow = (row: TripRow): Trip => {
-  return {
-    id: row.id,
-    name: row.name,
-    description: row.description ?? "",
-    currency:
-      CURRENCY_OPTIONS.find((c) => c.code === row.currencyCode) ??
-      CURRENCY_OPTIONS[0],
-    createdAt: row.createdAt,
-  };
-};
-
-export const transformMemberRow = (row: MemberRow): Member => {
-  return {
-    id: row.id,
-    tripId: row.tripId,
-    name: row.name,
-    isOwner: row.isOwner,
-    memberColor: row.memberColor,
-    createdAt: row.createdAt,
-  };
-};
-
-export function transformExpenseRow(
-  row: ExpenseRow & { splits: ExpenseSplitRow[] },
-): Expense {
-  return {
-    id: row.id,
-    tripId: row.tripId,
-    paidByMemberId: row.paidByMemberId,
-    amount: row.amount,
-    description: row.description ?? "",
-    // activityId is an untyped text() column (design_decisions.md, "Source of
-    // truth for shared concepts..."), so a stale/typo'd id falls back to the
-    // last ACTIVITIES entry ("other") rather than throwing.
-    activity:
-      ACTIVITIES.find((activity) => activity.id === row.activityId) ??
-      ACTIVITIES[ACTIVITIES.length - 1],
-    date: row.date,
-    splitMethod: row.splitMethod,
-    createdAt: row.createdAt,
-    splits: row.splits,
-  };
-}
-
-// One row of getAllTripsWithMembersAndExpenses(), with its members and expenses
-export function transformTripWithRelationsRow(
-  row: TripRow & {
-    members: MemberRow[];
-    expenses: (ExpenseRow & { splits: ExpenseSplitRow[] })[];
-  },
-): { trip: Trip; members: Member[]; expenses: Expense[] } {
-  return {
-    trip: transformTripRow(row),
-    members: row.members.map(transformMemberRow),
-    expenses: row.expenses.map(transformExpenseRow),
-  };
-}
-
-export function getDefaultExpenseSplit(members: Member[]) {
-  const owner = members.find((member) => member.isOwner) ?? members[0];
-  return {
-    paidByMemberId: owner.id,
-    selectedMemberIds: members.map((member) => member.id),
-    splitShares: Object.fromEntries(members.map((member) => [member.id, 1])),
-  };
-}
 
 // Splits selected "amounts" members into explicit (typed, incl. "0") vs
 // auto (no key), and what's left of totalAmount after explicit entries.
@@ -497,24 +419,4 @@ export function resolveSplitAmounts(
     paidByMemberId,
     decimalDigits,
   ).rows;
-}
-
-// Positive = viewer lent this amount (they paid and are owed back),
-// negative = viewer owes this amount, 0 = viewer wasn't part of this expense.
-// Payer's net is amount minus THEIR OWN split row, not the sum of everyone
-// else's — this now reads the rounding/leftover remainder directly, since
-// resolveSplitAmounts already baked it into the payer's stored row. See
-// design_decisions.md "Split rounding/leftover is assigned to the payer"
-// (2026-09-25).
-export function getViewerNetForExpense(
-  expense: Pick<Expense, "paidByMemberId" | "amount">,
-  splits: Pick<Split, "memberId" | "individualAmount">[],
-  viewerMemberId: string,
-): number {
-  const viewerSplit = splits.find((s) => s.memberId === viewerMemberId);
-  const isPayer = expense.paidByMemberId === viewerMemberId;
-
-  if (isPayer) return expense.amount - (viewerSplit?.individualAmount ?? 0);
-  if (viewerSplit) return -viewerSplit.individualAmount;
-  return 0;
 }

@@ -7,7 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { FieldErrors, useForm } from "react-hook-form";
 import { KeyboardAwareScrollViewRef } from "react-native-keyboard-controller";
 import { CreateTripFormHandle } from "../components/CreateTripForm";
-import { CURRENCY_OPTIONS } from "../constants";
+import { CURRENCY_OPTIONS } from "@/domain/currencies";
 import { getDefaultCurrency } from "../helpers/currencyHelpers";
 import {
   CreateTripFormData,

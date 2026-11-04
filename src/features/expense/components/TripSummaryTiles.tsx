@@ -1,8 +1,6 @@
-import {
-  formatExpenseCount,
-  TripSummary,
-} from "@/features/expense/helpers/tripHomeHelpers";
-import { TripCardState } from "@/features/trips/helpers/tripsHelpers";
+import { TripCardState } from "@/domain/tripBalance";
+import { formatExpenseCount } from "@/domain/tripFormat";
+import { TripSummary } from "@/features/expense/helpers/tripHomeHelpers";
 import { tabularNums } from "@/themes/typography";
 import { Currency } from "@/types/TCreateTrip";
 import { cn } from "@/utils/cn";

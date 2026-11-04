@@ -68,7 +68,7 @@ export const expenses = sqliteTable("expenses", {
   // (src/utils/currency.ts), which already work in float dollars throughout the app
   amount: real("amount").notNull(),
   description: text("description"),
-  // matches an id in ACTIVITIES (src/features/expense/constants.ts) — app-level enum, not FK'd
+  // matches an id in ACTIVITIES (src/domain/activities.ts) — app-level enum, not FK'd
   activityId: text("activity_id").notNull(),
   // dateId string — same format as flash-calendar's toDateId/parseDateId (src/utils/date.ts)
   date: text("date").notNull(),

@@ -1,7 +1,6 @@
-import { ACTIVITIES } from "@/features/expense/constants";
+import { ACTIVITIES } from "@/domain/activities";
 import {
   formatDayHeader,
-  formatExpenseCount,
   formatPeopleLabel,
   formatSwitcherMeta,
   getTripSummary,
@@ -81,17 +80,6 @@ describe("formatPeopleLabel", () => {
   it("counts the others, singular for one", () => {
     expect(formatPeopleLabel(2)).toBe("You and 1 other");
     expect(formatPeopleLabel(4)).toBe("You and 3 others");
-  });
-});
-
-describe("formatExpenseCount", () => {
-  it("is singular for one expense", () => {
-    expect(formatExpenseCount(1)).toBe("1 expense");
-  });
-
-  it("is plural for none and for many", () => {
-    expect(formatExpenseCount(0)).toBe("0 expenses");
-    expect(formatExpenseCount(23)).toBe("23 expenses");
   });
 });
 

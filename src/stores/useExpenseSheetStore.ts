@@ -1,5 +1,5 @@
-import { CURRENCY_OPTIONS } from "@/features/createTrip/constants";
-import { ACTIVITIES } from "@/features/expense/constants";
+import { CURRENCY_OPTIONS } from "@/domain/currencies";
+import { ACTIVITIES } from "@/domain/activities";
 import { Currency } from "@/types/TCreateTrip";
 import { Activity, Member, SplitMethod } from "@/types/TExpense";
 import { toDateId } from "@marceloterreiro/flash-calendar";
