@@ -5,7 +5,7 @@ description: Bookkeeping rules for implementing a Feat_ planning task or a Fix_ 
 
 # Implementing tasks: bookkeeping
 
-Moved out of CLAUDE.md Step 3 so it loads only when a task is being implemented. CLAUDE.md keeps Verify, Log each task, Frozen targets and Review.
+Moved out of the `feature-workflow` skill's Step 3 so it loads only when a task is being implemented. That step keeps Verify, Log each task, Frozen targets and Review.
 
 - **Open checks** — a Verify item that can't be done yet (it needs a later
   task's code, or data the app doesn't have yet) goes in the implementation

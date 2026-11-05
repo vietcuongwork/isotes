@@ -97,7 +97,7 @@ Quote the values (rows, tree lines, log result) in the task's log in the vault's
 - Once findings are quoted in the vault, delete that run's folder: `rm -rf .sim/maestro/<flow>-<time>`. Keep `.sim/maestro/home/`.
 - Flow runs and tree reads write nothing to `~/.maestro/tests/`, but each MCP driver start (an `xctest_runner_*.log`) and each `maestro list-devices` does: delete the `~/.maestro/tests/<time>/` folders this session created (`ls -lt ~/.maestro/tests | head`).
 - Stop only what this session started, by its background task or PID: `caffeinate`, and Metro if Launch started it. Never kill by process name; never stop another project's Metro.
-- At the end of a test session, once the evidence is quoted in the vault, run `scripts/cleanup.sh`: it deletes flow trips, keeping the newest per flow and the baseline trip. The user's own trips never match the flow-name pattern.
+- At the end of a test session, once the evidence is quoted in the vault, run `scripts/cleanup.sh`: it deletes flow trips, keeping the newest per flow and the baseline trip. The user's own trips never match the flow-name pattern. `/autopilot` runs it at every Demo that ran flows; a companion-mode session runs it in the feature's acceptance task.
 
 ## Helpers
 

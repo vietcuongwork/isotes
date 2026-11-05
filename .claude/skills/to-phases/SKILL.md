@@ -5,7 +5,7 @@ description: Break a reviewed feature spec into vertical-slice phases, each endi
 
 # To Phases
 
-Turn a reviewed `Feat_{slug}_spec.md` into **phases**: tracer-bullet vertical slices, each one ending on a **Demo**, each broken into the small tasks CLAUDE.md Step 2 describes. A phase is the unit you and the user check together; a task is the unit of one proposal.
+Turn a reviewed `Feat_{slug}_spec.md` into **phases**: tracer-bullet vertical slices, each one ending on a **Demo**, each broken into the small tasks the `feature-workflow` skill's Step 2 describes. A phase is the unit you and the user check together; a task is the unit of one proposal.
 
 ## 1. Read
 
@@ -24,7 +24,7 @@ Done when, for every user story, you can name the modules it touches, from where
 - **Prefactoring first**: Phase 0 holds the prefactors. Its Demo is "behaviour unchanged": a regression check of what it touches. It also proves readiness: the baseline is committed, and every seam a later phase names has at least one passing example test.
 - **One session**: a phase fits one fresh context window.
 - **Wide refactors and migrations run expand–contract**: Expand (the new form beside the old, nothing using it yet; Demo = behaviour unchanged), then one Migrate phase per consumer or batch, each with its own Demo and blocked by Expand, then Contract (delete the old form), blocked by every Migrate.
-- **Acceptance closes the spec**: the last phase ends with an acceptance task (`[Live]`) that first runs `pnpm check` (the feature's one tsc, lint and Prettier run), then re-runs every criterion's check on the final build — a pass logged by an earlier task doesn't count — and ticks only what passes in full. A partly checked criterion stays unticked with a note on what's missing; a dropped one is marked `descoped: {reason} (user, YYYY-MM-DD)` only with the user's OK. Then it sets the spec's `status` to `done`. For a feature that changes the app (`src/`), the same task runs the vault's `Test_golden-path.md` on that build, so a regression outside the feature's own criteria still shows. Last, it greps `Tasks_backlog.md` for open items that link to this feature (`[[Feat_{slug}_…]]`) or carry one of its `screen/` or `area/` tags (`Ref_tag-pool`), and lists them beside the criteria they might satisfy. The user names which ones the feature fixed, and the task ticks those in the vault note: `- [x]` moved under `## Done` with `· done {today}`. It also sets `status: done` on the feature's spec, planning and implementation notes. With no matching items, it writes "backlog: none linked or tagged". Then, if the feature changed a rule or a screen path, it updates the `Flow_{area}` note for that user job from `templates/Flow_template.md`, creating the note if needed and covering only what this feature touched. Otherwise it logs "flow: no change".
+- **Acceptance closes the spec**: the last phase is acceptance, a phase of its own that runs after the feature's review session (`Feat_{slug}_review`, which the planning note doesn't list). Its one `[Live]` task first runs `pnpm check` (the feature's one tsc, lint and Prettier run), then re-runs every criterion's check on the final build — a pass logged by an earlier task doesn't count — and ticks only what passes in full. A partly checked criterion stays unticked with a note on what's missing; a dropped one is marked `descoped: {reason} (user, YYYY-MM-DD)` only with the user's OK. Then it sets the spec's `status` to `done`. For a feature that changes the app (`src/`), the same task runs the vault's `Test_golden-path.md` on that build, so a regression outside the feature's own criteria still shows. It also runs every check the review note lists under "Checks not shown". Last, it greps `Tasks_backlog.md` for open items that link to this feature (`[[Feat_{slug}_…]]`) or carry one of its `screen/` or `area/` tags (`Ref_tag-pool`), and lists them beside the criteria they might satisfy. The user names which ones the feature fixed, and the task ticks those in the vault note: `- [x]` moved under `## Done` with `· done {today}`. It also sets `status: done` on the feature's spec, planning, implementation and review notes. With no matching items, it writes "backlog: none linked or tagged". The review session has already updated the `Flow_{area}` note.
 
 </phase-rules>
 
@@ -50,7 +50,7 @@ Iterate until the user approves the phase list. Then ask: "Companion, or should 
 
 ## 4. Break each phase into tasks
 
-Inside each approved phase, write the tasks by CLAUDE.md Step 2's task rules: smallest, non-breaking, revertible, tagged `[TDD]` or `[Live]`, with a **Verify** line and `Blocked by` where needed. Tasks may be one file each; the phase carries the vertical slice. A `[TDD]` task names its seam from the phase's **Seams**.
+Inside each approved phase, write the tasks by the `feature-workflow` skill's Step 2 task rules: smallest, non-breaking, revertible, tagged `[TDD]` or `[Live]`, with a **Verify** line and `Blocked by` where needed. Tasks may be one file each; the phase carries the vertical slice. A `[TDD]` task names its seam from the phase's **Seams**.
 
 Tag a task `[Live, checked in T{n}]` only when it draws something and changes no behaviour: no tap handler, no state change, no navigation. A task that adds an interaction, such as a popover that opens and closes, keeps its own short Verify and runs it on the simulator at that task.
 
@@ -76,4 +76,4 @@ Write `Feat_{slug}_planning.md` from `templates/Tasks_template.md`, and copy the
     - [ ] **T5 — <title>. [TDD]**
       - **Verify:** …
 
-Then hand back to CLAUDE.md Step 2's review gate.
+Then hand back to the `feature-workflow` skill's Step 2 review gate.

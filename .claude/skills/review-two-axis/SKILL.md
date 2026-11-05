@@ -1,6 +1,6 @@
 ---
 name: review-two-axis
-description: "Two-axis review — Standards (isotes rules, design decisions, smell baseline) and Spec (the vault note the work implements) — run as parallel sub-agents and reported side by side. Use once at the end of a feature, before its acceptance checks (Feat_ Step 3), after a non-trivial Fix_ task (Fix_ Step 5), or when the user asks to review changes since X. Not for trivial edits."
+description: "Two-axis review — Standards (isotes rules, design decisions, smell baseline) and Spec (the vault note the work implements) — run as parallel sub-agents and reported side by side. Use once at the end of a feature, in its review session after the last code phase (`feature-workflow` Step 4), after a non-trivial Fix_ task (Fix_ Step 5), or when the user asks to review changes since X. Not for trivial edits."
 ---
 
 Two-axis review of the changes pinned in step 1:
@@ -30,7 +30,7 @@ The spec is the vault note the work implements, under `/Users/admin/repository/v
 
 Read the note(s) with the Obsidian MCP tools and paste the relevant contents into the Spec sub-agent's prompt.
 
-For a task under review, also paste the task's planned **Verify** line and its draft Verify results from this conversation: review runs before the task is logged, so the note doesn't have them yet. For a feature at its end, paste the spec's acceptance criteria and the implementation note's Open checks and Deviation lines instead, since every task is already logged there.
+For a task under review, also paste the task's planned **Verify** line and its draft Verify results from this conversation: review runs before the task is logged, so the note doesn't have them yet. For a feature at its end, paste the spec's acceptance criteria and the implementation note's Open checks and Deviation lines instead, since every task is already logged there. The review session runs in a fresh session opened with `/recall {slug}`, so read the three feature notes first.
 
 ### 3. Identify the standards sources
 
@@ -85,6 +85,8 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
 Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings, because the two axes are deliberately separate (see _Why two axes_).
 
 End with a one-line summary: total findings per axis, the Spec axis's PASS / FAIL / NOT SHOWN counts, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
+
+For a feature at its end, write the aggregate into `Feat_{slug}_review` from `templates/Feat_review_template`, not into the implementation note: one section per heading, a decision beside each Spec finding. For a task or a `Fix_` review, report in the conversation as now.
 
 Report only — don't fix anything. Each fix the user picks is proposed per "Smallest steps" (AGENTS.md).
 
