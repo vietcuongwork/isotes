@@ -1,4 +1,4 @@
-import { filterMembers } from "@/features/expense/helpers/memberHelpers";
+import { filterMembers } from "@/features/addExpense/helpers/memberHelpers";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { useMemo, useState } from "react";
 

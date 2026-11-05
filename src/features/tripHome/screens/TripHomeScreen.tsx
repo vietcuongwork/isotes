@@ -1,4 +1,4 @@
-import AddExpenseBottomSheet from "@/features/expense/components/AddExpenseBottomSheet";
+import AddExpenseBottomSheet from "@/features/addExpense/components/AddExpenseBottomSheet";
 import ExpenseDayCard from "@/features/tripHome/components/ExpenseDayCard";
 import ExpenseEmpty from "@/features/tripHome/components/ExpenseEmpty";
 import TripHeader from "@/features/tripHome/components/TripHeader";

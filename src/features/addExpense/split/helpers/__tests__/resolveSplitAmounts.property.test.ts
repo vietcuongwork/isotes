@@ -1,6 +1,6 @@
 import * as fc from "fast-check";
 
-import { resolveSplitAmounts } from "@/features/expense/helpers/expenseHelpers";
+import { resolveSplitAmounts } from "@/features/addExpense/split/helpers/splitHelpers";
 import { Member } from "@/types/TExpense";
 
 // expenseHelpers imports the draft store only for its dirty check; the real

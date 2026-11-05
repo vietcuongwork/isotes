@@ -6,12 +6,12 @@ import { getInitial } from "@/utils/utils";
 import { ReactElement } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useSplitBottomSheet from "@/features/expense/hooks/useSplitBottomSheet";
-import AddPerson from "../addperson/AddPerson";
-import MemberListRow from "./MemberListRow";
-import MemberNoMatches from "./MemberNoMatches";
-import MemberSearchField from "./MemberSearchField";
-import SelectionSummaryBar from "./SelectionSummaryBar";
+import useSplitBottomSheet from "@/features/addExpense/split/hooks/useSplitBottomSheet";
+import AddPerson from "@/features/addExpense/addPerson/components/AddPerson";
+import MemberListRow from "@/features/addExpense/components/members/MemberListRow";
+import MemberNoMatches from "@/features/addExpense/components/members/MemberNoMatches";
+import MemberSearchField from "@/features/addExpense/components/members/MemberSearchField";
+import SelectionSummaryBar from "@/features/addExpense/components/members/SelectionSummaryBar";
 import SplitMethodControl from "./SplitMethodControl";
 import SplitSummary from "./SplitSummary";
 

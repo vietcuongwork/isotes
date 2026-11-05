@@ -9,9 +9,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAddExpenseBottomSheet from "../hooks/useAddExpenseBottomSheet";
 import ActivityAndDateSection from "./ActivityAndDateSection";
 import AmountField from "./amount/AmountField";
-import AddDateBottomSheet from "./date/AddDateBottomSheet";
+import AddDateBottomSheet from "@/features/addExpense/date/components/AddDateBottomSheet";
 import DescriptionField from "./description/DescriptionField";
-import PaidAndSplitSection from "./paidbyandsplit/PaidAndSplitSection";
+import PaidAndSplitSection from "./PaidAndSplitSection";
 import RestoredDraftBanner from "./RestoredDraftBanner";
 import StartOverDialog from "./StartOverDialog";
 

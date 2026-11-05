@@ -1,7 +1,7 @@
 import {
   getAmountsRemainder,
   getRoundingRemainder,
-} from "@/features/expense/helpers/expenseHelpers";
+} from "@/features/addExpense/split/helpers/splitHelpers";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { colors } from "@/themes/color";
 import { Member, SplitSelection } from "@/types/TExpense";

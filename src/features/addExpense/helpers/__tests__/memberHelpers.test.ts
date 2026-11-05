@@ -1,4 +1,4 @@
-import { filterMembers } from "@/features/expense/helpers/memberHelpers";
+import { filterMembers } from "@/features/addExpense/helpers/memberHelpers";
 import { Member } from "@/types/TExpense";
 
 const member = (id: string, name: string): Member => ({

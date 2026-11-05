@@ -1,11 +1,11 @@
 import { ReactElement, useState } from "react";
 import { View } from "react-native";
-import PaidByBottomSheet from "./PaidByBottomSheet";
-import PayerRow from "./PayerRow";
-import PeopleSummaryRow from "./PeopleSummaryRow";
-import SplitBottomSheet from "./SplitBottomSheet";
-import SplitMethodControl from "./SplitMethodControl";
-import SplitSummary from "./SplitSummary";
+import PaidByBottomSheet from "@/features/addExpense/paidBy/components/PaidByBottomSheet";
+import PayerRow from "@/features/addExpense/paidBy/components/PayerRow";
+import PeopleSummaryRow from "@/features/addExpense/split/components/PeopleSummaryRow";
+import SplitBottomSheet from "@/features/addExpense/split/components/SplitBottomSheet";
+import SplitMethodControl from "@/features/addExpense/split/components/SplitMethodControl";
+import SplitSummary from "@/features/addExpense/split/components/SplitSummary";
 
 export default function PaidAndSplitSection(): ReactElement {
   const [isPaidByOpen, setPaidByOpen] = useState(false);

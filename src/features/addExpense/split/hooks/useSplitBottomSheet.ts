@@ -1,4 +1,4 @@
-import { filterMembers } from "@/features/expense/helpers/memberHelpers";
+import { filterMembers } from "@/features/addExpense/helpers/memberHelpers";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { Member, SplitSelection } from "@/types/TExpense";
 import { formatDisplayAmount, parseAmountInput } from "@/utils/currency";
@@ -9,7 +9,7 @@ import {
   getRoundingRemainder,
   resolveSplitAmounts,
   SplitRow,
-} from "../helpers/expenseHelpers";
+} from "@/features/addExpense/split/helpers/splitHelpers";
 import useChangeSplitAmount from "./useChangeSplitAmount";
 
 type RemainderInfo = ReturnType<typeof getRoundingRemainder>;

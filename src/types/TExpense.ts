@@ -1,4 +1,4 @@
-import { ExpenseRow } from "@/db/schema";
+import { ExpenseRow, NewExpenseSplit } from "@/db/schema";
 import { colors } from "@/themes/color";
 import { LucideIcon } from "lucide-react-native";
 
@@ -9,6 +9,10 @@ export interface Activity {
 }
 
 export type SplitMethod = ExpenseRow["splitMethod"];
+
+// A split row as persisted by insertExpenseWithSplits (id and expenseId are
+// assigned there).
+export type PersistedSplitRow = Omit<NewExpenseSplit, "id" | "expenseId">;
 
 // Source of truth for which colours a member can be assigned. If you add or
 // remove a key here (or in color.js's `member`/`memberInk`), also update the

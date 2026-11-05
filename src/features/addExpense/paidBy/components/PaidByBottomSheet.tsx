@@ -8,12 +8,12 @@ import { getInitial } from "@/utils/utils";
 import { ReactElement } from "react";
 import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import usePaidByBottomSheet from "@/features/expense/hooks/usePaidByBottomSheet";
-import AddPerson from "../addperson/AddPerson";
-import MemberListRow from "./MemberListRow";
-import MemberNoMatches from "./MemberNoMatches";
-import MemberSearchField from "./MemberSearchField";
-import SelectionSummaryBar from "./SelectionSummaryBar";
+import usePaidByBottomSheet from "@/features/addExpense/paidBy/hooks/usePaidByBottomSheet";
+import AddPerson from "@/features/addExpense/addPerson/components/AddPerson";
+import MemberListRow from "@/features/addExpense/components/members/MemberListRow";
+import MemberNoMatches from "@/features/addExpense/components/members/MemberNoMatches";
+import MemberSearchField from "@/features/addExpense/components/members/MemberSearchField";
+import SelectionSummaryBar from "@/features/addExpense/components/members/SelectionSummaryBar";
 
 export interface PaidByBottomSheetProps {
   visible: boolean;

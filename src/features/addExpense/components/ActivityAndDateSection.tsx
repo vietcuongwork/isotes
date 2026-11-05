@@ -4,7 +4,7 @@ import { ReactElement } from "react";
 import { View } from "react-native";
 import ActivityField from "./activity/ActivityField";
 import ActivityPicker from "./activity/ActivityPicker";
-import DateField from "./date/DateField";
+import DateField from "@/features/addExpense/date/components/DateField";
 
 interface ActivityAndDateSectionProps {
   isActivityPickerOpen: boolean;

@@ -3,11 +3,11 @@ import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { parseAmountInput } from "@/utils/currency";
 import { toDateId } from "@marceloterreiro/flash-calendar";
 import { useState } from "react";
+import { resolveSplitAmounts } from "@/features/addExpense/split/helpers/splitHelpers";
 import {
   getIsDraftRestored,
-  resolveSplitAmounts,
   validateExpenseSheet,
-} from "../helpers/expenseHelpers";
+} from "@/features/addExpense/helpers/expenseSheetHelpers";
 
 const today = toDateId(new Date());
 

@@ -5,7 +5,7 @@ import {
 import { ReactElement } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useAddDateBottomSheet from "@/features/expense/hooks/useAddDateBottomSheet";
+import useAddDateBottomSheet from "@/features/addExpense/date/hooks/useAddDateBottomSheet";
 import DateCalendar from "./DateCalendar";
 import QuickPickPills from "./QuickPickPills";
 
