@@ -1,4 +1,5 @@
 // https://docs.expo.dev/guides/using-eslint/
+const fs = require("node:fs");
 const { defineConfig } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
 const noTokenNote = require("./scripts/eslint-rules/no-token-note");
@@ -54,6 +55,46 @@ const TEXT_INPUT_LINE_HEIGHT = {
   message:
     "Text role with a line height on a single-line TextInput. Why: iOS draws its text low when lineHeight is set ([[Learn_react-native_textinput-lineheight-ios]]). Fix: a -flat role, or the role's font and size through style.",
 };
+// import/no-restricted-paths zones: `target` files may not import from `from`.
+// Zone options don't merge across blocks either, so every zone lives in IMPORT_ZONES.
+const SHARED_FOLDER_ZONES = ["domain", "components", "stores"].map(
+  (folder) => ({
+    target: `./src/${folder}`,
+    from: "./src/features",
+    message: `Shared folder importing a feature. Why: src/${folder} is below features, so a feature import makes a cycle (ADR 0018). Fix: move what both need into src/domain (logic) or src/components (UI).`,
+  }),
+);
+// Read from disk so a new feature folder is covered with no edit here
+const FEATURES = fs
+  .readdirSync("src/features", { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name);
+const FEATURE_ZONE_MESSAGE =
+  "Feature importing another feature. Why: features stay independent so each folder can change alone (ADR 0018). Fix: move what both need into src/domain (logic) or src/components (UI).";
+const featureZone = (feature, from, except) => ({
+  target: `./src/features/${feature}`,
+  from: from.map((other) => `./src/features/${other}`),
+  ...(except && { except }),
+  message: FEATURE_ZONE_MESSAGE,
+});
+const FEATURE_ZONES = FEATURES.flatMap((feature) => {
+  const others = FEATURES.filter((other) => other !== feature);
+  if (feature !== "tripHome") return [featureZone(feature, others)];
+  // The one exception: trip home opens the Add expense sheet (ADR 0018)
+  return [
+    featureZone(
+      feature,
+      others.filter((other) => other !== "addExpense"),
+    ),
+    featureZone(
+      feature,
+      ["addExpense"],
+      ["./components/AddExpenseBottomSheet.tsx"],
+    ),
+  ];
+});
+const IMPORT_ZONES = [...SHARED_FOLDER_ZONES, ...FEATURE_ZONES];
+
 // Built before the px tokens; a file leaves this list when the migration restyles it
 const LEGACY_SPACING_FILES = [
   "src/components/Avatar.tsx",
@@ -170,5 +211,12 @@ module.exports = defineConfig([
   {
     files: NO_TOKEN_NOTE_EXEMPT,
     rules: { "isotes/no-token-note": "off" },
+  },
+  {
+    // Folder layering: shared folders never import features, and features never import each other
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "import/no-restricted-paths": ["error", { zones: IMPORT_ZONES }],
+    },
   },
 ]);
