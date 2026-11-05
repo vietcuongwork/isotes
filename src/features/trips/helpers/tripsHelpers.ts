@@ -1,5 +1,6 @@
 import { computeTripBalance } from "@/domain/tripBalance";
 import { transformTripWithRelationsRow } from "@/domain/transforms";
+import { formatExpenseCount } from "@/domain/tripFormat";
 import { TripCardData } from "@/types/TTrips";
 
 // A trip with no owner member has nobody to be the viewer, so its balance is 0
@@ -18,15 +19,13 @@ export function getTripCardData(
   };
 }
 
-export function getAvatarStack<T>(
-  members: T[],
-  maxDiscs = 4,
-): { visible: T[]; overflow: number } {
-  if (members.length <= maxDiscs) return { visible: members, overflow: 0 };
-
-  // The last disc becomes "+N", so one fewer person fits
-  const shown = maxDiscs - 1;
-  return { visible: members.slice(0, shown), overflow: members.length - shown };
+export function formatSwitcherMeta(
+  currencyCode: string,
+  peopleCount: number,
+  expenseCount: number,
+): string {
+  const people = `${peopleCount} ${peopleCount === 1 ? "person" : "people"}`;
+  return `${currencyCode} · ${people} · ${formatExpenseCount(expenseCount)}`;
 }
 
 // NFD splits "à" into "a" plus a combining mark (U+0300 to U+036F),

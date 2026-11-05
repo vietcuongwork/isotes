@@ -1,4 +1,4 @@
-import TripSwitcherItem from "@/components/trip-drawer/TripSwitcherItem";
+import TripSwitcherItem from "@/features/trips/components/TripSwitcherItem";
 import { useTripSwitcher } from "@/features/trips/hooks/useTripSwitcher";
 import { EXPO_ROUTER } from "@/navigation/route";
 import { useTripDrawerStore } from "@/stores/useTripDrawerStore";

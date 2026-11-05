@@ -1,5 +1,5 @@
 import { getTripCardState, TripCardState } from "@/domain/tripBalance";
-import { formatSwitcherMeta } from "@/features/expense/helpers/tripHomeHelpers";
+import { formatSwitcherMeta } from "@/features/trips/helpers/tripsHelpers";
 import { colors } from "@/themes/color";
 import { tabularNums } from "@/themes/typography";
 import { TripCardData } from "@/types/TTrips";

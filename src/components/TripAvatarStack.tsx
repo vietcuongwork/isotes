@@ -1,5 +1,4 @@
 import Avatar from "@/components/Avatar";
-import { getAvatarStack } from "@/features/trips/helpers/tripsHelpers";
 import { Member } from "@/types/TExpense";
 import { cn } from "@/utils/cn";
 import { getInitial } from "@/utils/utils";
@@ -10,6 +9,17 @@ const RING = "bg-card p-[2px]";
 const DISC = "h-space-8 w-space-8";
 // NOTE - no token for a 12/16 semibold initial, falling back to text-initial-md (12, 600)
 const INITIAL = "text-initial-md";
+
+export function getAvatarStack<T>(
+  members: T[],
+  maxDiscs = 4,
+): { visible: T[]; overflow: number } {
+  if (members.length <= maxDiscs) return { visible: members, overflow: 0 };
+
+  // The last disc becomes "+N", so one fewer person fits
+  const shown = maxDiscs - 1;
+  return { visible: members.slice(0, shown), overflow: members.length - shown };
+}
 
 interface TripAvatarStackProps {
   members: Member[];

@@ -2,7 +2,6 @@ import { ACTIVITIES } from "@/domain/activities";
 import {
   formatDayHeader,
   formatPeopleLabel,
-  formatSwitcherMeta,
   getTripSummary,
   groupExpensesByDay,
 } from "@/features/expense/helpers/tripHomeHelpers";
@@ -80,18 +79,6 @@ describe("formatPeopleLabel", () => {
   it("counts the others, singular for one", () => {
     expect(formatPeopleLabel(2)).toBe("You and 1 other");
     expect(formatPeopleLabel(4)).toBe("You and 3 others");
-  });
-});
-
-describe("formatSwitcherMeta", () => {
-  it("joins the currency, people and expenses with dots", () => {
-    expect(formatSwitcherMeta("JPY", 4, 23)).toBe(
-      "JPY · 4 people · 23 expenses",
-    );
-  });
-
-  it("is singular for one person and one expense", () => {
-    expect(formatSwitcherMeta("EUR", 1, 1)).toBe("EUR · 1 person · 1 expense");
   });
 });
 

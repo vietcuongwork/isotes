@@ -1,4 +1,4 @@
-import TripAvatarStack from "@/features/trips/components/TripAvatarStack";
+import TripAvatarStack from "@/components/TripAvatarStack";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { colors } from "@/themes/color";
 import { cn } from "@/utils/cn";

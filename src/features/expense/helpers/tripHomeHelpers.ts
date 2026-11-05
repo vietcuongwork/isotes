@@ -3,7 +3,6 @@ import {
   getTripCardState,
   TripCardState,
 } from "@/domain/tripBalance";
-import { formatExpenseCount } from "@/domain/tripFormat";
 import { Expense } from "@/types/TExpense";
 import { roundToDecimals } from "@/utils/currency";
 
@@ -59,15 +58,6 @@ export function formatPeopleLabel(count: number): string {
   const others = count - 1;
   if (others === 0) return "Just you";
   return `You and ${others} ${others === 1 ? "other" : "others"}`;
-}
-
-export function formatSwitcherMeta(
-  currencyCode: string,
-  peopleCount: number,
-  expenseCount: number,
-): string {
-  const people = `${peopleCount} ${peopleCount === 1 ? "person" : "people"}`;
-  return `${currencyCode} · ${people} · ${formatExpenseCount(expenseCount)}`;
 }
 
 // The share is what you were split into, whoever paid

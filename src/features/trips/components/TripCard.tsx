@@ -1,6 +1,6 @@
 import { getTripCardState, TripCardState } from "@/domain/tripBalance";
 import { formatTripCreatedDate, formatTripDateLine } from "@/domain/tripFormat";
-import TripAvatarStack from "@/features/trips/components/TripAvatarStack";
+import TripAvatarStack from "@/components/TripAvatarStack";
 import { TripCardData } from "@/types/TTrips";
 import { cn } from "@/utils/cn";
 import { tabularNums } from "@/themes/typography";
