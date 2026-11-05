@@ -1,4 +1,4 @@
-import { formatPeopleLabel } from "@/features/expense/helpers/tripHomeHelpers";
+import { formatPeopleLabel } from "@/features/tripHome/helpers/tripHomeHelpers";
 import TripAvatarStack from "@/components/TripAvatarStack";
 import { Member } from "@/types/TExpense";
 import { Text, View } from "react-native";

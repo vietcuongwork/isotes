@@ -4,7 +4,7 @@ import {
   formatPeopleLabel,
   getTripSummary,
   groupExpensesByDay,
-} from "@/features/expense/helpers/tripHomeHelpers";
+} from "@/features/tripHome/helpers/tripHomeHelpers";
 import { Expense, Split } from "@/types/TExpense";
 
 // tripHomeHelpers → tripsHelpers → expenseHelpers imports the draft store; the real

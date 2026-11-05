@@ -13,7 +13,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo } from "react";
 
-export default function useExpenseScreen() {
+export default function useTripHomeScreen() {
   const { tripId } = useLocalSearchParams<{ tripId: string }>();
 
   const { data: trip, error } = useLiveQuery(getTripById(tripId));
@@ -49,7 +49,7 @@ export default function useExpenseScreen() {
   const viewerMemberId = transformedMembers.find((m) => m.isOwner)?.id;
 
   if (__DEV__ && error) {
-    console.error("[useExpenseScreen] Trip query failed", error);
+    console.error("[useTripHomeScreen] Trip query failed", error);
   }
 
   useEffect(() => {

@@ -90,7 +90,7 @@ const LEGACY_SPACING_FILES = [
   "src/features/expense/components/paidbyandsplit/SplitBottomSheet.tsx",
   "src/features/expense/components/paidbyandsplit/SplitMethodControl.tsx",
   "src/features/expense/components/paidbyandsplit/SplitSummary.tsx",
-  "src/features/expense/screens/ExpenseScreen.tsx",
+  "src/features/tripHome/screens/TripHomeScreen.tsx",
 ];
 // Old dark-theme files with raw px and no notes; a file leaves when the migration restyles it
 const NO_TOKEN_NOTE_EXEMPT = [
@@ -131,6 +131,7 @@ module.exports = defineConfig([
     files: [
       "src/features/**/*Sheet*.{ts,tsx}",
       "src/features/expense/components/**/*.tsx",
+      "src/features/tripHome/components/**/*.tsx",
     ],
     rules: {
       "no-restricted-imports": [

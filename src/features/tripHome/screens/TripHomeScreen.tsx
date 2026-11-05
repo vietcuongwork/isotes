@@ -1,12 +1,13 @@
-import ExpenseDayCard from "@/features/expense/components/ExpenseDayCard";
-import ExpenseEmpty from "@/features/expense/components/ExpenseEmpty";
-import TripHeader from "@/features/expense/components/TripHeader";
-import TripPeopleRow from "@/features/expense/components/TripPeopleRow";
-import TripSummaryTiles from "@/features/expense/components/TripSummaryTiles";
+import AddExpenseBottomSheet from "@/features/expense/components/AddExpenseBottomSheet";
+import ExpenseDayCard from "@/features/tripHome/components/ExpenseDayCard";
+import ExpenseEmpty from "@/features/tripHome/components/ExpenseEmpty";
+import TripHeader from "@/features/tripHome/components/TripHeader";
+import TripPeopleRow from "@/features/tripHome/components/TripPeopleRow";
+import TripSummaryTiles from "@/features/tripHome/components/TripSummaryTiles";
 import {
   getTripSummary,
   groupExpensesByDay,
-} from "@/features/expense/helpers/tripHomeHelpers";
+} from "@/features/tripHome/helpers/tripHomeHelpers";
 import { useTripDrawerStore } from "@/stores/useTripDrawerStore";
 import { colors } from "@/themes/color";
 import { useIsFocused } from "expo-router";
@@ -15,21 +16,20 @@ import { Menu, Plus } from "lucide-react-native";
 import { useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AddExpenseBottomSheet from "../components/AddExpenseBottomSheet";
-import useExpenseScreen from "../hooks/useExpenseScreen";
+import useTripHomeScreen from "../hooks/useTripHomeScreen";
 
 function DaySeparator() {
   return <View className="h-space-5" />;
 }
 
-export default function ExpenseScreen() {
+export default function TripHomeScreen() {
   const [isAddExpenseOpen, setAddExpenseOpen] = useState(false);
   const openDrawer = useTripDrawerStore((state) => state.open);
   const {
     transformedTrip: trip,
     transformedExpenses,
     transformedMembers,
-  } = useExpenseScreen();
+  } = useTripHomeScreen();
   // StatusBar props merge in mount order and Trips stays mounted under this
   // screen, so dark text is rendered only while the tab is on top
   const isFocused = useIsFocused();

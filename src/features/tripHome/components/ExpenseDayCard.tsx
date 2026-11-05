@@ -2,7 +2,7 @@ import { getViewerNetForExpense } from "@/domain/tripBalance";
 import {
   ExpenseDay,
   formatDayHeader,
-} from "@/features/expense/helpers/tripHomeHelpers";
+} from "@/features/tripHome/helpers/tripHomeHelpers";
 import { tabularNums } from "@/themes/typography";
 import { Currency } from "@/types/TCreateTrip";
 import { Member } from "@/types/TExpense";
