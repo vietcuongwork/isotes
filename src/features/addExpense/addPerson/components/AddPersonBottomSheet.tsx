@@ -5,6 +5,7 @@ import {
   BottomSheetTextInput,
 } from "@/components/sheet-keyboard";
 import { insertMember } from "@/db/members";
+import { firstUnusedColor } from "@/features/addExpense/addPerson/helpers/addPersonHelpers";
 import { useAddPersonStore } from "@/stores/useAddPersonStore";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { colors } from "@/themes/color";
@@ -115,7 +116,7 @@ export default function AddPersonBottomSheet(
 
   const name = useAddPersonStore((s) => s.name);
   const setName = useAddPersonStore((s) => s.setName);
-  const selectedColor = useAddPersonStore((s) => s.selectedColor);
+  const pickedColor = useAddPersonStore((s) => s.selectedColor);
   const setSelectedColor = useAddPersonStore((s) => s.setSelectedColor);
   const resetAddPerson = useAddPersonStore((s) => s.reset);
   const selectedMemberIds = useExpenseSheetStore((s) => s.selectedMemberIds);
@@ -125,10 +126,12 @@ export default function AddPersonBottomSheet(
   );
   const setSplitShares = useExpenseSheetStore((s) => s.setSplitShares);
 
-  const tripId = useExpenseSheetStore((s) => s.members[0]?.tripId);
+  const members = useExpenseSheetStore((s) => s.members);
+  const tripId = members[0]?.tripId;
 
   const safeAreaInsets = useSafeAreaInsets();
 
+  const color = pickedColor ?? firstUnusedColor(members);
   const trimmedName = name.trim();
 
   const handleAddPerson = async () => {
@@ -136,7 +139,7 @@ export default function AddPersonBottomSheet(
     const newMemberId = await insertMember({
       tripId,
       name: trimmedName,
-      memberColor: selectedColor,
+      memberColor: color,
     });
 
     // The expense sheet's seed effect only fires once (paidByMemberId is
@@ -163,17 +166,14 @@ export default function AddPersonBottomSheet(
       {/* revealMargin 50 = keyboard-controller's old bottomOffset */}
       <BottomSheetScrollView revealMargin={50}>
         <View className="gap-space-4 px-space-5">
-          <PersonPreview name={name} color={selectedColor} />
+          <PersonPreview name={name} color={color} />
 
           <NameField
             value={name}
             onChangeText={(text) => setName(sanitizeNameInput(text))}
           />
 
-          <ColorField
-            selectedColor={selectedColor}
-            onSelectColor={setSelectedColor}
-          />
+          <ColorField selectedColor={color} onSelectColor={setSelectedColor} />
 
           {/* Helper line */}
           <Text className="text-ink-500 text-caption">

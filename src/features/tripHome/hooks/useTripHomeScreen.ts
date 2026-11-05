@@ -8,6 +8,7 @@ import {
   transformMemberRow,
   transformTripRow,
 } from "@/domain/transforms";
+import { useAddPersonStore } from "@/stores/useAddPersonStore";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useLocalSearchParams } from "expo-router";
@@ -30,6 +31,7 @@ export default function useTripHomeScreen() {
   );
   const setSplitShares = useExpenseSheetStore((s) => s.setSplitShares);
   const reset = useExpenseSheetStore((s) => s.reset);
+  const resetAddPerson = useAddPersonStore((s) => s.reset);
 
   const transformedTrip = useMemo(
     () => (trip ? transformTripRow(trip) : undefined),
@@ -92,8 +94,11 @@ export default function useTripHomeScreen() {
     // Unmount only, so the draft survives the sheet closing and reopening.
     // Holds while switching trips replaces this screen (push, or the drawer's
     // root Stack replace); setParams would skip it. why: ADR 0004
-    return () => reset();
-  }, [reset]);
+    return () => {
+      reset();
+      resetAddPerson();
+    };
+  }, [reset, resetAddPerson]);
 
   return {
     transformedTrip,

@@ -1,10 +1,8 @@
-import { colors } from "@/themes/color";
+import { MEMBER_COLORS } from "@/features/addExpense/addPerson/helpers/addPersonHelpers";
 import { MemberColor } from "@/types/TExpense";
 import { capitalize } from "@/utils/utils";
 import { Text, View } from "react-native";
 import ColorItem from "./ColorItem";
-
-const MEMBER_COLORS = Object.keys(colors.member) as MemberColor[];
 
 // Explicit rows, not flex-wrap: six `w-1/6` items sum to 362.00003 in a 362 container
 // and the sixth wraps
