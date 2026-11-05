@@ -11,7 +11,7 @@ When exploring the codebase, read `GLOSSARY.md` (if it exists) so test names and
 
 ## Scope in isotes
 
-- **TDD**: anything callable as a plain function — split/remainder math (`expenseHelpers.ts`), transforms, DB access functions, and pure logic extracted from UI (e.g. `sheetMath`, `keyboardInset` in `src/components/sheet-keyboard/__tests__/`).
+- **TDD**: anything callable as a plain function — split/remainder math (`splitHelpers.ts`), transforms, DB access functions, and pure logic extracted from UI (e.g. `sheetMath`, `keyboardInset` in `src/components/sheet-keyboard/__tests__/`).
 - **Not TDD → Sim-verified**: rendering, focus/blur, gestures, keyboard timing, NativeWind styling. Jest can pass while the device fails here (see `.claude/rules/isotes-code-style.md`, Pressable function styles), so a green test is false confidence.
 - Tests live in a `__tests__/` folder next to the code. Run one file with `pnpm test -- <path>`, the full suite once at the end of the task.
 

@@ -4,6 +4,14 @@ import { cn } from "@/utils/cn";
 import { getInitial } from "@/utils/utils";
 import { Text, View } from "react-native";
 
+interface TripAvatarStackProps {
+  members: Member[];
+  /** Merged over the default `card` ring, e.g. "bg-ink-100" on an ink-100 row */
+  ringClassName?: string;
+  /** Merged over the default `ink-100` "+N" disc, e.g. "bg-ink-200" on an ink-100 row */
+  overflowClassName?: string;
+}
+
 // NOTE - no token for the 2pt ring, falling back to p-[2px] (Trips board)
 const RING = "bg-card p-[2px]";
 const DISC = "h-space-8 w-space-8";
@@ -19,14 +27,6 @@ export function getAvatarStack<T>(
   // The last disc becomes "+N", so one fewer person fits
   const shown = maxDiscs - 1;
   return { visible: members.slice(0, shown), overflow: members.length - shown };
-}
-
-interface TripAvatarStackProps {
-  members: Member[];
-  /** Merged over the default `card` ring, e.g. "bg-ink-100" on an ink-100 row */
-  ringClassName?: string;
-  /** Merged over the default `ink-100` "+N" disc, e.g. "bg-ink-200" on an ink-100 row */
-  overflowClassName?: string;
 }
 
 // Later discs overlap earlier ones by 8, as on the board
