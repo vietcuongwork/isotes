@@ -43,7 +43,7 @@ name: paid-by-split
 # Ana (added from Paid by) pays
 - tapOn: "You paid"
 - tapOn: "Add person"
-- tapOn: "Enter name"
+- tapOn: "Their name"
 - inputText: "Ana"
 # Return drops the keyboard, which otherwise covers "Add to trip".
 - pressKey: Enter
@@ -59,7 +59,7 @@ name: paid-by-split
 # The people row reads "Split between 2 people, Y, A" (the label carries the avatar initials).
 - tapOn: ".*2 people.*"
 - tapOn: "Add person"
-- tapOn: "Enter name"
+- tapOn: "Their name"
 - inputText: "Ben"
 - pressKey: Enter
 - tapOn: "Add to trip"

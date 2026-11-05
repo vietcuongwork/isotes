@@ -60,12 +60,12 @@ name: golden-path
 # Return drops the keyboard, which otherwise covers "Add to trip".
 - tapOn: "You paid"
 - tapOn: "Add person"
-- tapOn: "Enter name"
+- tapOn: "Their name"
 - inputText: "Ana"
 - pressKey: Enter
 - tapOn: "Add to trip"
 - tapOn: "Add person"
-- tapOn: "Enter name"
+- tapOn: "Their name"
 - inputText: "Ben"
 - pressKey: Enter
 - tapOn: "Add to trip"
