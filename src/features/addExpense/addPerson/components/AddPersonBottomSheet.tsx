@@ -14,7 +14,7 @@ import { MemberColor } from "@/types/TExpense";
 import { cn } from "@/utils/cn";
 import { getInitial, sanitizeNameInput } from "@/utils/utils";
 import { User } from "lucide-react-native";
-import { ReactElement, useState } from "react";
+import { ReactElement, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ColorField from "./ColorField";
@@ -92,6 +92,8 @@ function NameField(props: NameFieldProps): ReactElement {
       <BottomSheetTextInput
         value={value}
         onChangeText={onChangeText}
+        // Decided at mount: the field mounts on each open, so only a blank open focuses
+        autoFocus={value === ""}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         placeholder="Their name"
@@ -131,26 +133,35 @@ export default function AddPersonBottomSheet(
 
   const safeAreaInsets = useSafeAreaInsets();
 
+  // A ref, not state: a second tap before the next render must see it
+  const isAddingRef = useRef(false);
+
   const color = pickedColor ?? firstUnusedColor(members);
   const trimmedName = name.trim();
 
   const handleAddPerson = async () => {
+    if (isAddingRef.current) return;
     if (!trimmedName || !tripId) return;
-    const newMemberId = await insertMember({
-      tripId,
-      name: trimmedName,
-      memberColor: color,
-    });
+    isAddingRef.current = true;
+    try {
+      const newMemberId = await insertMember({
+        tripId,
+        name: trimmedName,
+        memberColor: color,
+      });
 
-    // The expense sheet's seed effect only fires once (paidByMemberId is
-    // already set by now), so a member added mid-session must be resolved
-    // into the split here — otherwise they're silently excluded from
-    // equal split / shares until submit.
-    setSelectedMemberIds([...selectedMemberIds, newMemberId]);
-    setSplitShares({ ...splitShares, [newMemberId]: 1 });
+      // The expense sheet's seed effect only fires once (paidByMemberId is
+      // already set by now), so a member added mid-session must be resolved
+      // into the split here — otherwise they're silently excluded from
+      // equal split / shares until submit.
+      setSelectedMemberIds([...selectedMemberIds, newMemberId]);
+      setSplitShares({ ...splitShares, [newMemberId]: 1 });
 
-    resetAddPerson();
-    onClose();
+      resetAddPerson();
+      onClose();
+    } finally {
+      isAddingRef.current = false;
+    }
   };
 
   return (

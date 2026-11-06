@@ -1,4 +1,6 @@
+import { useAddPersonStore } from "@/stores/useAddPersonStore";
 import { colors } from "@/themes/color";
+import { sanitizeNameInput } from "@/utils/utils";
 import { UserPlus } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -13,14 +15,22 @@ export default function AddPerson(props: AddPersonProps) {
   const { query = "" } = props;
   const [isOpen, setOpen] = useState(false);
 
+  const setName = useAddPersonStore((s) => s.setName);
+
   const name = query.trim();
+
+  // A one-off write, not a derived value: deriving the name from the query would make typing snap back
+  const handlePress = () => {
+    if (name) setName(sanitizeNameInput(name));
+    setOpen(true);
+  };
 
   return (
     <>
       <View className="gap-space-2">
         {/* //NOTE - no token for the 56pt row height and the 1.5pt dashed border, falling back to min-h-[56px] and border-[1.5px] */}
         <Pressable
-          onPress={() => setOpen(true)}
+          onPress={handlePress}
           accessibilityRole="button"
           className="min-h-[56px] flex-row items-center gap-space-3 rounded-md border-[1.5px] border-dashed border-ink-200 px-space-3"
         >
