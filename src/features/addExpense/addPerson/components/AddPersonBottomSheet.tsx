@@ -42,11 +42,6 @@ const nameInputStyle = {
   fontSize: body.fontSize,
 };
 
-// NOTE - no token for the preview's initial (no type role matches), falling back to Outfit semibold 24/32 (the AddPerson board's value)
-const initialStyle = StyleSheet.create({
-  text: { fontFamily: "outfit-semibold", fontSize: 24, lineHeight: 32 },
-}).text;
-
 // The avatar preview: a person icon while the name is blank, else the color and initial
 function PersonPreview(props: PersonPreviewProps): ReactElement {
   const { name, color } = props;
@@ -68,7 +63,7 @@ function PersonPreview(props: PersonPreviewProps): ReactElement {
       {trimmed === "" ? (
         <User size={24} strokeWidth={1.75} color={colors.ink[400]} />
       ) : (
-        <Text style={[initialStyle, { color: colors.memberInk[color] }]}>
+        <Text style={[styles.initial, { color: colors.memberInk[color] }]}>
           {getInitial(trimmed)}
         </Text>
       )}
@@ -93,7 +88,7 @@ function NameField(props: NameFieldProps): ReactElement {
         value={value}
         onChangeText={onChangeText}
         // Decided at mount: the field mounts on each open, so only a blank open focuses
-        autoFocus={value === ""}
+        autoFocus={value.trim() === ""}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         placeholder="Their name"
@@ -186,7 +181,6 @@ export default function AddPersonBottomSheet(
 
           <ColorField selectedColor={color} onSelectColor={setSelectedColor} />
 
-          {/* Helper line */}
           <Text className="text-ink-500 text-caption">
             {trimmedName
               ? `${trimmedName} joins the trip and this expense’s split.`
@@ -203,3 +197,8 @@ export default function AddPersonBottomSheet(
     </BottomSheet>
   );
 }
+
+// NOTE - no token for the preview's initial (no type role matches), falling back to Outfit semibold 24/32 (the AddPerson board's value)
+const styles = StyleSheet.create({
+  initial: { fontFamily: "outfit-semibold", fontSize: 24, lineHeight: 32 },
+});
