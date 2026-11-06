@@ -1,4 +1,6 @@
+import { findMemberByName } from "@/features/addExpense/addPerson/helpers/addPersonHelpers";
 import { useAddPersonStore } from "@/stores/useAddPersonStore";
+import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { colors } from "@/themes/color";
 import { sanitizeNameInput } from "@/utils/utils";
 import { UserPlus } from "lucide-react-native";
@@ -16,12 +18,16 @@ export default function AddPerson(props: AddPersonProps) {
   const [isOpen, setOpen] = useState(false);
 
   const setName = useAddPersonStore((s) => s.setName);
+  const members = useExpenseSheetStore((s) => s.members);
 
-  const name = query.trim();
+  const prefill = sanitizeNameInput(query.trim());
+  // An exact match offers the plain row: prefilling a duplicate would open the sheet already blocked
+  const isExactMatch = findMemberByName(members, prefill) !== undefined;
+  const name = isExactMatch ? "" : query.trim();
 
   // A one-off write, not a derived value: deriving the name from the query would make typing snap back
   const handlePress = () => {
-    if (name) setName(sanitizeNameInput(name));
+    if (name) setName(prefill);
     setOpen(true);
   };
 
