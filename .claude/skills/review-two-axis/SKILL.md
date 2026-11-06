@@ -86,7 +86,7 @@ Present the two reports under `## Standards` and `## Spec` headings, verbatim or
 
 End with a one-line summary: total findings per axis, the Spec axis's PASS / FAIL / NOT SHOWN counts, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
 
-For a feature at its end, write the aggregate into `Feat_{slug}_review` from `templates/Feat_review_template`, not into the implementation note: one section per heading, a decision beside each Spec finding. For a task or a `Fix_` review, report in the conversation as now.
+For a feature at its end, write the aggregate into `Feat_{slug}_review` from `templates/Feat_review_template`, not into the implementation note: the two reports under its `## Standards` and `## Spec` sections, each Spec finding numbered into the Summary's "Spec findings" table with a decision, and the Standards counts on the line below that table. For a task or a `Fix_` review, report in the conversation as now.
 
 Report only — don't fix anything. Each fix the user picks is proposed per "Smallest steps" (AGENTS.md).
 

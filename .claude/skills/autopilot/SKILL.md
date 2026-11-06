@@ -30,7 +30,7 @@ Done when the phase is identified, its blockers are done, the session is fresh, 
 - Run the task's **Verify** line.
 - The acceptance task: put each of its checks on the task list as its own step (`pnpm check`, the saved check flows, the golden path, each group of criteria, cleanup), so the user sees progress during a run of 20 minutes or more.
 - Review: read each task's diff inline against AGENTS.md before logging it. The feature-level review is not part of `/autopilot`. It runs in its own session, recorded in `Feat_{slug}_review`, after the last code phase.
-- Log the task in the implementation note per the `feature-workflow` skill's Step 3 (Change, Verify, Design choices, Deviation), and tick it in the planning note.
+- Log the task in the implementation note per the `feature-workflow` skill's Step 3 (one `· as planned` line, or Verify, Q&A, Design choices, Change and Deviation), and tick it in the planning note.
 
 ## 2. Hand back early
 
@@ -41,6 +41,8 @@ Stop, report where you are, and wait for the user when:
 - A finding changes what later tasks build (plan drift): record it per `implementing-tasks`.
 - The next change touches a file no task in this phase names, or installs a package the phase doesn't list.
 - A Verify line, acceptance criterion, or existing test assertion looks wrong: changing it needs the user's OK (CLAUDE.md "Frozen targets").
+
+Once the user answers, log it on that task's Q&A line as `Q (hand-back) … → A …`. An answer that changes the code also gets its Deviation (`decision`) or Design choices line, so it reaches the review's "Changed from the plan".
 
 ## 3. Finish at the Demo
 
