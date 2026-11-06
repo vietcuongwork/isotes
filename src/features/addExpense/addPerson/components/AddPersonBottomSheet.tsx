@@ -5,15 +5,19 @@ import {
   BottomSheetTextInput,
 } from "@/components/sheet-keyboard";
 import { insertMember } from "@/db/members";
-import { firstUnusedColor } from "@/features/addExpense/addPerson/helpers/addPersonHelpers";
+import {
+  cleanName,
+  findMemberByName,
+  firstUnusedColor,
+} from "@/features/addExpense/addPerson/helpers/addPersonHelpers";
 import { useAddPersonStore } from "@/stores/useAddPersonStore";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { colors } from "@/themes/color";
 import { textStyle } from "@/themes/typography";
-import { MemberColor } from "@/types/TExpense";
+import { Member, MemberColor } from "@/types/TExpense";
 import { cn } from "@/utils/cn";
 import { getInitial, sanitizeNameInput } from "@/utils/utils";
-import { User } from "lucide-react-native";
+import { CircleAlert, User } from "lucide-react-native";
 import { ReactElement, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -32,6 +36,11 @@ interface PersonPreviewProps {
 interface NameFieldProps {
   value: string;
   onChangeText: (text: string) => void;
+  isDuplicate: boolean;
+}
+
+interface DuplicateHelperProps {
+  member: Pick<Member, "name" | "isOwner">;
 }
 
 // font and size only: iOS draws single-line TextInput text low when lineHeight is
@@ -71,9 +80,26 @@ function PersonPreview(props: PersonPreviewProps): ReactElement {
   );
 }
 
+// The helper line's duplicate form: alert icon and who is already on the trip
+function DuplicateHelper(props: DuplicateHelperProps): ReactElement {
+  const { member } = props;
+
+  return (
+    <View className="flex-row items-center gap-space-1">
+      {/* //NOTE - no token for a 16pt inline icon (icons are 20 or 24), falling back to size={16} */}
+      <CircleAlert size={16} strokeWidth={1.75} color={colors.owe[600]} />
+      <Text className="text-owe-600 text-caption">
+        {member.isOwner
+          ? "You’re already on this trip."
+          : `${member.name} is already on this trip.`}
+      </Text>
+    </View>
+  );
+}
+
 // Mounts on each open, because the sheet renders nothing while closed
 function NameField(props: NameFieldProps): ReactElement {
-  const { value, onChangeText } = props;
+  const { value, onChangeText, isDuplicate } = props;
   const [focused, setFocused] = useState(false);
 
   return (
@@ -81,7 +107,11 @@ function NameField(props: NameFieldProps): ReactElement {
     <View
       className={cn(
         "h-space-12 flex-row items-center rounded-md border-[1.5px] bg-ink-100 px-space-4",
-        focused ? "border-ink-900" : "border-transparent",
+        isDuplicate
+          ? "border-owe-600"
+          : focused
+            ? "border-ink-900"
+            : "border-transparent",
       )}
     >
       <BottomSheetTextInput
@@ -133,6 +163,8 @@ export default function AddPersonBottomSheet(
 
   const color = pickedColor ?? firstUnusedColor(members);
   const trimmedName = name.trim();
+  // Derived in the render that also sets the button's disabled, so no race
+  const duplicateMember = findMemberByName(members, name);
 
   const handleAddPerson = async () => {
     if (isAddingRef.current) return;
@@ -141,7 +173,7 @@ export default function AddPersonBottomSheet(
     try {
       const newMemberId = await insertMember({
         tripId,
-        name: trimmedName,
+        name: cleanName(name),
         memberColor: color,
       });
 
@@ -177,20 +209,26 @@ export default function AddPersonBottomSheet(
           <NameField
             value={name}
             onChangeText={(text) => setName(sanitizeNameInput(text))}
+            isDuplicate={duplicateMember !== undefined}
           />
 
           <ColorField selectedColor={color} onSelectColor={setSelectedColor} />
 
-          <Text className="text-ink-500 text-caption">
-            {trimmedName
-              ? `${trimmedName} joins the trip and this expense’s split.`
-              : "They join the trip and this expense’s split."}
-          </Text>
+          {/* Helper line */}
+          {duplicateMember ? (
+            <DuplicateHelper member={duplicateMember} />
+          ) : (
+            <Text className="text-ink-500 text-caption">
+              {trimmedName
+                ? `${trimmedName} joins the trip and this expense’s split.`
+                : "They join the trip and this expense’s split."}
+            </Text>
+          )}
 
           <PrimaryButton
             label="Add to trip"
             onPress={handleAddPerson}
-            disabled={!trimmedName}
+            disabled={!trimmedName || duplicateMember !== undefined}
           />
         </View>
       </BottomSheetScrollView>
