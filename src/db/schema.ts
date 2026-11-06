@@ -1,5 +1,11 @@
 import { sql } from "drizzle-orm";
-import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  integer,
+  real,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 export const trips = sqliteTable("trips", {
   id: text("id").primaryKey(),
@@ -16,40 +22,52 @@ export type TripRow = typeof trips.$inferSelect;
 //NOTE - shape you pass to INSERT (id/defaults optional where applicable)
 export type NewTrip = typeof trips.$inferInsert;
 
-export const members = sqliteTable("members", {
-  id: text("id").primaryKey(),
-  tripId: text("trip_id")
-    .notNull()
-    .references(() => trips.id),
-  name: text("name").notNull(),
-  // true only for the member row auto-created when the trip is made — lets
-  // UI/balance math find "you" without matching on name
-  isOwner: integer("is_owner", { mode: "boolean" }).notNull().default(false),
-  // key into colors.member/colors.memberInk (src/themes/color.js) — resolves
-  // to a fixed fill/ink hex pair, assigned once at creation so it stays stable
-  // regardless of other members being added/removed later
-  // Keep this array's keys in sync with MemberColor (src/types/TExpense.ts)
-  // by hand when either changes.
-  memberColor: text("member_color", {
-    enum: [
-      "sand",
-      "olive",
-      "citron",
-      "amber",
-      "honey",
-      "terracotta",
-      "coral",
-      "rose",
-      "lilac",
-      "periwinkle",
-      "sky",
-      "teal",
-    ],
-  }).notNull(),
-  createdAt: integer("created_at")
-    .notNull()
-    .default(sql`(unixepoch())`),
-});
+export const MEMBERS_TRIP_NAME_INDEX = "members_trip_name_unique";
+
+export const members = sqliteTable(
+  "members",
+  {
+    id: text("id").primaryKey(),
+    tripId: text("trip_id")
+      .notNull()
+      .references(() => trips.id),
+    name: text("name").notNull(),
+    // true only for the member row auto-created when the trip is made — lets
+    // UI/balance math find "you" without matching on name
+    isOwner: integer("is_owner", { mode: "boolean" }).notNull().default(false),
+    // key into colors.member/colors.memberInk (src/themes/color.js) — resolves
+    // to a fixed fill/ink hex pair, assigned once at creation so it stays stable
+    // regardless of other members being added/removed later
+    // Keep this array's keys in sync with MemberColor (src/types/TExpense.ts)
+    // by hand when either changes.
+    memberColor: text("member_color", {
+      enum: [
+        "sand",
+        "olive",
+        "citron",
+        "amber",
+        "honey",
+        "terracotta",
+        "coral",
+        "rose",
+        "lilac",
+        "periwinkle",
+        "sky",
+        "teal",
+      ],
+    }).notNull(),
+    createdAt: integer("created_at")
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (t) => [
+    // trim + ASCII lower only; the sheet's rule is stricter (ADR 0019)
+    uniqueIndex(MEMBERS_TRIP_NAME_INDEX).on(
+      t.tripId,
+      sql`lower(trim(${t.name}))`,
+    ),
+  ],
+);
 
 //NOTE - shape of a row you SELECT
 export type MemberRow = typeof members.$inferSelect;

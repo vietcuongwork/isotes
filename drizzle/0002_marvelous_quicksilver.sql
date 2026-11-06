@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `members_trip_name_unique` ON `members` (`trip_id`,lower(trim("name")));
