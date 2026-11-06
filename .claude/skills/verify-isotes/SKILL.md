@@ -76,6 +76,18 @@ IFS='|' read -r A_ID A < <(.claude/skills/verify-isotes/scripts/trip.sh "Flow pa
 
 **Don't save files while a flow runs:** Metro's fast refresh reloads the app mid-flow (a blue "Refreshing…" banner), and the next step fails on a screen that isn't there.
 
+## Drive headless
+
+Gestures with tight timing, visual checks and a look at a failed check go through idb: the `ios-simulator` MCP (`ui_tap`, `ui_swipe`, `ui_type`, `ui_describe_all`, `screenshot`) or `idb ui` in the shell. Both work with Device Hub closed, another app in front, or the Mac locked, as long as `caffeinate` runs.
+
+- Pass `udid: F074204A-8DED-491A-9D45-3C6344EECCEB` on every MCP call.
+- After every simulator boot, run `idb connect F074204A-8DED-491A-9D45-3C6344EECCEB` before the first idb call. A companion left from the previous boot fails taps with "dtuhidd connection ... has been invalidated".
+- If `ui_describe_all` returns only the app node with a 0×0 frame, reboot the simulator and run `idb connect` again. That cleared it the one time it happened; the cause is unknown.
+- Coordinates are points, screenshot pixels ÷ 3 (1206×2622 px is 402×874 pt).
+- Screenshots come from `xcrun simctl io F074204A-8DED-491A-9D45-3C6344EECCEB screenshot --type=jpeg <file>` or the MCP's `screenshot`. `ui_view` reads the size from the tree's root frame, so it fails whenever the tree is empty.
+- Send taps one at a time. An idb tap takes about 300 ms against Maestro's 1.7 s, so a fast run of taps goes through idb.
+- A long press is `ui_tap` with `duration`. Pinch, Home, keys and multi-tap exist only in the shell: `idb ui pinch <x> <y> <scale>` (the zoom comes out below the scale asked for), `idb ui button HOME`, `idb ui key`, `idb ui multi-tap`.
+
 ## Evidence
 
 Prove the real user path: the action and the state it leaves, not just the last screen.
