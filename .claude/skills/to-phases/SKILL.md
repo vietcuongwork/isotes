@@ -58,6 +58,10 @@ A task that renames, removes or replaces a labelled element, or puts a new scree
 
 An `accessible` row or card exposes one joined label, so wrapping texts in one replaces their labels. Its flows and **Verify** lines match the whole label by regex (`".*, You paid, \\$7\\.25"`), and a size inside it is measured from a screenshot.
 
+Write each **Verify** as something only the change can produce (a db row, a trait), never a label that is always on screen. For a race guard, plan the widened-race run: a temporary delay, two parallel taps, guard on and off.
+
+A criterion about a trait or container `idb` doesn't expose (a header trait, a group label) says `verified by: real-device pass` from the start.
+
 A UI task's board check compares bounds with the board's HTML, as the vault's `Ref_claude-design.md` → "In the feature workflow" describes. Its **Verify** line says so; a rendered picture of the board is used only when the user asks for one.
 
 Done when every acceptance criterion in the spec traces to a task — write that task's number into the criterion's `verified by` (`Live (T12)`) — and every phase's last task ends on its Demo. Then read each criterion and each Demo Verify line for behaviours (a tap that changes state, a close, a save) and check that each one appears in the body of the task that builds it, not only in the task that checks it.

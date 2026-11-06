@@ -27,7 +27,7 @@ Done when the phase is identified, its blockers are done, the session is fresh, 
 - `[TDD]`: run the `tdd` skill at the task's seam; seams listed in the phase count as confirmed.
 - `[Live]`: write the change, then run the real thing per the `feature-workflow` skill's Step 3 (simulator for `src/`, otherwise the real command or task).
 - After each file: the task's own test file, when there is one.
-- Run the task's **Verify** line.
+- Run the task's **Verify** line and log evidence for each item. An item with no evidence becomes an Open check.
 - The acceptance task: put each of its checks on the task list as its own step (`pnpm check`, the saved check flows, the golden path, each group of criteria, cleanup), so the user sees progress during a run of 20 minutes or more.
 - Review: read each task's diff inline against AGENTS.md before logging it. The feature-level review is not part of `/autopilot`. It runs in its own session, recorded in `Feat_{slug}_review`, after the last code phase.
 - Log the task in the implementation note per the `feature-workflow` skill's Step 3 (one `· as planned` line, or Verify, Q&A, Design choices, Change and Deviation), and tick it in the planning note.
