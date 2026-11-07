@@ -171,18 +171,20 @@ export default function AddPersonBottomSheet(
     if (!trimmedName || !tripId) return;
     isAddingRef.current = true;
     try {
-      const newMemberId = await insertMember({
+      const result = await insertMember({
         tripId,
         name: cleanName(name),
         memberColor: color,
       });
+      // The row exists; the live query brings it in and the duplicate state shows
+      if (result.status === "duplicate-name") return;
 
       // The expense sheet's seed effect only fires once (paidByMemberId is
       // already set by now), so a member added mid-session must be resolved
       // into the split here — otherwise they're silently excluded from
       // equal split / shares until submit.
-      setSelectedMemberIds([...selectedMemberIds, newMemberId]);
-      setSplitShares({ ...splitShares, [newMemberId]: 1 });
+      setSelectedMemberIds([...selectedMemberIds, result.id]);
+      setSplitShares({ ...splitShares, [result.id]: 1 });
 
       resetAddPerson();
       onClose();

@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { members, trips } from "../schema";
+import { uniqueViolationTarget } from "../sqliteErrors";
 
 const MIGRATIONS_FOLDER = path.resolve(__dirname, "../../../drizzle");
 const INDEX_ERROR =
@@ -55,6 +56,27 @@ describe("members_trip_name_unique", () => {
         .values(memberRow("m2", "t1", " mai "))
         .run(),
     ).toThrow(INDEX_ERROR);
+  });
+
+  it("gives uniqueViolationTarget the index name from a real rejected insert", () => {
+    const { db } = freshDb();
+    seedTrips(db, ["t1"]);
+    db.insert(members)
+      .values(memberRow("m1", "t1", "Mai"))
+      .run();
+
+    let thrown: unknown;
+    try {
+      db.insert(members)
+        .values(memberRow("m2", "t1", " mai "))
+        .run();
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(uniqueViolationTarget(thrown)).toBe(
+      "index 'members_trip_name_unique'",
+    );
   });
 
   it("accepts the same name on another trip", () => {
