@@ -44,6 +44,6 @@ Moved out of the `feature-workflow` skill's Step 3 so it loads only when a task 
   misbehaves), run `diagnosing-bugs` if the cause isn't obvious, then write
   the note as soon as the cause is known, without asking:
   `Debug_{slug}.md` if it's codebase-specific, `Learn_{field}_{slug}.md` if
-  it's generic, or both (per "Logging minor issues" in AGENTS.md). Link it
+  it's generic, or both (per "Issue Scoping" in CLAUDE.md). Link it
   from that task's Deviation line. Still unresolved → keep it on the
   Deviation line and write the note once the cause is confirmed.

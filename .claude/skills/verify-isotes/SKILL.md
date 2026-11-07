@@ -5,7 +5,7 @@ description: Drive isotes (the Expo iOS trip-expense app) on the working simulat
 
 # Verify isotes
 
-isotes is a mobile app: one dev build (`com.anonymous.isotes`) on the simulator `F074204A-8DED-491A-9D45-3C6344EECCEB`, loading its JS from Metro on `:8081`. A user touches it only through the screen; its state lives in `isotes.db` (SQLite) inside the app's data container. Run every command from the repo root. Features and how to reach each: `features/README.md`.
+isotes is a mobile app: one dev build (`com.anonymous.isotes`) on the simulator `F074204A-8DED-491A-9D45-3C6344EECCEB`, loading its JS from Metro on `:8081`. A user touches it only through the screen; its state lives in `isotes.db` (SQLite) inside the app's data container. Run every command from the repo root. Features and how to reach each: `features/README.md`. Reference files next to this one: `HEADLESS.md` (idb gestures and visual evidence), `MAESTRO-MCP.md` (the Maestro MCP server) and `HELPERS.md` (every script's arguments).
 
 ## Launch
 
@@ -19,8 +19,6 @@ Teardown is under Cleanup.
 ## Doctor
 
 Run before driving, and whenever anything looks off: `.claude/skills/verify-isotes/scripts/doctor.sh` → `doctor: ok`. It's read-only and safe in any session: it makes no Maestro device call (each one starts a driver). It exits 1 with a reason and a fix when Maestro isn't 2.11.0, idb isn't installed, the simulator isn't booted, isotes isn't installed, another app is open on the simulator, nothing listens on 8081, any listener there isn't this checkout's Metro, 8081 doesn't answer `packager-status:running`, or the native fingerprint differs from the installed build's (`.sim/last-native-build`). It also lists, without failing, background shells a Claude session left running over 12 hours (the live Metro's excepted). Never stop what it names without asking the user.
-
-In an MCP session, also call MCP `list_devices`: `F074204A-…` should be `connected: true`. That only means booted; it answers even when the MCP driver is dead. A dead driver shows on the first `run` or `inspect_screen` as "Device became unreachable" → use the CLI for the rest of the session.
 
 ## Drive
 
@@ -40,14 +38,7 @@ Maestro **2.11.0** (`maestro --version`); an upgrade is its own task. `MAESTRO_C
 JAVA_TOOL_OPTIONS=-Duser.home=$PWD/.sim/maestro/home maestro --device F074204A-8DED-491A-9D45-3C6344EECCEB hierarchy 2>/dev/null | jq -r '.. | .attributes? // empty | [.accessibilityText, .text, ."resource-id"] | map(select(. != null and . != "")) | unique | join(" | ") | select(. != "")' | awk '!seen[$0]++' | grep -F 'you lent'
 ```
 
-**Step by step (MCP server `maestro`):** `list_devices` → `run` with inline YAML (`appId: com.anonymous.isotes`, then `---` and commands such as `tapOn`, `openLink`, `assertVisible`) on device `F074204A-8DED-491A-9D45-3C6344EECCEB`. To check one value, `assertVisible` it in a `run`; `inspect_screen` returns the whole unfiltered tree (~7 KB on a trip's expense tab), so use it only to find selectors. `cheat_sheet` is ~20 KB: only when unsure of a command's arguments. Never use the AI commands (`assertWithAI`, `assertNoDefectsWithAI`, `extractTextWithAI`): they upload screenshots. When the server misbehaves, fall back to the CLI above and say so; don't retry the same call.
-
-| Tool | Use | Prompts? |
-|---|---|---|
-| `list_devices`, `run`, `inspect_screen`, `cheat_sheet` | as above | no (allow-listed) |
-| `take_screenshot` | visual checks only (Evidence) | yes, on purpose |
-| `open_maestro_viewer` | not used | yes |
-| `list_cloud_devices`, `run_on_cloud`, `get_cloud_run_status`, `describe_cloud_run` | not used: `run_on_cloud` uploads the app and flows | yes |
+**Step by step (MCP server `maestro`):** read `MAESTRO-MCP.md` before the first call.
 
 **Reach a trip with no taps:** links work on a cold start only, so stop the app first. Text selectors are full-string regex: escape `( ) + . ?` in the trip name.
 
@@ -78,15 +69,7 @@ IFS='|' read -r A_ID A < <(.claude/skills/verify-isotes/scripts/trip.sh "Flow pa
 
 ## Drive headless
 
-Gestures with tight timing, visual checks and a look at a failed check go through idb: the `ios-simulator` MCP (`ui_tap`, `ui_swipe`, `ui_type`, `ui_describe_all`, `screenshot`) or `idb ui` in the shell. Both work with Device Hub closed, another app in front, or the Mac locked, as long as `caffeinate` runs.
-
-- Pass `udid: F074204A-8DED-491A-9D45-3C6344EECCEB` on every MCP call.
-- After every simulator boot, run `idb connect F074204A-8DED-491A-9D45-3C6344EECCEB` before the first idb call. A companion left from the previous boot fails taps with "dtuhidd connection ... has been invalidated".
-- If `ui_describe_all` returns only the app node with a 0×0 frame, reboot the simulator and run `idb connect` again. That cleared it the one time it happened; the cause is unknown.
-- Coordinates are points, screenshot pixels ÷ 3 (1206×2622 px is 402×874 pt).
-- Screenshots come from `xcrun simctl io F074204A-8DED-491A-9D45-3C6344EECCEB screenshot --type=jpeg <file>` or the MCP's `screenshot`. `ui_view` reads the size from the tree's root frame, so it fails whenever the tree is empty.
-- Send taps one at a time. An idb tap takes about 300 ms against Maestro's 1.7 s, so a fast run of taps goes through idb.
-- A long press is `ui_tap` with `duration`. Pinch, Home, keys and multi-tap exist only in the shell: `idb ui pinch <x> <y> <scale>` (the zoom comes out below the scale asked for), `idb ui button HOME`, `idb ui key`, `idb ui multi-tap`.
+Gestures with tight timing, visual checks and a look at a failed check go through idb. Read `HEADLESS.md` before the first idb or `ios-simulator` MCP call: it has the `idb connect` step, the coordinate scale, and why taps go one call at a time.
 
 ## Evidence
 
@@ -97,10 +80,8 @@ Prove the real user path: the action and the state it leaves, not just the last 
 - **Roles and traits** (button, header, selected): Maestro's iOS tree has labels and bounds only, so read them with `scripts/traits.sh "<label regex>"` (idb), after a flow has reached the screen. Quote its line, e.g. `Expenses, tab, 1 of 3 | - | Selected`. An empty trait list prints `(none)`. Two elements with one label (the drawer's X and scrim) differ by testID. Accessibility Inspector is only for a trait idb doesn't report.
 - **Focus:** Maestro's `focused` attribute is always `false` on iOS, even mid-typing. Read focus from `traits.sh`: a focused field lists `IsEditing` (`Search trips | - | TextEntry, IsEditing, TextOperationsAvailable`).
 - **Logs:** `.sim/cu.sh mark` before, `.sim/cu.sh show` after → list new WARN/ERROR lines, or "cu.sh → none".
-- **No flash while loading** (a state that lasts a few frames): record with `xcrun simctl io booted recordVideo <file>.mp4`, then `scripts/frames.sh <file>.mp4 [from to]` tiles the frames 12 per sheet and prints each cell's frame number and timestamp. Read the key first, then only the sheets around the change.
-- **Pixel facts** (glyph widths, a fade's timing, a color run): `scripts/pixels.sh` (Helpers) on a screenshot or recording, so numbers back the verdict instead of a look at the image.
+- **Timing and pixels** (a flash while loading, glyph widths, a fade, a flow's own `takeScreenshot`): `HEADLESS.md` "Visual evidence".
 - **Screenshots** only for a visual check (layout, color, spacing) or a failed check. A failed flow leaves exactly one in its run folder (`find .sim/maestro/<run> -name '*.png'`); read that one, nothing else.
-  - A flow's own `takeScreenshot` takes a bare name, never a path: Maestro rejects an absolute path. Run the flow with `flow.sh`, which sets `--debug-output` and `--test-output-dir` itself. The image lands at `.sim/maestro/<run>/shots/<time>/<flow name>/takeScreenshot/<name>.png`. Copy it out from there. A raw `maestro test` needs both flags, or its log goes to `~/.maestro/tests`.
 
 Quote the values (rows, tree lines, log result) in the task's log in the vault's implementation note. That note is where evidence lives; run folders are scratch.
 
@@ -113,20 +94,4 @@ Quote the values (rows, tree lines, log result) in the task's log in the vault's
 
 ## Helpers
 
-- `scripts/doctor.sh` — Doctor, above.
-- `scripts/flow.sh <flow.yaml> [options]` — Whole flow, above. Retries once, after `simctl launch`, when a failed run started with another app in front (the runner log's first `Detected running apps`).
-- `scripts/db.sh "<sql>"` — one read-only `sqlite3` query on `isotes.db`; looks the container up on every call (its folder changes per install). Newest golden-path trip's splits:
-
-  ```bash
-  .claude/skills/verify-isotes/scripts/db.sh "SELECT m.name, s.individual_amount FROM expense_splits s JOIN expenses e ON e.id = s.expense_id JOIN members m ON m.id = s.member_id WHERE e.trip_id = (SELECT id FROM trips WHERE name LIKE 'Flow golden-path %' ORDER BY created_at DESC LIMIT 1) ORDER BY m.name"
-  ```
-
-- `scripts/trip.sh "<name prefix>"` — the newest trip whose name starts with the prefix, as `id|name`; exits 1 when none matches. For a flow's `-e` variables (Drive).
-- `scripts/traits.sh "<label regex>"` — `label | testID | traits` for each matching element, read with `idb ui describe-all`; drops idb's blanket `Scrollable`. Needs `brew install facebook/fb/idb`.
-- `scripts/cleanup.sh [--dry-run]` — deletes flow trips (Cleanup, above). It stops the app, backs up `isotes.db` to `.sim/backup/`, deletes in one transaction, prints before and after counts and a restore command, then runs `cu.sh relaunch`. `--dry-run` prints per-flow counts only.
-- `scripts/fresh.sh [--shutdown]` — erases the spare simulator `isotes-fresh` (created on first use), installs the working simulator's build and prints its UDID; `--shutdown` stops it. One simulator, so the Claude app asks for device consent only once.
-- `scripts/build.sh` — builds and installs the dev build (`expo run:ios`, log in `.sim/build/`), then writes its native fingerprint to `.sim/last-native-build`; `scripts/fingerprint.sh` prints the current one. Doctor fails when they differ.
-- `scripts/green.sh mark | check` — fingerprints `src/` (tracked and untracked files) into `.sim/last-green` after a green Demo; `check` prints `same` (exit 0) when nothing in `src/` changed since, so autopilot's Preflight can skip the smoke flow.
-- `scripts/pixels.sh columns|luma <file> <x> <y> <w> <h>` — region in points (`PIXELS_SCALE=2` on a 2x device). `columns` prints a screenshot's ink column runs (two amounts with the decimal point in the same run are tabular); `luma` prints a recording's mean luma at each change (a fade's start, end and values).
-- `.sim/cu.sh relaunch | mark | show` — the project's launcher and Metro log reader (outside this skill).
-- `flows/<flow>.yaml` — one per mapped feature; run with the Drive command.
+Every script's arguments and output: `HELPERS.md`. The ones used above (`flow.sh`, `db.sh`, `trip.sh`, `traits.sh`, `cleanup.sh`) show their call inline.

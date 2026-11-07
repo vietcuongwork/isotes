@@ -19,7 +19,7 @@ If the redacted output is not enough to diagnose the bug, say so and ask the use
 
 Most bugs here are obvious once the symptom is seen. Try up to two fixes before building a loop.
 
-1. **See it once.** Reproduce the symptom one time (simulator steps, a Jest run, or the user's exact steps) and note what you saw: that's the before-picture each fix is checked against. On the simulator, reach the screen with a `verify-isotes` flow, then trigger the symptom with computer use. It needn't be tight or minimised. Can't reproduce it → Phase 1.
+1. **See it once.** Reproduce the symptom one time (simulator steps, a Jest run, or the user's exact steps) and note what you saw: that's the before-picture each fix is checked against. On the simulator, reach the screen with a `verify-isotes` flow, then trigger the symptom through idb (`verify-isotes` `HEADLESS.md`), or computer use for what idb can't do (CLAUDE.md "Simulator testing"). It needn't be tight or minimised. Can't reproduce it → Phase 1.
 2. **Rank 3–5 hypotheses**, each with its prediction (format in Phase 3). Send the list and the fix for the top one in the same message; the user's yes on that file covers both.
 3. **Try it.** Write the fix and repeat the same steps. Symptom gone → Phase 5, then Phase 6; the hypothesis whose prediction held is the cause on record.
 4. **Still there → revert the fix**, then try hypothesis 2 the same way. Each attempt runs on clean code, so its result belongs to one change.
@@ -30,105 +30,13 @@ Skip straight to Phase 1 when the fix would need 3+ files or a choice between ap
 
 Done when the symptom is gone after one of the two attempts, or both are reverted and their results noted.
 
-## Phase 1: Build a feedback loop
+## Phases 1–2: Build a loop, reproduce and minimise
 
-Reached when both quick fixes failed, or the symptom wouldn't show. **This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug (one that goes red on _this_ bug), you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.
+Reached when both quick fixes failed, or the symptom wouldn't show. Read `LOOP.md` first. Its rule: no Phase 3 until one command you have already run goes red on this bug, and the repro is minimised.
 
-Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give up.**
+## Phases 3–4: Hypothesise and instrument
 
-### Ways to construct one, in roughly this order
-
-1. **Simulator repro** — for anything touching sheets, keyboard, gestures, focus or layout. Reach the screen with a `verify-isotes` flow and check state from `isotes.db` or the tree; do the triggering gesture or timing with computer use. Follow "Simulator testing" in CLAUDE.md (working simulator, Metro log at `.sim/metro.log`, `.sim/cu.sh relaunch|mark|show` for the log slice since the last mark).
-2. **Failing Jest test** at whatever seam reaches the bug — for pure logic (helpers, transforms, DB functions).
-3. **Replay a captured trace.** Save a real network request / payload / event log to disk; replay it through the code path in isolation.
-4. **Throwaway harness.** Spin up a minimal subset of the system (one service, mocked deps) that exercises the bug code path with a single function call.
-5. **Property / fuzz loop.** If the bug is "sometimes wrong output", run 1000 random inputs and look for the failure mode.
-6. **Bisection harness.** If the bug appeared between two known states (commit, dataset, version), automate "boot at state X, check, repeat" so you can `git bisect run` it.
-7. **Differential loop.** Run the same input through old-version vs new-version (or two configs) and diff outputs.
-8. **Structured human repro.** Last resort, when you can't drive it yourself: physical-device-only bugs, display unavailable, gestures computer use can't express reliably, or symptoms only a human can judge (jank, flicker, feel). Give the user numbered steps in chat, add `[DEBUG-xxxx]` logs first so Metro captures the ordering, and ask for the observation in a fixed form (e.g. "flash: yes/no", "sheet height after close: …"). Each run is one round; keep the steps identical between rounds.
-
-Build the right feedback loop, and the bug is 90% fixed.
-
-### Tighten the loop
-
-Treat the loop as a product. Once you have _a_ loop, **tighten** it:
-
-- Can I make it faster? (Cache setup, skip unrelated init, narrow the test scope.)
-- Can I make the signal sharper? (Assert on the specific symptom, not "didn't crash".)
-- Can I make it more deterministic? (Pin time, seed RNG, isolate filesystem, freeze network.)
-
-A 30-second flaky loop is barely better than no loop; a 2-second deterministic one is tight, a debugging superpower.
-
-### Non-deterministic bugs
-
-The goal is not a clean repro but a **higher reproduction rate**. Loop the trigger 100×, parallelise, add stress, narrow timing windows, inject sleeps. A 50%-flake bug is debuggable; 1% is not, so keep raising the rate until it's debuggable.
-
-### When you genuinely cannot build a loop
-
-Stop and say so explicitly. List what you tried. Ask the user for: (a) access to whatever environment reproduces it, (b) a redacted captured artifact (HAR file, log dump, core dump, screen recording with timestamps), or (c) permission to add temporary production instrumentation. Do **not** proceed to hypothesise without a loop.
-
-### Completion criterion: a tight loop that goes red
-
-Phase 1 is done when the loop is **tight** and **red-capable**: you can name **one command** (a script path, a test invocation, a curl) that you have **already run at least once** (show the invocation and its output, redacted), and that is:
-
-- [ ] **Red-capable**: it drives the actual bug code path and asserts the **user's exact symptom**, so it can go red on this bug and green once fixed. Not "runs without erroring"; it must be able to _catch this specific bug_.
-- [ ] **Deterministic**: same verdict every run (flaky bugs: a pinned, high reproduction rate, per above).
-- [ ] **Fast**: seconds, not minutes.
-- [ ] **Agent-driven where possible**: a Jest command or a computer-use sequence on the simulator you have already executed once. Fall back to a structured human repro (item 8) only for the cases it lists — never ask the user to reproduce what you can drive.
-
-If you catch yourself reading code to build a third theory before this command exists, **stop: after two missed guesses, another guess is the exact failure this phase prevents.** No red-capable command, no Phase 2.
-
-## Phase 2: Reproduce + minimise
-
-Run the loop. Watch it go red as the bug appears.
-
-Confirm:
-
-- [ ] The loop produces the failure mode the **user** described, not a different failure that happens to be nearby. Wrong bug = wrong fix.
-- [ ] The failure is reproducible across multiple runs (or, for non-deterministic bugs, reproducible at a high enough rate to debug against).
-- [ ] You have captured the exact symptom (error message, wrong output, slow timing) so later phases can verify the fix actually addresses it.
-
-### Minimise
-
-Once it's red, shrink the repro to the **smallest scenario that still goes red**. Cut inputs, callers, config, data, and steps **one at a time**, re-running the loop after each cut, and keep only what's load-bearing for the failure.
-
-Why bother: a minimal repro shrinks the hypothesis space in Phase 3 (fewer moving parts left to suspect) and becomes the clean regression test in Phase 5.
-
-Done when **every remaining element is load-bearing**: removing any one of them makes the loop go green.
-
-Do not proceed until you have reproduced **and** minimised.
-
-## Phase 3: Hypothesise
-
-Re-rank with what the loop and the failed quick fixes showed: drop the two ruled out, add new ones, **3–5 ranked hypotheses** in all, before testing any of them. Single-hypothesis generation anchors on the first plausible idea.
-
-Each hypothesis must be **falsifiable**: state the prediction it makes.
-
-> Format: "If <X> is the cause, then <changing Y> will make the bug disappear / <changing Z> will make it worse."
-
-If you cannot state the prediction, the hypothesis is a vibe: discard or sharpen it.
-
-**"Will the touch reach X?"** Trace the whole path from the touch point to the view: every ancestor wrapper's `pointerEvents`, sibling overlays, the sheet's wrapper and backdrop (`src/components/sheet-keyboard/sheet/BottomSheet.tsx`). Don't stop at the first blocker, and state the full path in the hypothesis. (2026-09-30: a removed scrim was claimed to free the Split list, but a second wrapper was `pointerEvents="none"`.)
-
-**Why logs after two misses.** A theory that sounds mechanically sound is still a guess until a log confirms that specific mechanism fires; this codebase has several overlapping candidates (the shared `BottomSheet`, gesture-handler, keyboard handling all touch focus). On 2026-09-28 (numpad caret blur) two theories were each implemented before a log disproved them, and the second had to be reverted out of `BottomSheet.tsx`, which every sheet uses. That's why the quick tries stop at two: past them, every fix waits for a log that confirms its mechanism.
-
-**Show the ranked list to the user and wait for their reply before instrumenting.** They often have domain knowledge that re-ranks instantly, or know hypotheses they've already ruled out.
-
-## Phase 4: Instrument
-
-Each probe must map to a specific prediction from Phase 3. **Change one variable at a time.**
-
-Tool preference:
-
-1. **Debugger / REPL inspection** if the env supports it. One breakpoint beats ten logs.
-2. **Targeted logs** at the boundaries that distinguish hypotheses.
-3. Never "log everything and grep".
-
-**Tag every debug log** with a unique prefix, e.g. `[DEBUG-a4f2]`. Cleanup at the end becomes a single grep. Untagged logs survive; tagged logs die.
-
-**One format for every probe**: `[TAG] <event> key=value … t=${performance.now().toFixed(1)}`, one line per event, so captures from different rounds line up and sort by `t`.
-
-**Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, `performance.now()`, profiler, query plan), then bisect. Measure first, fix second.
+Read `HYPOTHESES.md` first. Its two stops: show the 3–5 ranked hypotheses to the user and wait before instrumenting, and change one variable per probe.
 
 ## Big bug hand-off
 
@@ -156,7 +64,7 @@ If a correct seam exists:
 4. Watch it pass.
 5. Re-run the Phase 1 feedback loop against the original (un-minimised) scenario.
 
-If the loop is still red after the fix, STOP and return to Phase 3. After 2 failed fixes, stop and ask the user (CLAUDE.md "Investigate before fixing").
+If the loop is still red after the fix, STOP and return to Phase 3. After 2 failed fixes, stop and ask the user (CLAUDE.md "Working rules", AGENTS.md rule 3).
 
 ## Phase 6: Cleanup
 

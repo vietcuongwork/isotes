@@ -46,7 +46,7 @@ Needs a verified planning note. Mode is companion by default, one proposal at a 
 - Read `implementing-tasks` before the first task (Open checks, Caught late, Deviation labels, Plan drift, Spin-offs, Setbacks).
 - Log each task once verified, in the implementation template's fields only. A task that went exactly to plan gets one line: its title with `· as planned`, and its Verify. Otherwise: Verify, then Q&A (every question put to the user, an autopilot hand-back as `Q (hand-back)`), Design choices (what the plan didn't cover), Change (only the part that differs from the plan) and Deviation, each only when there is one.
 - Frozen targets: never weaken or delete a Verify line, an acceptance criterion or an existing test assertion to make a task pass. If one looks wrong, say so and get the user's OK first; log the OK on the Deviation line.
-- Review each task's diff inline against AGENTS.md before logging it. Log it only when it changed something, as a Design choice or a Deviation.
+- Review each task's diff inline against AGENTS.md, `isotes-code-style.md` and `isotes-architecture.md` before logging it. Log it only when it changed something, as a Design choice or a Deviation.
 - After the last code phase's Demo, the session ends with: "Next: review session. Start a fresh session with `/recall {slug}`."
 
 ## Step 4: Review (fresh session)

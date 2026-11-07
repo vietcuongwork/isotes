@@ -64,36 +64,6 @@ When designing an interface, ask:
 - **The interface is the test surface.** Callers and tests cross the same seam. If you want to test *past* the interface, the module is probably the wrong shape.
 - **One adapter means a hypothetical seam. Two adapters means a real one.** Don't introduce a seam unless something actually varies across it.
 
-## Designing for testability
-
-Good interfaces make testing natural:
-
-1. **Accept dependencies, don't create them.**
-
-   ```typescript
-   // Testable
-   function processOrder(order, paymentGateway) {}
-
-   // Hard to test
-   function processOrder(order) {
-     const gateway = new StripeGateway();
-   }
-   ```
-
-2. **Return results, don't produce side effects.**
-
-   ```typescript
-   // Testable
-   function calculateDiscount(cart): Discount {}
-
-   // Hard to test
-   function applyDiscount(cart): void {
-     cart.total -= discount;
-   }
-   ```
-
-3. **Small surface area.** Fewer methods = fewer tests needed. Fewer params = simpler test setup.
-
 ## Relationships
 
 - A **Module** has exactly one **Interface** (the surface it presents to callers and tests).
@@ -112,7 +82,7 @@ Good interfaces make testing natural:
 
 The project's rules and its accepted ADRs (`documentation/adr/`) win over this vocabulary wherever they conflict:
 
-- **Function scope (AGENTS.md)** — split a function by concern; that's decomposition, not a mandate for an interface/strategy/registry over a fixed small set. Split-method branching stays plain `if`/`switch` per function until a 4th method exists.
+- **Function scope (`isotes-code-style.md`)** — split a function by concern; that's decomposition, not a mandate for an interface/strategy/registry over a fixed small set. Split-method branching stays plain `if`/`switch` per function until a 4th method exists.
 - **Known seam** — `transformXRow` functions (e.g. `transformTripRow`) are the seam between DB schema types and app-level UI types; schema types never cross it.
 - **Design it twice** spawns parallel sub-agents — only when the user asks.
 
@@ -120,3 +90,4 @@ The project's rules and its accepted ADRs (`documentation/adr/`) win over this v
 
 - **Deepening a cluster given its dependencies**, see [DEEPENING.md](DEEPENING.md): dependency categories, seam discipline, and replace-don't-layer testing.
 - **Exploring alternative interfaces**, see [DESIGN-IT-TWICE.md](DESIGN-IT-TWICE.md): spin up parallel sub-agents to design the interface several radically different ways, then compare on depth, locality, and seam placement.
+- **Designing an interface tests can reach**, see [TESTABILITY.md](TESTABILITY.md): accept dependencies, return results instead of side effects, keep the surface small.
