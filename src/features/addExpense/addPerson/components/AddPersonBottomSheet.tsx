@@ -125,8 +125,6 @@ function NameField(props: NameFieldProps): ReactElement {
         placeholderTextColor={colors.ink[500]}
         accessibilityLabel="Name"
         returnKeyType="done"
-        // A light sheet, whatever the system appearance (the input defaults to dark)
-        keyboardAppearance="light"
         cursorColor={colors.ink[900]}
         selectionColor={colors.ink[900]}
         className="h-full flex-1 text-ink-900"
@@ -199,7 +197,6 @@ export default function AddPersonBottomSheet(
       onClose={onClose}
       title="Add person"
       titleSize="title"
-      appearance="light"
       showCloseButton
       safeAreaInsets={safeAreaInsets}
     >

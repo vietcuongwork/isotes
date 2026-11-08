@@ -106,17 +106,17 @@ describe("showCloseButton", () => {
 });
 
 describe("keyboardAppearance", () => {
-  it("defaults to dark on the text input and light on the pad, and a caller can override it", async () => {
+  it("defaults to light on the text input and the pad, and a caller can override it", async () => {
     await render(
       <KeyboardHost safeAreaInsets={INSETS}>
         <BottomSheetTextInput testID="text" />
-        <BottomSheetTextInput testID="text-light" keyboardAppearance="light" />
+        <BottomSheetTextInput testID="text-dark" keyboardAppearance="dark" />
         <NumberPadInput testID="pad" value="" onChangeText={() => {}} />
       </KeyboardHost>,
     );
-    expect(screen.getByTestId("text").props.keyboardAppearance).toBe("dark");
-    expect(screen.getByTestId("text-light").props.keyboardAppearance).toBe(
-      "light",
+    expect(screen.getByTestId("text").props.keyboardAppearance).toBe("light");
+    expect(screen.getByTestId("text-dark").props.keyboardAppearance).toBe(
+      "dark",
     );
     expect(screen.getByTestId("pad").props.keyboardAppearance).toBe("light");
   });

@@ -33,7 +33,6 @@ export default function PaidByBottomSheet(
       onClose={onClose}
       title="Paid by"
       titleSize="title"
-      appearance="light"
       showCloseButton
       closeVariant="done"
       snapPoints={["80%"]}

@@ -28,7 +28,6 @@ export default function AddDateBottomSheet(
       onClose={onClose}
       title="Date"
       titleSize="title"
-      appearance="light"
       showCloseButton
       closeVariant="done"
       safeAreaInsets={safeAreaInsets}

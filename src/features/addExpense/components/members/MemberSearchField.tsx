@@ -35,8 +35,6 @@ export default function MemberSearchField(
         returnKeyType="search"
         autoCorrect={false}
         autoCapitalize="none"
-        // A light sheet, whatever the system appearance (the input defaults to dark)
-        keyboardAppearance="light"
         cursorColor={colors.ink[900]}
         selectionColor={colors.ink[900]}
         className="h-full flex-1 text-ink-900"

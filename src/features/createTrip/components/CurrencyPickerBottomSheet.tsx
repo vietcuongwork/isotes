@@ -121,8 +121,6 @@ function CurrencySearchField(props: CurrencySearchFieldProps) {
         returnKeyType="search"
         autoCorrect={false}
         autoCapitalize="none"
-        // A light sheet, whatever the system appearance (the input defaults to dark)
-        keyboardAppearance="light"
         className="h-full flex-1 text-ink-900"
         style={searchTextStyle}
       />
@@ -303,7 +301,6 @@ export default function CurrencyPickerBottomSheet(
       onClose={onClose}
       title="Currency"
       showCloseButton
-      appearance="light"
       closeAccessibilityLabel="Close currency sheet"
       snapPoints={[windowHeight - SHEET_TOP]}
       safeAreaInsets={safeAreaInsets}

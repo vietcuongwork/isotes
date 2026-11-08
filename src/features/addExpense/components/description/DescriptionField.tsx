@@ -26,8 +26,6 @@ export default function DescriptionField() {
         placeholder="What was it for?"
         placeholderTextColor={colors.ink[500]}
         accessibilityLabel="Description"
-        // A light sheet, whatever the system appearance (the input defaults to dark)
-        keyboardAppearance="light"
         cursorColor={colors.ink[900]}
         selectionColor={colors.ink[900]}
         className="h-full text-ink-900"

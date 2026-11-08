@@ -33,7 +33,6 @@ export default function SplitBottomSheet(
       onClose={onClose}
       title="Split"
       titleSize="title"
-      appearance="light"
       showCloseButton
       closeVariant="done"
       snapPoints={["80%"]}

@@ -18,14 +18,14 @@ export interface BottomSheetTextInputProps extends TextInputProps {
  *    system keyboard (RCTTextInputComponentView _setShowSoftInputOnFocus,
  *    verified in RN 0.86.3; re-check on upgrades).
  * Outside a KeyboardHost (a screen-level form) it is a plain TextInput with
- * the dark keyboard.
+ * the light keyboard.
  */
 export function BottomSheetTextInput({
   onFocus,
   onBlur,
   showSoftInputOnFocus = true,
-  // isotes is dark-only, but app.json's userInterfaceStyle is "automatic"
-  keyboardAppearance = "dark",
+  // isotes is light-only, but app.json's userInterfaceStyle is "automatic"
+  keyboardAppearance = "light",
   ...rest
 }: BottomSheetTextInputProps) {
   const host = useOptionalKeyboardHost();

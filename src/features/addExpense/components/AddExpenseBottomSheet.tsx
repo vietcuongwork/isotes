@@ -34,7 +34,6 @@ export default function AddExpenseBottomSheet(
       title="New"
       titleAccent="expense"
       titleSize="title"
-      appearance="light"
       showCloseButton
       safeAreaInsets={safeAreaInsets}
     >
