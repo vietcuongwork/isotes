@@ -29,13 +29,19 @@ Done when every draft or in-progress spec has its fields recorded, and every PRD
 A spec is **ready** when its status is draft, every `blocked_by` link is done, and `design` is ready or not applicable.
 
 Pick **one to tackle**, by the first rule that decides:
-1. An open Critical backlog item comes first, as a fix.
+1. An open Critical backlog item comes first, in its bug batch (below).
 2. An in-progress v1 feature continues. Finish before starting.
 3. The ready spec closest to the PRD section 3 goal: a real trip logged and settled on TestFlight. A gap in a section 8 flow beats polish, and the smaller size breaks a tie.
 
 Pick **one alongside**: a ready spec or bug that shares no `screen/` or `area/` tag with the pick, and isn't blocked by it, so the two never edit the same files. At most one of the two has `schema: yes`, and at most one needs a native rebuild. Name the runner-up that lost to the pick, and why.
 
-Done when the pick, the one alongside (or "none safe", with the clash) and the runner-up each have a one-line reason.
+**Bug batches.** Group the open Critical and Bug lines into batches, each fixed on its own `bugfix/{batch-slug}` branch and merged with `--no-ff`:
+- A batch is lines that share a `screen/` or `area/` tag, or lines the backlog says to fix together.
+- At most one line per batch looks like a Big bug: it names a shared file, 3 or more files, or a choice between approaches (CLAUDE.md "Issue Scoping").
+- A batch shares no tag with the feature in progress on `main`. A line that would clash waits until that feature merges.
+- The batch with a Critical is the rule 1 pick. Otherwise the batch closest to the v1 goal, by rule 3's test, can be the one alongside.
+
+Done when the pick, the one alongside (or "none safe", with the clash) and the runner-up each have a one-line reason, and every open Critical and Bug line is in a batch or held back with its clash.
 
 ## 4. Report
 
@@ -43,7 +49,9 @@ At most 25 lines, in this shape:
 
     **Let's tackle:** [[Feat_x_spec]]: {reason tied to the v1 goal}. Start: {the session to open, e.g. a spec session with `/recall x`, or `/autopilot {phase}`}
     **Alongside:** [[…]]: {why it can't collide}
-    **Fix first:** {Critical and Bug items, at most 3, each with its link}
+    **Bug batch:** `bugfix/{batch-slug}`: {its lines, each with its link, the likely Big one marked}
+    **Other batches:** {one line each: slug, line count, shared tag}
+    **Bugs held back:** {lines that clash with the feature on main, with the shared tag}
     **Needs you:**
     - design: {spec}: {the board or frame to draw, from Ref_claude-design}
     - decision: {spec}: {the open question from its Notes}
