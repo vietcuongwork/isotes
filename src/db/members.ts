@@ -5,7 +5,7 @@ import { MEMBERS_TRIP_NAME_INDEX, members, NewMember } from "./schema";
 import { uniqueViolationTarget } from "./sqliteErrors";
 
 export type InsertMemberResult =
-  { status: "added"; id: string } | { status: "duplicate-name" };
+  { kind: "added"; id: string } | { kind: "duplicate-name" };
 
 export async function insertMember(
   data: Omit<NewMember, "id">,
@@ -15,11 +15,11 @@ export async function insertMember(
     await db.insert(members).values({ ...data, id });
   } catch (error) {
     if (uniqueViolationTarget(error) === `index '${MEMBERS_TRIP_NAME_INDEX}'`) {
-      return { status: "duplicate-name" };
+      return { kind: "duplicate-name" };
     }
-    throw error; // other failures: as today (backlog)
+    throw error; // only the name index is an expected failure
   }
-  return { status: "added", id };
+  return { kind: "added", id };
 }
 
 export function getMembersByTripId(tripId: string) {

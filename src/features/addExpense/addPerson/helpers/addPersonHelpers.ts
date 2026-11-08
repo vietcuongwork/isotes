@@ -8,12 +8,12 @@ export function cleanName(name: string): string {
   return name.normalize("NFC").trim().replace(/\s+/g, " ");
 }
 
-// The comparison form (Q11): cleanName plus case folded; accents still count
+// The comparison form: cleanName plus case folded; accents still count
 export function normalizeName(name: string): string {
   return cleanName(name).toLowerCase();
 }
 
-// The member whose name matches under the Q11 rule, if any
+// The member whose name matches under normalizeName, if any
 export function findMemberByName(
   members: Member[],
   name: string,

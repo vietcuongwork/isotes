@@ -3,12 +3,12 @@ import { DrizzleQueryError } from "drizzle-orm";
 
 import { uniqueViolationTarget } from "../sqliteErrors";
 
-// T3's logged device message (primary key), wrapper lines included
+// A primary-key violation as logged on the device, wrapper lines included
 const DEVICE_PRIMARY_KEY =
   "FunctionCallException: Calling the 'runSync' function has failed (at ExpoModulesCore/SyncFunctionDefinition.swift:94)\n" +
   "→ Caused by: SQLiteErrorException: Error code 19: UNIQUE constraint failed: members.id (at ExpoSQLite/SQLiteModule.swift:416)";
 
-// The index form: T3's wrapper around T11's text (better-sqlite3 logged the inner text only)
+// The index form: the device's wrapper around better-sqlite3's text (no device capture yet)
 const DEVICE_INDEX =
   "FunctionCallException: Calling the 'runSync' function has failed (at ExpoModulesCore/SyncFunctionDefinition.swift:94)\n" +
   "→ Caused by: SQLiteErrorException: Error code 19: UNIQUE constraint failed: index 'members_trip_name_unique' (at ExpoSQLite/SQLiteModule.swift:416)";

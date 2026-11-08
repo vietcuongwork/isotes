@@ -162,7 +162,7 @@ export default function AddPersonBottomSheet(
   const isAddingRef = useRef(false);
 
   const color = pickedColor ?? firstUnusedColor(members);
-  const trimmedName = name.trim();
+  const trimmedName = cleanName(name);
   // Derived in the render that also sets the button's disabled, so no race
   const duplicateMember = findMemberByName(members, name);
 
@@ -173,11 +173,11 @@ export default function AddPersonBottomSheet(
     try {
       const result = await insertMember({
         tripId,
-        name: cleanName(name),
+        name: trimmedName,
         memberColor: color,
       });
       // The row exists; the live query brings it in and the duplicate state shows
-      if (result.status === "duplicate-name") return;
+      if (result.kind === "duplicate-name") return;
 
       // The expense sheet's seed effect only fires once (paidByMemberId is
       // already set by now), so a member added mid-session must be resolved
