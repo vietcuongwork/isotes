@@ -82,7 +82,7 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
 
 ### 5. Aggregate
 
-Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings, because the two axes are deliberately separate (see _Why two axes_).
+Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings, because the two axes are deliberately separate (see _Why two axes_). Before recording a claim a tool can check (Prettier, lint, `tsc`, a test), run that tool; drop the claim and say so when the tool disagrees (why: a reviewer once reported Prettier failures on files `prettier --check` passed).
 
 End with a one-line summary: total findings per axis, the Spec axis's PASS / FAIL / NOT SHOWN counts, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
 
