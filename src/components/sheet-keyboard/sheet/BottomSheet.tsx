@@ -694,7 +694,7 @@ const CLOSE_CIRCLE = 44;
 const DONE_HEIGHT = 44;
 // NOTE - no token for the Done width, falling back to 64 (~42 text + 12 gap + 10 spare)
 const DONE_RESERVE = 64;
-// Title row's top: 12 header pad + 4 grabber + 10 gap, then centred 12 + 4 + 10, then centred on the role's own line
+// Title row's top: 12 header pad + 4 grabber + 10 gap, then centred on the role's own line
 const TITLE_ROW_TOP = 12 + 4 + 10;
 const TITLE_LINE = {
   heading: roles.heading.line,
@@ -722,10 +722,9 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    paddingTop: 12, // = pt-3 on the old sheet handle
+    paddingTop: 12,
     paddingHorizontal: 20, // = px-5
   },
-  // 40×4 pill; 10 below it
   grabber: {
     width: 40,
     height: 4,
@@ -733,7 +732,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: tokens.ink[200],
   },
-  // Left-aligned
   title: {
     ...textStyle("heading"),
     alignSelf: "stretch",

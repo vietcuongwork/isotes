@@ -98,12 +98,8 @@ const IMPORT_ZONES = [...SHARED_FOLDER_ZONES, ...FEATURE_ZONES];
 // Built before the px tokens; a file leaves this list when the migration restyles it
 const LEGACY_SPACING_FILES = [
   "src/components/Avatar.tsx",
-  "src/components/Button.tsx",
   "src/components/Chip.tsx",
-  "src/components/formfield/FieldShell.tsx",
-  "src/components/formfield/TextField.tsx",
   "src/components/header/Header.tsx",
-  "src/components/header/TabScreenHeader.tsx",
   "src/features/createTrip/components/CreateTripForm.tsx",
   "src/features/createTrip/components/CurrencyField.tsx",
   "src/features/createTrip/screens/CreateTripScreen.tsx",
@@ -135,7 +131,6 @@ const LEGACY_SPACING_FILES = [
 ];
 // Old dark-theme files with raw px and no notes; a file leaves when the migration restyles it
 const NO_TOKEN_NOTE_EXEMPT = [
-  "src/components/header/TabScreenHeader.tsx",
   "src/features/addExpense/components/members/MemberListRow.tsx",
   "src/features/addExpense/paidBy/components/PaidByBottomSheet.tsx",
 ];

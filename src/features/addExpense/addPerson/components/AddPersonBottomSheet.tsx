@@ -57,7 +57,7 @@ function PersonPreview(props: PersonPreviewProps): ReactElement {
   const trimmed = name.trim();
 
   return (
-    // NOTE - no token for the 64pt disc, falling back to h-[64px] w-[64px] (one component's own size; Avatar always draws a color and the dark ring)
+    // NOTE - no token for the 64pt disc, falling back to h-[64px] w-[64px] (one component's own size; Avatar always draws a color and a ring)
     <View
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"

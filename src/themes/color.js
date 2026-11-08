@@ -29,7 +29,7 @@ module.exports = {
       olive: "#141F0C", // green-950
       citron: "#1F2209",
       amber: "#2C2207",
-      honey: "#2A1B08", // THE accent, see README
+      honey: "#2A1B08",
       terracotta: "#2B1708",
       coral: "#2A120A", // red-950
       rose: "#2C1219",
@@ -53,7 +53,7 @@ module.exports = {
       950: "#2A120A", // text/icon sitting ON red-400 (avatar initial)
     },
 
-    // ── Ink & Shine ── the light look, values from DESIGN.md.
+    // ── Ink & Shine ── values from DESIGN.md.
     ink: {
       50: "#F3F1EC", // page background (paper)
       100: "#E9E6E0",

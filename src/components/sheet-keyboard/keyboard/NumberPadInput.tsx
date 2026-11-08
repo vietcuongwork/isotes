@@ -54,7 +54,7 @@ export function NumberPadInput({
   onBlur,
   onSelectionChange,
   ref,
-  // Light, to match the light number pad; BottomSheetTextInput stays dark until the Add person sheet is restyled
+  // Light, to match the light number pad
   keyboardAppearance = "light",
   ...rest
 }: NumberPadInputProps) {
