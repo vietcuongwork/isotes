@@ -38,7 +38,7 @@ const design = () => ({
 
 const theme = () => ({
   colors: {
-    grey: { 50: "#F5F0E8" }, // old set: not in DESIGN.md, ignored
+    green: { 400: "#A8C98A" }, // theme-only: not in DESIGN.md, ignored
     ink: { 50: "#f3f1ec" },
     card: "#FFFEFB",
     member: { sand: "#D9C48A" },

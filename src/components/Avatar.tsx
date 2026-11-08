@@ -16,7 +16,7 @@ function Avatar(props: AvatarProps) {
     props;
 
   return (
-    <View className={cn("rounded-full bg-grey-900 p-0.5", ringClassName)}>
+    <View className={cn("rounded-full p-0.5", ringClassName)}>
       <View
         className={cn(
           "h-7 w-7 items-center justify-center overflow-hidden rounded-pill",

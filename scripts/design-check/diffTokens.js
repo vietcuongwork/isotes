@@ -1,6 +1,6 @@
 // Compares the DESIGN.md header with src/themes/ and lists every token that is
 // missing from the theme or has a different value. Tokens only in the theme
-// (the old dark set) are ignored.
+// are ignored.
 
 /** color.js shapes → DESIGN.md names: ink.50 → ink-50, memberInk.sand → member-sand-ink */
 function flattenColors(colors) {
