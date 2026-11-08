@@ -34,6 +34,7 @@ Status follows the feature: `in-progress` from spec approval until acceptance cl
 - A task that keeps behaviour unchanged runs its own tests and `tsc`; its flows and screenshots wait for the phase Demo.
 - Prefactoring tasks come first. A task that depends on a non-adjacent task says `Blocked by: T{n}`. Tasks cover the full scope.
 - Agents as in Step 1. Then Plannotator, STOP.
+- After approval, check that Plannotator kept the approved copy: the newest numbered file in `~/.plannotator/history/isotes/annotate-feat-{slug}-planning-md-*/`. It is the handoff version that Step 4 compares against, so later edits to done tasks lose nothing. If no copy exists, copy the note to `.sim/review/{slug}-planning-handoff.md` before the first task.
 
 ## Step 3: Implement
 
@@ -45,6 +46,7 @@ Needs a verified planning note. Mode is companion by default, one proposal at a 
 - Run the task's Verify line before proposing the next task. Inert infrastructure tasks get a quick regression check; `tsc`, lint and Prettier run once, in acceptance.
 - Read `implementing-tasks` before the first task (Open checks, Caught late, Deviation labels, Plan drift, Spin-offs, Setbacks).
 - Log each task once verified, in the implementation template's fields only. A task that went exactly to plan gets one line: its title with `· as planned`, and its Verify. Otherwise: Verify, then Q&A (every question put to the user, an autopilot hand-back as `Q (hand-back)`), Design choices (what the plan didn't cover), Change (only the part that differs from the plan) and Deviation, each only when there is one.
+- Keep the planning note matching the code. When a task's Change, Design choices or Deviation line means its code differs from the planned text, edit that task in the planning note in place, its prose and its code blocks both, in the same step as the log, and add `· changed in implementation` to its title. The why stays on the implementation note's line.
 - Frozen targets: never weaken or delete a Verify line, an acceptance criterion or an existing test assertion to make a task pass. If one looks wrong, say so and get the user's OK first; log the OK on the Deviation line.
 - Review each task's diff inline against AGENTS.md, `isotes-code-style.md` and `isotes-architecture.md` before logging it. Log it only when it changed something, as a Design choice or a Deviation.
 - After the last code phase's Demo, the session ends with: "Next: review session. Start a fresh session with `/recall {slug}`."
@@ -53,12 +55,15 @@ Needs a verified planning note. Mode is companion by default, one proposal at a 
 
 - `/recall {slug}` loads spec, planning and implementation notes. Create `Feat_{slug}_review` from `templates/Feat_review_template`.
 - Run `review-two-axis` once on the feature's whole diff, from the baseline commit T1 recorded to the working tree. Running it here is the user's OK to spawn its sub-agents; `/autopilot` does not run it.
-- Fill the review note's Summary first. "Changed from the plan" gets one row per Deviation line and per Design choice in the implementation note, plus each review fix. "What planning missed" tallies the Deviation labels and names 0 to 3 lessons for the next plan.
+- Fill the review note's Summary first. "What planning missed" tallies the Deviation labels in the implementation note and names 0 to 3 lessons for the next plan.
+- Before the findings, check that the planning note matches the code: every task with a Change, Design choices or Deviation line that changed code carries `· changed in implementation` and describes the final code. Fix any that don't.
 - Record each Spec finding with a decision: fix now, reword spec, backlog or accept. Fixes follow "Smallest steps": one file per proposal, re-verified after each batch. A finding that needs a spec rewording waits for the user's review. A fix that needs real tasks becomes a new phase in the planning note, before acceptance.
+- Each review fix keeps the notes matching the code. It gets an entry in the implementation note's "Review fixes" section (the finding's number, Change, Verify), and the done task it changes is edited in place in the planning note, prose and code blocks, with `· changed in review, finding {n}`. The review note keeps the finding and the user's decision only.
 - If the feature changed a rule or a screen path, update the `Flow_{area}` note from `templates/Flow_template.md` (create it if needed, cover only what this feature touched); otherwise write "not needed" with the reason in the review note's Flow section.
 - List criteria the review could not see under "Checks not shown". They carry into acceptance.
-- Status `done` once every finding has a decision and each fix is verified.
+- Then open the handoff diff for the user, in the background: `git diff --no-index <approved copy> <planning note> | plannotator review --patch-file -`. It shows every change to the plan from handoff to the end of review. Address any annotations it returns.
+- Status `done` once every finding has a decision, each fix is verified, and the user has closed the handoff diff.
 
 ## Step 5: Acceptance
 
-The planning note's last phase, after the review note is `done` (`/autopilot` refuses to start it otherwise). Its one `[Live]` task is defined in `to-phases`. A failure it fixes adds a row to the review note's "Changed from the plan". Offer `/retro` only when "What planning missed" names a change to the environment (rules, checks, tooling). Then run `whats-next`, so the session ends on a proposal for the next feature.
+The planning note's last phase, after the review note is `done` (`/autopilot` refuses to start it otherwise). Its one `[Live]` task is defined in `to-phases`. A failure it fixes is logged like a review fix: a "Review fixes" entry in the implementation note and an in-place edit of the planning task. If it edited the plan, open the handoff diff again (Step 4) before closing. Offer `/retro` only when "What planning missed" names a change to the environment (rules, checks, tooling). Then run `whats-next`, so the session ends on a proposal for the next feature.

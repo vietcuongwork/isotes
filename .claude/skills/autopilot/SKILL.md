@@ -42,7 +42,7 @@ Stop, report where you are, and wait for the user when:
 - The next change touches a file no task in this phase names, or installs a package the phase doesn't list.
 - A Verify line, acceptance criterion, or existing test assertion looks wrong: changing it needs the user's OK (CLAUDE.md "Frozen targets").
 
-Once the user answers, log it on that task's Q&A line as `Q (hand-back) … → A …`. An answer that changes the code also gets its Deviation (`decision`) or Design choices line, so it reaches the review's "Changed from the plan".
+Once the user answers, log it on that task's Q&A line as `Q (hand-back) … → A …`. An answer that changes the code also gets its Deviation (`decision`) or Design choices line, and the task is edited in place in the planning note, prose and code blocks, with `· changed in implementation` (`feature-workflow` Step 3).
 
 ## 3. Finish at the Demo
 
