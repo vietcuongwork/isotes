@@ -1,6 +1,6 @@
 ---
 name: diagnosing-bugs
-description: Diagnosis loop for any bug in isotes — two quick fixes first, then a tight loop and logs. Small bugs end to end, Big bugs through Phase 4 (the Investigate_ note). Use when the user says "diagnose"/"debug this", or reports something broken/throwing/failing/slow.
+description: Diagnosis loop for any bug in isotes — two quick fixes first, then a tight loop and logs. Small bugs end to end, Big bugs through Phase 4 (the Investigate_ note). Use when the user says "diagnose"/"debug this", reports something broken/throwing/failing/slow, or wants to fix a bug in companion mode.
 ---
 
 # Diagnosing Bugs
@@ -29,6 +29,17 @@ Most bugs here are obvious once the symptom is seen. Try up to two fixes before 
 Skip straight to Phase 1 when the fix would need 3+ files or a choice between approaches: that's a Big bug from the start. A quick fix that works is a Small bug (`Debug_` note), even in a shared file.
 
 Done when the symptom is gone after one of the two attempts, or both are reverted and their results noted.
+
+## Companion mode
+
+Used when the user asks for it: the user decides each fix and you write it. Only who proposes the fix changes. The two-try limit, the reverts and the notes stay as they are.
+
+1. **Objective.** After Phase 0 step 1, send the symptom as seen, the 3–5 ranked hypotheses with their predictions, and `file:line` pointers to where each cause would sit. Name no fix.
+2. **The user's fix.** The user picks a hypothesis and says how to fix it. That message is their yes for the files it names. Write it, and list anything you changed from their wording (a caller they missed, a type that wouldn't compile) and why.
+3. **Try it** as in Phase 0 steps 3–5. Each fix the user gives is one of the two tries, and a failed one is reverted before the next.
+4. **Stuck.** If the user asks for a hint, give the top hypothesis's fix as a proposal. It still counts as a try.
+5. **Big bug.** The companion round moves to `Solution_`: send the `Investigate_` root cause and the constraints a fix must meet, the user outlines the approach, and you write the note from it, listing the differences. The Plannotator gate is unchanged.
+6. **Phase 5** runs as written: the user's fix is the one stashed and restored around the regression test.
 
 ## Phases 1–2: Build a loop, reproduce and minimise
 
