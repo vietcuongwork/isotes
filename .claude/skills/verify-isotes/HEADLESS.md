@@ -11,6 +11,7 @@ Gestures with tight timing, visual checks and a look at a failed check go throug
 - Screenshots come from `xcrun simctl io F074204A-8DED-491A-9D45-3C6344EECCEB screenshot --type=jpeg <file>` or the MCP's `screenshot`. `ui_view` reads the size from the tree's root frame, so it fails whenever the tree is empty.
 - Send taps, text and swipes one call at a time, never several in one message: parallel calls overlap, iOS drops touches, and it looks like an app bug (why: [[Ref_ported-memories]]). An idb tap takes about 300 ms against Maestro's 1.7 s, so a fast run of taps goes through idb.
 - A long press is `ui_tap` with `duration`. Pinch, Home, keys and multi-tap exist only in the shell: `idb ui pinch <x> <y> <scale>` (the zoom comes out below the scale asked for), `idb ui button HOME`, `idb ui key`, `idb ui multi-tap`.
+- With the hardware keyboard connected, a focused field shows no software keyboard. To change it, use computer use in Device Hub: the Device menu, then Keyboard, then "Simulate Hardware Keyboard". The menu appears about 1 s after the click, so wait before the screenshot. `defaults write com.apple.iphonesimulator ConnectHardwareKeyboard` and a Simulator restart changed nothing. Compare keyboard-up shots only with shots taken under the same setting.
 
 ## Visual evidence
 

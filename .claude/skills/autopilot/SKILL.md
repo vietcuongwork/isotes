@@ -50,8 +50,8 @@ Once the user answers, log it on that task's Q&A line as `Q (hand-back) … → 
 - Run the phase's **Demo**.
 - Confirm no debug logs are left.
 - Phase ran flows on the simulator: once the Demo's evidence is quoted in the log, run `verify-isotes/scripts/cleanup.sh --dry-run`, then `cleanup.sh`, and put its before and after counts in the report. It keeps the newest trip per flow and the baseline trip. Skip it when the phase ran no flows.
+- Every Open check due by this phase is closed or, on its first postponement, re-targeted to a later task or Demo. A check already postponed once keeps the Demo from being green: log the Demo as `not green`, name the check in the report, and wait for the user to accept it or say how to close it (`implementing-tasks`, Open checks).
 - Demo green and the phase changed `src/`: run `verify-isotes/scripts/green.sh mark`, so the next phase's Preflight can skip its smoke flow.
-- Every Open check due by this phase is closed, re-targeted, or listed in the report for the user to accept.
 - Report: the Demo result, tasks done, Deviations, review judgement calls, open checks, and the files changed since the baseline. Add a suggested commit (the `commit-message` skill, as a runnable `git commit` command). The user commits.
 - **Read these first**: up to 3 hunks where the phase's risk sits (logic no test covers, a deviation from the plan, a judgement call the review flagged — at least one from review, if any were flagged), each as `file:line` plus one line on why. These are what to understand before committing; Verify and review cover the rest.
 - Append a session section to today's `Diary_` (template fields, including **State**), linking the implementation note instead of repeating task details.

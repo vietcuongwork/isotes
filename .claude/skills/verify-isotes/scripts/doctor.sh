@@ -53,6 +53,11 @@ else
       ps -o command= -p "$p" | grep -q "script .*metro\.log" && { logged=yes; break; }
     done
     [ "$logged" = yes ] || fail "Metro (pid $pid) isn't writing .sim/metro.log, so cu.sh sees no app logs. Why: it wasn't started through script -qF. Fix: ask the user, then restart it with Launch step 3."
+    # A Metro started before the last pnpm install serves a stale bundle (pnpm rewrites node_modules/.modules.yaml on install)
+    started=$(LC_ALL=C date -j -f '%a %b %e %T %Y' "$(ps -o lstart= -p "$pid" | sed 's/ *$//')" +%s 2>/dev/null)
+    installed=$(stat -f %m "$repo/node_modules/.modules.yaml" 2>/dev/null)
+    [ -z "$started" ] || [ -z "$installed" ] || [ "$started" -ge "$installed" ] \
+      || fail "Metro (pid $pid) started before the last pnpm install, so it may serve a stale bundle that ignores new code. Fix: ask the user, then restart it with Launch step 3, adding --clear."
   done
   [ "$(curl -s -m 3 localhost:8081/status)" = "packager-status:running" ] \
     || fail ":8081 doesn't answer packager-status:running (Metro still starting, hung, or not Metro). Fix: wait and rerun, or ask the user."

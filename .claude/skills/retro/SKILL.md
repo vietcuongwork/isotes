@@ -12,7 +12,7 @@ With the argument `weekly`, or a prompt starting `[weekly-retro:scheduled]`, fol
 
 1. Call the Skill tool with `writing-for-agents` for the writing style guide.
 
-2. Read the primary sources for the session the user specifies. This may mean searching through session logs on this machine. If the user doesn't specify a session, default to the current one.
+2. Read the primary sources for the session the user specifies. If the user doesn't specify a session, default to the current one. A feature slug names every session of that feature, because each workflow phase runs in its own session. Its sources are the four `Feat_{slug}_*` notes, the diaries that name it, and each transcript that names it: list them with `grep -l {slug} ~/.claude/projects/$(pwd | tr '/' '-')/*.jsonl`, then read only the assistant's text (`jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="text") | .text'`) and grep it for setbacks (failed, instead, retry, wrong). Roundtrips that never reached a note, such as a flow's own mistakes, appear only there.
 
 3. Look for candidates for improvement in these categories.
 

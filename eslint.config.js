@@ -98,10 +98,7 @@ const IMPORT_ZONES = [...SHARED_FOLDER_ZONES, ...FEATURE_ZONES];
 // Built before the px tokens; a file leaves this list when the migration restyles it
 const LEGACY_SPACING_FILES = [
   "src/components/Avatar.tsx",
-  "src/components/Chip.tsx",
-  "src/components/header/Header.tsx",
   "src/features/createTrip/components/CreateTripForm.tsx",
-  "src/features/createTrip/components/CurrencyField.tsx",
   "src/features/createTrip/screens/CreateTripScreen.tsx",
   "src/features/addExpense/components/ActivityAndDateSection.tsx",
   "src/features/addExpense/components/AddExpenseBottomSheet.tsx",
@@ -134,6 +131,15 @@ const NO_TOKEN_NOTE_EXEMPT = [
   "src/features/addExpense/components/members/MemberListRow.tsx",
   "src/features/addExpense/paidBy/components/PaidByBottomSheet.tsx",
 ];
+
+// A deleted file left on a list is dead config, and nothing else reports it
+for (const file of [...LEGACY_SPACING_FILES, ...NO_TOKEN_NOTE_EXEMPT]) {
+  if (!fs.existsSync(`${__dirname}/${file}`)) {
+    throw new Error(
+      `eslint.config.js lists ${file}, which doesn't exist. Why: a file leaves these lists when it's restyled or deleted. Fix: remove the entry.`,
+    );
+  }
+}
 
 module.exports = defineConfig([
   expoConfig,

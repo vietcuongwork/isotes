@@ -52,7 +52,7 @@ appId: com.anonymous.isotes
     timeout: 15000
 ```
 
-**Flows that open an existing trip** take its name and id as `-e` variables (`${A}`, `${A_ID}` in the YAML), looked up at run time with `trip.sh`. `cleanup.sh` keeps only the newest trip per flow, so a trip written into the YAML is gone by the next session.
+**Flows that open an existing trip** take its name and id as `-e` variables (`${A}`, `${A_ID}` in the YAML), looked up at run time with `trip.sh`. `cleanup.sh` keeps only the newest trip per flow, so a trip written into the YAML is gone by the next session. A screenshot baseline must outlive that cleanup, so its flow opens the trip the script protects (`BASELINE`, named `Flow golden-path 10-15 19:44`) or a trip named outside the `Flow …` pattern. A baseline taken on an ordinary flow trip lost that trip, and its title then differed behind every sheet.
 
 ```bash
 IFS='|' read -r A_ID A < <(.claude/skills/verify-isotes/scripts/trip.sh "Flow paid-by-split")

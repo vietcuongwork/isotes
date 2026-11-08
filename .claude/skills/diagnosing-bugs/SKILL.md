@@ -20,7 +20,7 @@ If the redacted output is not enough to diagnose the bug, say so and ask the use
 Most bugs here are obvious once the symptom is seen. Try up to two fixes before building a loop.
 
 1. **See it once.** Reproduce the symptom one time (simulator steps, a Jest run, or the user's exact steps) and note what you saw: that's the before-picture each fix is checked against. On the simulator, reach the screen with a `verify-isotes` flow, then trigger the symptom through idb (`verify-isotes` `HEADLESS.md`), or computer use for what idb can't do (CLAUDE.md "Simulator testing"). It needn't be tight or minimised. Can't reproduce it → Phase 1.
-2. **Rank 3–5 hypotheses**, each with its prediction (format in Phase 3). Send the list and the fix for the top one in the same message; the user's yes on that file covers both.
+2. **Rank 3–5 hypotheses**, each with its prediction (format in Phase 3). Start from the vault: `search_notes` the failing module or error text and read any `Debug_` note it finds, because a Swift build failure was once diagnosed from scratch while a note on that module sat unread. Send the list and the fix for the top one in the same message; the user's yes on that file covers both.
 3. **Try it.** Write the fix and repeat the same steps. Symptom gone → Phase 5, then Phase 6; the hypothesis whose prediction held is the cause on record.
 4. **Still there → revert the fix**, then try hypothesis 2 the same way. Each attempt runs on clean code, so its result belongs to one change.
 5. **Both fail → Phase 1.** Carry both hypotheses and what each attempt showed; Phase 3 starts with them ruled out.
