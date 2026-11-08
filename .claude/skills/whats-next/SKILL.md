@@ -19,7 +19,7 @@ Done when both greps print nothing.
 
 - **Features.** `read_multiple_notes` with `includeContent: false` on every `Feat_*_spec.md` and `Fix_*.md`, 10 per call. Keep `status` draft or in-progress. Record `blocked_by`, `design`, `schema`, `size`, `kind`, `waiting_until`, `next` and the `screen/` and `area/` tags.
 - **In progress.** For each in-progress item, `get_notes_info` on its working note (implementation, else planning, else spec): 7 or more days idle with no future `waiting_until` is **stale**. Then `grep -n -A12 '^## Open checks'` on its implementation note (keep items due today or earlier, or undated) and `grep -n -A15 '^## Out of scope, flagged'` on its planning note (keep items not done).
-- **Backlog.** `grep -n '^## ' Tasks_backlog.md`, then `sed -n` Critical, Bug and Workflow. Keep open Critical and Bug lines, and Workflow lines whose date or trigger has passed. For Minor and Refactor, count open lines per `screen/` and `area/` tag only.
+- **Backlog.** `grep -n '^## ' Tasks_backlog.md`, then `sed -n` Critical, Bug and Workflow. Keep open Critical and Bug lines, and Workflow lines whose date or trigger has passed. For Polish, Enhancement and Refactor, count open lines per `screen/` and `area/` tag only. A tag is **orphaned** when it has open lines in those sections and no draft or in-progress spec carries it, so no coming feature will edit that screen and pick them up.
 - **Sources.** `PRD.md` section 3 (the v1 goal) and section 6 (the scope table). For each v1 row, find its spec by subject. Compare the row's Design cell with the spec's `design` and with the screen's row in `Ref_claude-design` → Screen map (`grep -n`).
 
 Done when every draft or in-progress spec has its fields recorded, and every PRD v1 row is matched to a spec or listed as **unsplit**.
@@ -49,6 +49,6 @@ At most 25 lines, in this shape:
     - decision: {spec}: {the open question from its Notes}
     **Waiting:** {each workflow feature with its waiting_until and next}
     **Runner-up:** [[…]]: {why it lost}
-    **Housekeeping:** {overdue open checks, flagged items with their feature, stale features with days idle, unsplit PRD rows, PRD drift, untagged backlog count}
+    **Housekeeping:** {overdue open checks, flagged items with their feature, stale features with days idle, unsplit PRD rows, PRD drift, untagged backlog count, orphaned tags with their line counts and a suggested sweep (one small session that clears the tag's Polish and Refactor lines, or a spec when its Enhancement lines add up to a feature)}
 
 Leave out an empty line. Where a fix needs a vault edit (a backlog line, a stale feature's status, a PRD row), print the exact line and its section. Finish with: **"Start on [[Feat_x_spec]]?"**
