@@ -61,7 +61,7 @@ export function useCreateTripForm(codes: string[]) {
       description: data.description,
       currencyCode: data.currency.code,
     });
-    router.push(EXPO_ROUTER.EXPENSE(tripId));
+    router.replace(EXPO_ROUTER.EXPENSE(tripId));
   };
 
   const onInvalid = (errors: FieldErrors<CreateTripFormData>) => {
