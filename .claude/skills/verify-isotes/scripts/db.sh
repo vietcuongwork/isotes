@@ -3,7 +3,7 @@
 # Usage: db.sh "<sql>"
 set -euo pipefail
 
-SIM=F074204A-8DED-491A-9D45-3C6344EECCEB
+. "$(dirname "$0")/sim-env.sh"
 BUNDLE=com.anonymous.isotes
 
 [ $# -eq 1 ] || { echo "usage: db.sh \"<sql>\"" >&2; exit 2; }

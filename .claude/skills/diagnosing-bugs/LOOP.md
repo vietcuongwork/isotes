@@ -10,7 +10,7 @@ Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give
 
 ### Ways to construct one, in roughly this order
 
-1. **Simulator repro** — for anything touching sheets, keyboard, gestures, focus or layout. Reach the screen with a `verify-isotes` flow and check state from `isotes.db` or the tree; do the triggering gesture or timing through idb (`verify-isotes` `HEADLESS.md`), or computer use for what idb can't do. Follow "Simulator testing" in CLAUDE.md (working simulator, Metro log at `.sim/metro.log`, `.sim/cu.sh relaunch|mark|show` for the log slice since the last mark).
+1. **Simulator repro** — for anything touching sheets, keyboard, gestures, focus or layout. Reach the screen with a `verify-isotes` flow and check state from `isotes.db` or the tree; do the triggering gesture or timing through idb (`verify-isotes` `HEADLESS.md`), or computer use for what idb can't do. Follow "Simulator testing" in CLAUDE.md (working simulator, Metro log through `stim logs`, `.sim/cu.sh relaunch|mark|show` for the log slice since the last mark).
 2. **Failing Jest test** at whatever seam reaches the bug — for pure logic (helpers, transforms, DB functions).
 3. **Replay a captured trace.** Save a real network request / payload / event log to disk; replay it through the code path in isolation.
 4. **Throwaway harness.** Spin up a minimal subset of the system (one service, mocked deps) that exercises the bug code path with a single function call.

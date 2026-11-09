@@ -4,9 +4,9 @@
 # that doesn't launch isotes itself fails; that run gets one retry after isotes is brought back.
 # Usage: flow.sh <flow.yaml> [maestro test options, e.g. -e A="$A"]
 set -uo pipefail
+. "$(dirname "$0")/sim-env.sh"
 cd "$(git rev-parse --show-toplevel)" || exit 2
 
-SIM=F074204A-8DED-491A-9D45-3C6344EECCEB
 BUNDLE=com.anonymous.isotes
 
 [ $# -ge 1 ] || { echo 'usage: flow.sh <flow.yaml> [maestro test options]' >&2; exit 2; }

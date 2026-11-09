@@ -3,7 +3,7 @@
 # the baseline trip. Run from the repo root. Usage: cleanup.sh [--dry-run]
 set -euo pipefail
 
-SIM=F074204A-8DED-491A-9D45-3C6344EECCEB
+. "$(dirname "$0")/sim-env.sh"
 BUNDLE=com.anonymous.isotes
 # The baseline Expenses tab and Add expense shots deep-link to this trip
 BASELINE=dbcb98c7-4ac2-44c9-a42f-6236590cb3b3

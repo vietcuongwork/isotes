@@ -2,9 +2,9 @@
 
 Read when the session drives with the Maestro MCP server instead of the CLI. "One driver per session" in `SKILL.md` Drive still applies: MCP steps first, then CLI.
 
-In an MCP session, also call MCP `list_devices`: `F074204A-…` should be `connected: true`. That only means booted; it answers even when the MCP driver is dead. A dead driver shows on the first `run` or `inspect_screen` as "Device became unreachable" → use the CLI for the rest of the session.
+In an MCP session, also call MCP `list_devices`: the `SIM=` value from `scripts/sim-env.sh` should be `connected: true`. That only means booted; it answers even when the MCP driver is dead. A dead driver shows on the first `run` or `inspect_screen` as "Device became unreachable" → use the CLI for the rest of the session.
 
-**Step by step (MCP server `maestro`):** `list_devices` → `run` with inline YAML (`appId: com.anonymous.isotes`, then `---` and commands such as `tapOn`, `openLink`, `assertVisible`) on device `F074204A-8DED-491A-9D45-3C6344EECCEB`. To check one value, `assertVisible` it in a `run`; `inspect_screen` returns the whole unfiltered tree (~7 KB on a trip's expense tab), so use it only to find selectors. `cheat_sheet` is ~20 KB: only when unsure of a command's arguments. Never use the AI commands (`assertWithAI`, `assertNoDefectsWithAI`, `extractTextWithAI`): they upload screenshots. When the server misbehaves, fall back to the CLI above and say so; don't retry the same call.
+**Step by step (MCP server `maestro`):** `list_devices` → `run` with inline YAML (`appId: com.anonymous.isotes`, then `---` and commands such as `tapOn`, `openLink`, `assertVisible`) on that device. To check one value, `assertVisible` it in a `run`; `inspect_screen` returns the whole unfiltered tree (~7 KB on a trip's expense tab), so use it only to find selectors. `cheat_sheet` is ~20 KB: only when unsure of a command's arguments. Never use the AI commands (`assertWithAI`, `assertNoDefectsWithAI`, `extractTextWithAI`): they upload screenshots. When the server misbehaves, fall back to the CLI above and say so; don't retry the same call.
 
 | Tool | Use | Prompts? |
 |---|---|---|

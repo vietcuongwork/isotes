@@ -4,9 +4,12 @@
 # Usage: doctor.sh
 set -uo pipefail
 
-SIM=F074204A-8DED-491A-9D45-3C6344EECCEB
+repo=$(cd "$(dirname "$0")/../../../.." && pwd)
+cd "$repo" || exit 1
+SCRIPTS=.claude/skills/verify-isotes/scripts
 BUNDLE=com.anonymous.isotes
 MAESTRO_VERSION=2.11.0
+STIM_VERSION=1.40.0
 # 12 h, longer than any test session
 LEFTOVER_SECS=43200
 # System apps seen running in the background on an idle simulator; anything else is someone's foreground app.
@@ -17,12 +20,16 @@ fail() { echo "!! $1"; problems=$((problems + 1)); }
 
 version=$(maestro --version 2>/dev/null | tail -1)
 [ "$version" = "$MAESTRO_VERSION" ] || fail "maestro is '${version:-missing}', want $MAESTRO_VERSION. Fix: upgrading is its own task; ask the user."
+stim_version=$(stim --version 2>/dev/null | tail -1)
+[ "$stim_version" = "$STIM_VERSION" ] || fail "stim is '${stim_version:-missing}', want $STIM_VERSION. Fix: upgrading is its own task; ask the user."
 # traits.sh reads header/selected/button through idb; Maestro's tree has no traits
 command -v idb >/dev/null || fail "idb isn't installed, so traits.sh can't read traits. Fix: ask the user before brew install facebook/fb/idb (its tap formulae need brew trust)."
 
-if ! xcrun simctl list devices booted | grep -q "$SIM"; then
-  fail "simulator $SIM isn't booted. Fix: Launch step 1."
+# sim-env.sh stops at its first problem, so it's tried in a subshell: doctor reports every problem.
+if ! msg=$("$SCRIPTS/sim-env.sh" 2>&1 >/dev/null); then
+  fail "${msg#sim-env: }"
 else
+  . "$SCRIPTS/sim-env.sh"
   xcrun simctl get_app_container "$SIM" "$BUNDLE" >/dev/null 2>&1 \
     || fail "isotes isn't installed on $SIM. Fix: scripts/build.sh as a background task, or ask the user."
 
@@ -32,35 +39,21 @@ else
       | grep -v -x "$BUNDLE" | grep -v -E "$BACKGROUND_APPS" | sort -u | tr '\n' ' ')
     [ -z "$others" ] || fail "other apps running on the simulator: ${others% }. Why: driving isotes takes over a screen someone may be using. Fix: ask the user before closing them."
   else
-    fail "couldn't list the simulator's running apps (launchctl via simctl failed). Fix: rerun; if it persists, Launch step 1."
+    fail "couldn't list the simulator's running apps (launchctl via simctl failed). Fix: rerun; if it persists, run 'stim ios'."
   fi
-fi
 
-# The dev build loads its JS from :8081, so every listener there must be this checkout's Metro.
-repo=$(cd "$(dirname "$0")/../../../.." && pwd)
-pids=$(lsof -nP -iTCP:8081 -sTCP:LISTEN -t 2>/dev/null | sort -u)
-if [ -z "$pids" ]; then
-  fail "nothing listens on :8081, so isotes' Metro isn't running. Fix: Launch step 3."
-else
-  for pid in $pids; do
-    cmd=$(ps -o command= -p "$pid")
-    [[ "$cmd" == "node $repo/node_modules/"* ]] \
-      || { fail ":8081 is held by another process (pid $pid: ${cmd:0:80}). Why: the isotes build would load that bundle. Fix: ask the user before stopping it."; continue; }
-    # cu.sh reads app logs from .sim/metro.log, which only Launch step 3's `script -qF` writes
-    logged=no; p=$pid
-    for _ in 1 2 3 4 5; do
-      p=$(ps -o ppid= -p "$p" | tr -d ' '); [ -z "$p" ] || [ "$p" = 1 ] && break
-      ps -o command= -p "$p" | grep -q "script .*metro\.log" && { logged=yes; break; }
-    done
-    [ "$logged" = yes ] || fail "Metro (pid $pid) isn't writing .sim/metro.log, so cu.sh sees no app logs. Why: it wasn't started through script -qF. Fix: ask the user, then restart it with Launch step 3."
+  # The app loads its JS from this workspace's Metro, which Stim supervises.
+  if [ "$METRO_RUNNING" != "true" ]; then
+    fail "Stim's Metro for this checkout isn't running. Why: the app falls back to :8081 and loads whatever serves there. Fix: run 'stim start'."
+  else
     # A Metro started before the last pnpm install serves a stale bundle (pnpm rewrites node_modules/.modules.yaml on install)
-    started=$(LC_ALL=C date -j -f '%a %b %e %T %Y' "$(ps -o lstart= -p "$pid" | sed 's/ *$//')" +%s 2>/dev/null)
+    started=$(date -j -u -f '%Y-%m-%dT%H:%M:%S' "${SUPERVISOR_STARTED%%.*}" +%s 2>/dev/null)
     installed=$(stat -f %m "$repo/node_modules/.modules.yaml" 2>/dev/null)
     [ -z "$started" ] || [ -z "$installed" ] || [ "$started" -ge "$installed" ] \
-      || fail "Metro (pid $pid) started before the last pnpm install, so it may serve a stale bundle that ignores new code. Fix: ask the user, then restart it with Launch step 3, adding --clear."
-  done
-  [ "$(curl -s -m 3 localhost:8081/status)" = "packager-status:running" ] \
-    || fail ":8081 doesn't answer packager-status:running (Metro still starting, hung, or not Metro). Fix: wait and rerun, or ask the user."
+      || fail "Stim's Metro (started $SUPERVISOR_STARTED) started before the last pnpm install, so it may serve a stale bundle that ignores new code. Fix: ask the user, then run 'stim start --reset-cache'."
+    [ "$(curl -s -m 3 "localhost:$METRO_PORT/status")" = "packager-status:running" ] \
+      || fail ":$METRO_PORT doesn't answer packager-status:running (Metro still starting, hung, or not Metro). Fix: wait and rerun, or ask the user."
+  fi
 fi
 
 # A native change with no rebuild leaves the installed app on old native code.
@@ -77,20 +70,11 @@ fi
 
 # Leftovers: listed, never counted as a problem. A background shell from any Claude
 # session runs until stopped, however long the session sits idle.
-metro=$(lsof -nP -iTCP:8081 -sTCP:LISTEN -t 2>/dev/null | head -1)
 ps -eo pid=,etime=,command= | grep -F shell-snapshots | grep -v grep \
   | while read -r pid etime cmd; do
       secs=$(awk -F'[-:]' '{ if (NF == 4) print $1*86400 + $2*3600 + $3*60 + $4; else if (NF == 3) print $1*3600 + $2*60 + $3; else print $1*60 + $2 }' <<<"$etime")
       [ "$secs" -ge "$LEFTOVER_SECS" ] || continue
       what=$(sed -E "s/.*eval '?//; s/'? < \/dev\/null.*//" <<<"$cmd")
-      # The shell that runs the live Metro is in use, not left over
-      live=no; p=$metro
-      for _ in 1 2 3 4 5; do
-        [ -z "$p" ] || [ "$p" = 1 ] && break
-        [ "$p" = "$pid" ] && { live=yes; break; }
-        p=$(ps -o ppid= -p "$p" | tr -d ' ')
-      done
-      [ "$live" = no ] || continue
       echo "-- leftover from a Claude session, up $etime: pid $pid, ${what:0:70}. Fix: ask the user before stopping it."
     done
 

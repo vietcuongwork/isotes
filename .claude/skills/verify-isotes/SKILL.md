@@ -5,20 +5,19 @@ description: Drive isotes (the Expo iOS trip-expense app) on the working simulat
 
 # Verify isotes
 
-isotes is a mobile app: one dev build (`com.anonymous.isotes`) on the simulator `F074204A-8DED-491A-9D45-3C6344EECCEB`, loading its JS from Metro on `:8081`. A user touches it only through the screen; its state lives in `isotes.db` (SQLite) inside the app's data container. Run every command from the repo root. Features and how to reach each: `features/README.md`. Reference files next to this one: `HEADLESS.md` (idb gestures and visual evidence), `MAESTRO-MCP.md` (the Maestro MCP server) and `HELPERS.md` (every script's arguments).
+isotes is a mobile app: one dev build (`com.anonymous.isotes`) on this checkout's Stim simulator (`stim-isotes` in the main checkout), loading its JS from the Metro Stim runs for that checkout. `scripts/sim-env.sh` prints the simulator's UDID and the Metro port, which can change after a `stim stop`. A user touches it only through the screen; its state lives in `isotes.db` (SQLite) inside the app's data container. Run every command from the repo root. Features and how to reach each: `features/README.md`. Reference files next to this one: `HEADLESS.md` (idb gestures and visual evidence), `MAESTRO-MCP.md` (the Maestro MCP server) and `HELPERS.md` (every script's arguments).
 
 ## Launch
 
-1. Boot the simulator (no-op when booted): `xcrun simctl bootstatus F074204A-8DED-491A-9D45-3C6344EECCEB -b`
+1. Boot the simulator, start Metro and launch the app: `stim ios`. A cached build takes seconds; after a native change it compiles for several minutes, so run that case as a background task. When Stim stopped a lane for being idle, `stim revive` resumes it without building.
 2. Keep the Mac awake for the session, as a background task: `caffeinate -d -t 14400`. It exits after 4 h, so a forgotten one can't leak; start another if the session runs longer.
-3. Metro, only if nothing listens on 8081 (`lsof -nP -iTCP:8081 -sTCP:LISTEN`), as a background task: `tail -f /dev/null | script -qF .sim/metro.log pnpm start` (add `--clear` after a package install). Ready when `curl -s localhost:8081/status` prints `packager-status:running`.
-4. Relaunch the app and mark the log: `.sim/cu.sh relaunch` → `ready (~Ns)`. It refuses on a shared simulator and says what to do.
+3. Relaunch the app and mark the log: `.sim/cu.sh relaunch` → `ready (~Ns)`. It refuses on a shared simulator and says what to do.
 
 Teardown is under Cleanup.
 
 ## Doctor
 
-Run before driving, and whenever anything looks off: `.claude/skills/verify-isotes/scripts/doctor.sh` → `doctor: ok`. It's read-only and safe in any session: it makes no Maestro device call (each one starts a driver). It exits 1 with a reason and a fix when Maestro isn't 2.11.0, idb isn't installed, the simulator isn't booted, isotes isn't installed, another app is open on the simulator, nothing listens on 8081, any listener there isn't this checkout's Metro, 8081 doesn't answer `packager-status:running`, or the native fingerprint differs from the installed build's (`.sim/last-native-build`). It also lists, without failing, background shells a Claude session left running over 12 hours (the live Metro's excepted). Never stop what it names without asking the user.
+Run before driving, and whenever anything looks off: `.claude/skills/verify-isotes/scripts/doctor.sh` → `doctor: ok`. It's read-only and safe in any session: it makes no Maestro device call (each one starts a driver). It exits 1 with a reason and a fix when Maestro isn't 2.11.0, Stim isn't 1.40.0, idb isn't installed, Stim has no workspace for this checkout, the simulator isn't booted, isotes isn't installed, another app is open on the simulator, Stim's Metro isn't running, started before the last `pnpm install` or doesn't answer `packager-status:running`, or the native fingerprint differs from the installed build's (`.sim/last-native-build`). It also lists, without failing, background shells a Claude session left running over 12 hours. Never stop what it names without asking the user.
 
 ## Drive
 
@@ -35,7 +34,8 @@ Maestro **2.11.0** (`maestro --version`); an upgrade is its own task. `MAESTRO_C
 **Tree read (CLI):** `hierarchy` has no output flag and logs to `~/.maestro/tests/`, so its Java home moves to `.sim/maestro/home/` (keep that folder). Never read the raw tree (~150 KB); filter to labels and grep one value. Run it after a flow: the session's first CLI call starts Maestro's driver, which brings the iOS home screen forward, so a tree read first reads the home screen.
 
 ```bash
-JAVA_TOOL_OPTIONS=-Duser.home=$PWD/.sim/maestro/home maestro --device F074204A-8DED-491A-9D45-3C6344EECCEB hierarchy 2>/dev/null | jq -r '.. | .attributes? // empty | [.accessibilityText, .text, ."resource-id"] | map(select(. != null and . != "")) | unique | join(" | ") | select(. != "")' | awk '!seen[$0]++' | grep -F 'you lent'
+SIM=$(.claude/skills/verify-isotes/scripts/sim-env.sh | sed -n 's/^SIM=//p')
+JAVA_TOOL_OPTIONS=-Duser.home=$PWD/.sim/maestro/home maestro --device "$SIM" hierarchy 2>/dev/null | jq -r '.. | .attributes? // empty | [.accessibilityText, .text, ."resource-id"] | map(select(. != null and . != "")) | unique | join(" | ") | select(. != "")' | awk '!seen[$0]++' | grep -F 'you lent'
 ```
 
 **Step by step (MCP server `maestro`):** read `MAESTRO-MCP.md` before the first call.
@@ -89,7 +89,7 @@ Quote the values (rows, tree lines, log result) in the task's log in the vault's
 
 - Once findings are quoted in the vault, delete that run's folder: `rm -rf .sim/maestro/<flow>-<time>`. Keep `.sim/maestro/home/`.
 - Flow runs and tree reads write nothing to `~/.maestro/tests/`, but each MCP driver start (an `xctest_runner_*.log`) and each `maestro list-devices` does: delete the `~/.maestro/tests/<time>/` folders this session created (`ls -lt ~/.maestro/tests | head`).
-- Stop only what this session started, by its background task or PID: `caffeinate`, and Metro if Launch started it. Never kill by process name; never stop another project's Metro.
+- Stop only what this session started, by its background task or PID, such as `caffeinate`. Stim's Metro and simulator stay up between sessions; run `stim stop` only when the user asks, because it shuts the simulator down and frees the Metro port. Never kill by process name; never stop another project's Metro.
 - At the end of a test session, once the evidence is quoted in the vault, run `scripts/cleanup.sh`: it deletes flow trips, keeping the newest per flow and the baseline trip. The user's own trips never match the flow-name pattern. `/autopilot` runs it at every Demo that ran flows; a companion-mode session runs it in the feature's acceptance task.
 
 ## Helpers

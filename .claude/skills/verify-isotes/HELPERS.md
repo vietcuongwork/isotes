@@ -3,6 +3,7 @@
 Every script's arguments and output. "Above" and section names (Doctor, Drive, Cleanup) refer to `SKILL.md`.
 
 - `scripts/doctor.sh` — Doctor, above.
+- `scripts/sim-env.sh` — this checkout's `SIM`, `SIM_STATE`, `METRO_PORT`, `METRO_RUNNING`, `SUPERVISOR_STARTED` and `SIM_LOG_DIR`, from `stim status --json`. Stops with a message when Stim doesn't know the folder or the simulator isn't booted. Scripts source it. The Bash tool runs zsh, whose read-only `status` breaks sourcing, so read a value there with `sim-env.sh | sed -n 's/^SIM=//p'`.
 - `scripts/flow.sh <flow.yaml> [options]` — Whole flow, above. Retries once, after `simctl launch`, when a failed run started with another app in front (the runner log's first `Detected running apps`).
 - `scripts/db.sh "<sql>"` — one read-only `sqlite3` query on `isotes.db`; looks the container up on every call (its folder changes per install). Newest golden-path trip's splits:
 
@@ -15,7 +16,7 @@ Every script's arguments and output. "Above" and section names (Doctor, Drive, C
 - `scripts/cleanup.sh [--dry-run]` — deletes flow trips (Cleanup, above). It stops the app, backs up `isotes.db` to `.sim/backup/`, deletes in one transaction, prints before and after counts and a restore command, then runs `cu.sh relaunch`. `--dry-run` prints per-flow counts only.
 - Deleting single test rows (a name a check added to a flow trip): no script, since `db.sh` is read-only. Follow `cleanup.sh`'s steps by hand: check that no expense or split references the rows, `xcrun simctl terminate` the app, copy `isotes.db` and its `-wal`/`-shm` to `.sim/backup/`, run `sqlite3 "$db" "BEGIN; DELETE … WHERE id IN (…); SELECT changes(); COMMIT;"` by id, then `cu.sh relaunch`. Quote the backup path in the vault log (why: rows were deleted by hand twice during one feature's checks, with no written steps).
 - `scripts/fresh.sh [--shutdown]` — erases the spare simulator `isotes-fresh` (created on first use), installs the working simulator's build and prints its UDID; `--shutdown` stops it. One simulator, so the Claude app asks for device consent only once.
-- `scripts/build.sh` — builds and installs the dev build (`expo run:ios`, log in `.sim/build/`), then writes its native fingerprint to `.sim/last-native-build`; `scripts/fingerprint.sh` prints the current one. Doctor fails when they differ.
+- `scripts/build.sh` — builds the dev build or restores it from Stim's cache, then installs and launches it (`stim ios`, log in `.sim/build/`), then writes its native fingerprint to `.sim/last-native-build`; `scripts/fingerprint.sh` prints the current one. Doctor fails when they differ. Stim's own fingerprint is a different hash.
 - `scripts/green.sh mark | check` — fingerprints `src/` (tracked and untracked files) into `.sim/last-green` after a green Demo; `check` prints `same` (exit 0) when nothing in `src/` changed since, so autopilot's Preflight can skip the smoke flow.
 - `scripts/pixels.sh columns|luma <file> <x> <y> <w> <h>` — region in points (`PIXELS_SCALE=2` on a 2x device). `columns` prints a screenshot's ink column runs (two amounts with the decimal point in the same run are tabular); `luma` prints a recording's mean luma at each change (a fade's start, end and values).
 - `.sim/cu.sh relaunch | mark | show` — the project's launcher and Metro log reader (outside this skill).

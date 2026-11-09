@@ -5,7 +5,6 @@
 # Run from the repo root. Usage: fresh.sh [--shutdown]; prints the UDID.
 set -euo pipefail
 
-SIM=F074204A-8DED-491A-9D45-3C6344EECCEB
 BUNDLE=com.anonymous.isotes
 NAME=isotes-fresh
 TYPE=com.apple.CoreSimulator.SimDeviceType.iPhone-17
@@ -21,6 +20,8 @@ if [ "${1:-}" = "--shutdown" ]; then
   exit 0
 fi
 
+# Below --shutdown, which has to work with the working simulator down.
+. "$(dirname "$0")/sim-env.sh"
 [ -n "$udid" ] || udid=$(xcrun simctl create "$NAME" "$TYPE" "$RUNTIME")
 # The working simulator's install is the build under test
 app=$(xcrun simctl get_app_container "$SIM" "$BUNDLE" app) || {
@@ -31,4 +32,6 @@ xcrun simctl erase "$udid"
 xcrun simctl boot "$udid"
 xcrun simctl bootstatus "$udid" -b >/dev/null
 xcrun simctl install "$udid" "$app"
+# Stim only writes this on its own simulators. Without it the app loads from :8081.
+xcrun simctl spawn "$udid" defaults write "$BUNDLE" RCT_jsLocation "localhost:$METRO_PORT"
 echo "$udid"
