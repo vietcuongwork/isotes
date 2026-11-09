@@ -1,6 +1,6 @@
 ---
 name: commit-message
-description: Suggest a commit message for isotes in its house format, plus the runnable git commit command. Use when the user asks to git diff and suggest a commit message, to commit, or when autopilot ends at a Demo.
+description: Suggest a commit message for isotes in its house format, plus the runnable git commit command, and write pull request descriptions. Use when the user asks to git diff and suggest a commit message, to commit, to open a pull request, or when autopilot ends at a Demo.
 ---
 
 # Commit message
@@ -24,3 +24,9 @@ EOF
 ```
 
 Add a pathspec (`… )" -- <paths>`) when other changes are already staged that this commit shouldn't sweep in. The user runs the commit.
+
+## Pull request description
+
+Copy `.github/pull_request_template.md`, fill each section from the diff, and pass the result to `gh pr create` with `--body-file`, because the `gh` manual doesn't say it reads the template on its own. Tick a check only after it ran. Delete Notes when it's empty. The title is the commit header.
+
+The repo is public, so describe the change in words and name only tracked code paths, keeping vault notes, `documentation/` and `.claude/` files out of it. End at the last section, with no tool attribution line (user, 2026-11-09).
