@@ -23,7 +23,7 @@ EOF
 )"
 ```
 
-Add a pathspec (`… )" -- <paths>`) when other changes are already staged that this commit shouldn't sweep in. The user runs the commit.
+Add a pathspec (`… )" -- <paths>`) when other changes are already staged that this commit shouldn't sweep in. The user runs the commit, except under `/worktree-finish`, where one yes on the shown commit message and pull request text covers the commit, the push and the pull request.
 
 ## Pull request description
 
