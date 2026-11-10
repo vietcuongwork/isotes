@@ -1,5 +1,5 @@
 import { ACTIVITIES } from "@/domain/activities";
-import { computeTripBalance, getTripCardState } from "@/domain/tripBalance";
+import { getMemberNetForTrip, getTripCardState } from "@/domain/tripBalance";
 import { Expense, Split } from "@/types/TExpense";
 
 const split = (memberId: string, individualAmount: number): Split => ({
@@ -10,7 +10,7 @@ const split = (memberId: string, individualAmount: number): Split => ({
   shares: null,
 });
 
-describe("computeTripBalance", () => {
+describe("getMemberNetForTrip", () => {
   it("gives the payer back what the others owe on an equal split", () => {
     const lodging: Expense = {
       id: "e1",
@@ -29,7 +29,7 @@ describe("computeTripBalance", () => {
       ],
     };
 
-    expect(computeTripBalance([lodging], "you")).toBe(60_000);
+    expect(getMemberNetForTrip([lodging], "you")).toBe(60_000);
   });
 });
 

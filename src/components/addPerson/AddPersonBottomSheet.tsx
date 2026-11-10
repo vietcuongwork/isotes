@@ -9,7 +9,7 @@ import {
   cleanName,
   findMemberByName,
   firstUnusedColor,
-} from "@/features/addExpense/addPerson/helpers/addPersonHelpers";
+} from "@/domain/addPersonHelpers";
 import { useAddPersonStore } from "@/stores/useAddPersonStore";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { colors } from "@/themes/color";

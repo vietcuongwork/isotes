@@ -1,8 +1,8 @@
-import { getViewerNetForExpense } from "@/domain/tripBalance";
+import { getMemberNetForExpense } from "@/domain/tripBalance";
 import {
   ExpenseDay,
   formatDayHeader,
-} from "@/features/tripHome/helpers/tripHomeHelpers";
+} from "@/features/expenses/helpers/expensesHelpers";
 import { tabularNums } from "@/themes/typography";
 import { Currency } from "@/types/TCreateTrip";
 import { Member } from "@/types/TExpense";
@@ -52,7 +52,7 @@ export default function ExpenseDayCard(props: ExpenseDayCardProps) {
                   (member) => member.id === expense.paidByMemberId,
                 ) ?? members[0]
               }
-              viewerNet={getViewerNetForExpense(
+              viewerNet={getMemberNetForExpense(
                 expense,
                 expense.splits,
                 viewerMemberId,

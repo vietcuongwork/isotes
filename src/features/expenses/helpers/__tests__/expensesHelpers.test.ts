@@ -4,10 +4,10 @@ import {
   formatPeopleLabel,
   getTripSummary,
   groupExpensesByDay,
-} from "@/features/tripHome/helpers/tripHomeHelpers";
+} from "@/features/expenses/helpers/expensesHelpers";
 import { Expense, Split } from "@/types/TExpense";
 
-// tripHomeHelpers → tripsHelpers → expenseHelpers imports the draft store; the real
+// expensesHelpers → tripsHelpers → expenseHelpers imports the draft store; the real
 // store pulls flash-calendar → flash-list ESM, which Jest doesn't transform
 jest.mock("@/stores/useExpenseSheetStore", () => ({ draftInitialState: {} }));
 

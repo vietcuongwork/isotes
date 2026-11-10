@@ -1,4 +1,4 @@
-import { getAllTripsWithMembersAndExpenses } from "@/db/trips";
+import { getTripsWithRelations } from "@/db/trips";
 import { transformTripWithRelationsRow } from "@/domain/transforms";
 import { getTripCardData } from "@/features/trips/helpers/tripsHelpers";
 import { TripCardData } from "@/types/TTrips";
@@ -23,7 +23,7 @@ export function useTripSwitcher(
     if (!isOpen) return;
 
     let isCancelled = false;
-    getAllTripsWithMembersAndExpenses().then((rows) => {
+    getTripsWithRelations().then((rows) => {
       if (isCancelled) return;
       const cards = rows.map((row) =>
         getTripCardData(transformTripWithRelationsRow(row)),

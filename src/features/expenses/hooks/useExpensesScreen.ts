@@ -1,4 +1,4 @@
-import { getExpensesWithSplitsByTripId } from "@/db/expenses";
+import { getExpensesByTripId } from "@/db/expenses";
 import { getMembersByTripId } from "@/db/members";
 import { getTripById } from "@/db/trips";
 import { CURRENCY_OPTIONS } from "@/domain/currencies";
@@ -14,14 +14,12 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo } from "react";
 
-export default function useTripHomeScreen() {
+export default function useExpensesScreen() {
   const { tripId } = useLocalSearchParams<{ tripId: string }>();
 
   const { data: trip, error } = useLiveQuery(getTripById(tripId));
   const { data: memberRows } = useLiveQuery(getMembersByTripId(tripId));
-  const { data: expenseRows } = useLiveQuery(
-    getExpensesWithSplitsByTripId(tripId),
-  );
+  const { data: expenseRows } = useLiveQuery(getExpensesByTripId(tripId));
   const setCurrency = useExpenseSheetStore((s) => s.setCurrency);
   const setMembers = useExpenseSheetStore((s) => s.setMembers);
   const paidByMemberId = useExpenseSheetStore((s) => s.paidByMemberId);
@@ -51,7 +49,7 @@ export default function useTripHomeScreen() {
   const viewerMemberId = transformedMembers.find((m) => m.isOwner)?.id;
 
   if (__DEV__ && error) {
-    console.error("[useTripHomeScreen] Trip query failed", error);
+    console.error("[useExpensesScreen] Trip query failed", error);
   }
 
   useEffect(() => {

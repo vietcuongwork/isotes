@@ -1,13 +1,13 @@
 import AddExpenseBottomSheet from "@/features/addExpense/components/AddExpenseBottomSheet";
-import ExpenseDayCard from "@/features/tripHome/components/ExpenseDayCard";
-import ExpenseEmpty from "@/features/tripHome/components/ExpenseEmpty";
-import TripHeader from "@/features/tripHome/components/TripHeader";
-import TripPeopleRow from "@/features/tripHome/components/TripPeopleRow";
-import TripSummaryTiles from "@/features/tripHome/components/TripSummaryTiles";
+import ExpenseDayCard from "@/features/expenses/components/ExpenseDayCard";
+import ExpenseEmpty from "@/features/expenses/components/ExpenseEmpty";
+import TripHeader from "@/features/expenses/components/TripHeader";
+import TripPeopleRow from "@/features/expenses/components/TripPeopleRow";
+import TripSummaryTiles from "@/features/expenses/components/TripSummaryTiles";
 import {
   getTripSummary,
   groupExpensesByDay,
-} from "@/features/tripHome/helpers/tripHomeHelpers";
+} from "@/features/expenses/helpers/expensesHelpers";
 import { useTripDrawerStore } from "@/stores/useTripDrawerStore";
 import { colors } from "@/themes/color";
 import { useIsFocused } from "expo-router";
@@ -16,20 +16,20 @@ import { Menu, Plus } from "lucide-react-native";
 import { useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useTripHomeScreen from "../hooks/useTripHomeScreen";
+import useExpensesScreen from "../hooks/useExpensesScreen";
 
 function DaySeparator() {
   return <View className="h-space-5" />;
 }
 
-export default function TripHomeScreen() {
+export default function ExpensesScreen() {
   const [isAddExpenseOpen, setAddExpenseOpen] = useState(false);
   const openDrawer = useTripDrawerStore((state) => state.open);
   const {
     transformedTrip: trip,
     transformedExpenses,
     transformedMembers,
-  } = useTripHomeScreen();
+  } = useExpensesScreen();
   // StatusBar props merge in mount order and Trips stays mounted under this
   // screen, so dark text is rendered only while the tab is on top
   const isFocused = useIsFocused();

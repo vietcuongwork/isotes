@@ -1,13 +1,13 @@
 import { Expense, Split } from "@/types/TExpense";
 import { roundToDecimals } from "@/utils/currency";
 
-export function computeTripBalance(
+export function getMemberNetForTrip(
   expenses: Expense[],
-  viewerMemberId: string,
+  memberId: string,
 ): number {
   return expenses.reduce(
     (total, expense) =>
-      total + getViewerNetForExpense(expense, expense.splits, viewerMemberId),
+      total + getMemberNetForExpense(expense, expense.splits, memberId),
     0,
   );
 }
@@ -28,22 +28,22 @@ export function getTripCardState(input: {
   return "square";
 }
 
-// Positive = viewer lent this amount (they paid and are owed back),
-// negative = viewer owes this amount, 0 = viewer wasn't part of this expense.
+// Positive = the member lent this amount (they paid and are owed back),
+// negative = the member owes this amount, 0 = they weren't part of this expense.
 // Payer's net is amount minus THEIR OWN split row, not the sum of everyone
 // else's — this now reads the rounding/leftover remainder directly, since
 // resolveSplitAmounts already baked it into the payer's stored row. See
 // design_decisions.md "Split rounding/leftover is assigned to the payer"
 // (2026-09-25).
-export function getViewerNetForExpense(
+export function getMemberNetForExpense(
   expense: Pick<Expense, "paidByMemberId" | "amount">,
   splits: Pick<Split, "memberId" | "individualAmount">[],
-  viewerMemberId: string,
+  memberId: string,
 ): number {
-  const viewerSplit = splits.find((s) => s.memberId === viewerMemberId);
-  const isPayer = expense.paidByMemberId === viewerMemberId;
+  const memberSplit = splits.find((s) => s.memberId === memberId);
+  const isPayer = expense.paidByMemberId === memberId;
 
-  if (isPayer) return expense.amount - (viewerSplit?.individualAmount ?? 0);
-  if (viewerSplit) return -viewerSplit.individualAmount;
+  if (isPayer) return expense.amount - (memberSplit?.individualAmount ?? 0);
+  if (memberSplit) return -memberSplit.individualAmount;
   return 0;
 }

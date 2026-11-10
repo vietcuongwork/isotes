@@ -79,7 +79,7 @@ const featureZone = (feature, from, except) => ({
 });
 const FEATURE_ZONES = FEATURES.flatMap((feature) => {
   const others = FEATURES.filter((other) => other !== feature);
-  if (feature !== "tripHome") return [featureZone(feature, others)];
+  if (feature !== "expenses") return [featureZone(feature, others)];
   // The one exception: trip home opens the Add expense sheet (ADR 0018)
   return [
     featureZone(
@@ -106,10 +106,10 @@ const LEGACY_SPACING_FILES = [
   "src/features/addExpense/components/StartOverDialog.tsx",
   "src/features/addExpense/components/activity/ActivityField.tsx",
   "src/features/addExpense/components/activity/ActivityPicker.tsx",
-  "src/features/addExpense/addPerson/components/AddPerson.tsx",
-  "src/features/addExpense/addPerson/components/AddPersonBottomSheet.tsx",
-  "src/features/addExpense/addPerson/components/ColorField.tsx",
-  "src/features/addExpense/addPerson/components/ColorItem.tsx",
+  "src/components/addPerson/AddPerson.tsx",
+  "src/components/addPerson/AddPersonBottomSheet.tsx",
+  "src/components/addPerson/ColorField.tsx",
+  "src/components/addPerson/ColorItem.tsx",
   "src/features/addExpense/components/amount/AmountField.tsx",
   "src/features/addExpense/date/components/AddDateBottomSheet.tsx",
   "src/features/addExpense/date/components/DateCalendar.tsx",
@@ -124,7 +124,7 @@ const LEGACY_SPACING_FILES = [
   "src/features/addExpense/split/components/SplitBottomSheet.tsx",
   "src/features/addExpense/split/components/SplitMethodControl.tsx",
   "src/features/addExpense/split/components/SplitSummary.tsx",
-  "src/features/tripHome/screens/TripHomeScreen.tsx",
+  "src/features/expenses/screens/ExpensesScreen.tsx",
 ];
 // Old dark-theme files with raw px and no notes; a file leaves when the migration restyles it
 const NO_TOKEN_NOTE_EXEMPT = [
@@ -168,7 +168,8 @@ module.exports = defineConfig([
     files: [
       "src/features/**/*Sheet*.{ts,tsx}",
       "src/features/addExpense/**/*.tsx",
-      "src/features/tripHome/components/**/*.tsx",
+      "src/features/expenses/components/**/*.tsx",
+      "src/components/addPerson/**/*.tsx",
     ],
     rules: {
       "no-restricted-imports": [

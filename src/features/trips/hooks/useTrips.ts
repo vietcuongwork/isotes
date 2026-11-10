@@ -1,4 +1,4 @@
-import { getAllTripsWithMembersAndExpenses } from "@/db/trips";
+import { getTripsWithRelations } from "@/db/trips";
 import { transformTripWithRelationsRow } from "@/domain/transforms";
 import {
   getTripCardData,
@@ -38,7 +38,7 @@ export function useTrips() {
   // totals (ADR 0009 allows one combined query here)
   useFocusEffect(
     useCallback(() => {
-      getAllTripsWithMembersAndExpenses().then((rows) => {
+      getTripsWithRelations().then((rows) => {
         setTrips(
           rows.map((row) =>
             getTripCardData(transformTripWithRelationsRow(row)),
