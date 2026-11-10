@@ -50,7 +50,7 @@ Iterate until the user approves the phase list. Then ask: "Companion, or should 
 
 ## 4. Break each phase into tasks
 
-Inside each approved phase, write the tasks by the `feature-workflow` skill's Step 2 task rules: smallest, non-breaking, revertible, tagged `[TDD]` or `[Live]`, with a **Verify** line and `Blocked by` where needed. Tasks may be one file each; the phase carries the vertical slice. A `[TDD]` task names its seam from the phase's **Seams**.
+Inside each approved phase, write the tasks by the `feature-workflow` skill's Step 2 task rules: smallest, non-breaking, revertible, tagged `[TDD]` or `[Live]`, with a **Verify** line and `Blocked by` where needed. Tasks may be one file each; the phase carries the vertical slice. A `[TDD]` task names its seam from the phase's **Seams**. A `src/db` function that uses the app's `db` isn't a Jest seam, because Jest can't open expo-sqlite (the Node tests in `src/db/__tests__/` use better-sqlite3); it's checked Live.
 
 Tag a task `[Live, checked in T{n}]` only when it draws something and changes no behaviour: no tap handler, no state change, no navigation. A task that adds an interaction, such as a popover that opens and closes, keeps its own short Verify and runs it on the simulator at that task.
 
