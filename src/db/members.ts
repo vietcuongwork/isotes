@@ -22,6 +22,13 @@ export async function insertMember(
   return { kind: "added", id };
 }
 
+export type DeleteMemberResult = { kind: "removed" } | { kind: "not-found" };
+
+export async function deleteMember(id: string): Promise<DeleteMemberResult> {
+  const { changes } = await db.delete(members).where(eq(members.id, id));
+  return changes === 0 ? { kind: "not-found" } : { kind: "removed" };
+}
+
 export function getMembersByTripId(tripId: string) {
   return db
     .select()

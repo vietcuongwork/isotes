@@ -29,6 +29,7 @@ interface ExpenseSheetState {
   setPaidByMemberId: (memberId: string) => void;
   setSelectedMemberIds: (memberIds: string[]) => void;
   selectMembers: (memberIds: string[]) => void;
+  removeMemberFromDraft: (memberId: string, ownerId: string) => void;
   setSplitMethod: (splitMethod: SplitMethod) => void;
   setSplitAmounts: (splitAmounts: Record<string, string>) => void;
   setSplitShares: (splitShares: Record<string, number>) => void;
@@ -67,6 +68,7 @@ const initialState: Omit<
   | "setPaidByMemberId"
   | "setSelectedMemberIds"
   | "selectMembers"
+  | "removeMemberFromDraft"
   | "setSplitMethod"
   | "setSplitAmounts"
   | "setSplitShares"
@@ -111,6 +113,23 @@ export const useExpenseSheetStore = create<ExpenseSheetState>((set, get) => ({
           ...state.splitShares,
           ...Object.fromEntries(added.map((id) => [id, 1])),
         },
+      };
+    }),
+  // Only draft fields change, so resetDraft needs no matching change
+  removeMemberFromDraft: (memberId, ownerId) =>
+    set((state) => {
+      const splitAmounts = { ...state.splitAmounts };
+      const splitShares = { ...state.splitShares };
+      delete splitAmounts[memberId];
+      delete splitShares[memberId];
+      return {
+        selectedMemberIds: state.selectedMemberIds.filter(
+          (id) => id !== memberId,
+        ),
+        splitAmounts,
+        splitShares,
+        paidByMemberId:
+          state.paidByMemberId === memberId ? ownerId : state.paidByMemberId,
       };
     }),
   setSplitMethod: (splitMethod) => set({ splitMethod }),

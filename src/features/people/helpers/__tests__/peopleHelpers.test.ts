@@ -1,5 +1,8 @@
 import { ACTIVITIES } from "@/domain/activities";
-import { getPersonSummaries } from "@/features/people/helpers/peopleHelpers";
+import {
+  canRemovePerson,
+  getPersonSummaries,
+} from "@/features/people/helpers/peopleHelpers";
 import { Expense, Member, Split } from "@/types/TExpense";
 import { roundToDecimals } from "@/utils/currency";
 
@@ -83,5 +86,15 @@ describe("getPersonSummaries", () => {
         2,
       ),
     ).toBe(0);
+  });
+});
+
+describe("canRemovePerson", () => {
+  it.each([
+    [true, 0, false], // You, even with no expenses
+    [false, 0, true],
+    [false, 1, false], // paid for or in the split of one expense
+  ])("isOwner %p, expenseCount %p", (isOwner, expenseCount, expected) => {
+    expect(canRemovePerson({ isOwner, expenseCount })).toBe(expected);
   });
 });

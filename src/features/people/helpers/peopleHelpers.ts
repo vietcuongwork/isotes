@@ -19,3 +19,9 @@ export function getPersonSummaries(
     }))
     .sort((a, b) => Number(b.isOwner) - Number(a.isOwner)); // createdAt can tie
 }
+
+export function canRemovePerson(
+  summary: Pick<PersonSummary, "isOwner" | "expenseCount">,
+): boolean {
+  return !summary.isOwner && summary.expenseCount === 0;
+}

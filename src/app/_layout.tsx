@@ -3,7 +3,8 @@ import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
 import * as SystemUI from "expo-system-ui";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { fonts } from "@/assets/fonts";
 import { colors } from "@/themes/color";
@@ -47,7 +48,7 @@ export default function RootLayout() {
     return null;
   }
   return (
-    <View style={styles.root}>
+    <GestureHandlerRootView style={styles.root}>
       <KeyboardProvider>
         <ThemeProvider value={AppTheme}>
           <Stack
@@ -58,7 +59,7 @@ export default function RootLayout() {
           />
         </ThemeProvider>
       </KeyboardProvider>
-    </View>
+    </GestureHandlerRootView>
   );
 }
 

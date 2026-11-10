@@ -14,10 +14,12 @@ interface AddPersonProps {
   query?: string;
   /** Merged last onto the row, for a screen that draws it at another size */
   rowClassName?: string;
+  /** Runs before the sheet opens, e.g. to close a swiped row */
+  onPress?: () => void;
 }
 
 export default function AddPerson(props: AddPersonProps) {
-  const { query = "", rowClassName } = props;
+  const { query = "", rowClassName, onPress } = props;
   const [isOpen, setOpen] = useState(false);
 
   const setName = useAddPersonStore((s) => s.setName);
@@ -30,6 +32,7 @@ export default function AddPerson(props: AddPersonProps) {
 
   // A one-off write, not a derived value: deriving the name from the query would make typing snap back
   const handlePress = () => {
+    onPress?.();
     if (name) setName(prefill);
     setOpen(true);
   };
