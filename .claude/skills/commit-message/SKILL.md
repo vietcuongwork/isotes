@@ -23,7 +23,7 @@ EOF
 )"
 ```
 
-Add a pathspec (`… )" -- <paths>`) when other changes are already staged that this commit shouldn't sweep in. The user runs the commit, except under `/worktree-finish`, where one yes on the shown commit message and pull request text covers the commit, the push and the pull request.
+Before any commit in a checkout another session also uses (the main checkout, never a worktree), list the staged paths with `git diff --staged --name-only` and compare them with the files this commit is meant to hold. Another session's `git mv` or `git add` sits in the shared index, and a bare `git commit` takes it along. A commit once pushed another session's 16 file moves without their import fixes, and the pre-commit hook passed, because it type-checks the working tree and not the index. Always end the command with a pathspec (`… )" -- <paths>`) naming only this commit's files. The user runs the commit, except under `/worktree-finish`, where one yes on the shown commit message and pull request text covers the commit, the push and the pull request.
 
 ## Pull request description
 
