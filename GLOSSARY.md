@@ -27,3 +27,7 @@ _Avoid_: experiment row, KPI
 **Decision**:
 A Deviation label for a choice the user made that the plan didn't record. It counts as neither rework nor friction.
 _Avoid_: change request
+
+**Worktree**:
+A linked git worktree folder (`../isotes-<slug>`) together with its branch, its own simulator and its own Metro. It is started with `/worktree-start` and finished with `/worktree-finish`.
+_Avoid_: lane

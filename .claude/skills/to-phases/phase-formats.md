@@ -28,7 +28,7 @@ The phase changes logic or removes code. Write three levels.
 
 - **Level 1, the phase:** its title and Demo.
 - **Level 2, objectives:** for each objective, its context (where the state lives, what the code does today and why that matters), its steps in plain language, and the edges to notice. Each step becomes a task.
-- **Level 3, pseudo code:** in the task's body, the logic for each function and where its inputs come from, with `file:line` pointers. It is complete when `/autopilot` or companion mode could implement the task from it.
+- **Level 3, the proposed code:** every task that changes code carries its code blocks, tests included, so the plan is one place to read the whole change. Moves and renames show the changed lines; UI tasks show the JSX with token classes. Inputs get `file:line` pointers. It is complete when `/autopilot` or companion mode could implement the task from it.
 
 Where a step depends on an earlier phase's result, write the check and a branch for each outcome.
 
