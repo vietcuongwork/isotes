@@ -70,7 +70,7 @@ Done when every acceptance criterion in the spec traces to a task — write that
 
 ## 5. Write the planning note
 
-Write `Feat_{slug}_planning.md` from `templates/Tasks_template.md`, and copy the spec's `screen/` and `area/` tags into its frontmatter `tags`. Each phase is a section under **Task List**:
+Write `Feat_{slug}_planning.md` from `templates/Tasks_template.md`, and copy the spec's `screen/` and `area/` tags into its frontmatter `tags`. Under the Goal, declare `Schema change: yes` or `Schema change: no`. `/worktree-start` reads that line, because only one schema-changing worktree runs at a time. Each phase is a section under **Task List**:
 
     ### Phase 2: <title>
 

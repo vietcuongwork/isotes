@@ -24,7 +24,7 @@ Status follows the feature: `in-progress` from spec approval until acceptance cl
 - Size check before writing, for a feature over about 15 tasks or spanning more than one of schema, shared foundation and UI: ask whether each part could ship alone. A part that can becomes its own feature, ordered with `Blocked by: [[Feat_x]]`. A feature that stays large gets a one-line reason.
 - Agents: `solution-consultant` for library or design choices, `expo-rn-expert` for API or platform questions.
 - One document, business and technical. Business: requirements, numbered user stories, edge cases, acceptance criteria, one checkbox each: `- [ ] {behaviour} — verified by: {Jest seam | Live | device}`. Technical: architecture, data model, API contracts, integration points, and testing decisions (which seams get Jest, what is verified on the simulator).
-- The spec exists before any implementation starts. Then Plannotator, STOP.
+- The spec exists before any implementation starts. It is written on `main`, never in a worktree. Then Plannotator, STOP.
 
 ## Step 2: Planning
 
@@ -33,13 +33,14 @@ Status follows the feature: `in-progress` from spec approval until acceptance cl
 - Each task is as small as possible (one focused change), non-breaking, and revertible alone. It is tagged after the title: `[TDD]` for logic callable as a plain function (see the `tdd` skill's scope), `[Live]` for running the real thing (the app on the simulator, or a tool's real command), `[Live, checked in T{n}]` for a piece a later task renders (no Verify line of its own).
 - A task that keeps behaviour unchanged runs its own tests and `tsc`; its flows and screenshots wait for the phase Demo.
 - Prefactoring tasks come first. A task that depends on a non-adjacent task says `Blocked by: T{n}`. Tasks cover the full scope.
-- Agents as in Step 1. Then Plannotator, STOP.
+- Agents as in Step 1. Planning stays on `main` too. Then Plannotator, STOP.
 - After approval, check that Plannotator kept the approved copy: the newest numbered file in `~/.plannotator/history/isotes/annotate-feat-{slug}-planning-md-*/`. It is the handoff version that Step 4 compares against, so later edits to done tasks lose nothing. If no copy exists, copy the note to `.sim/review/{slug}-planning-handoff.md` before the first task.
 
 ## Step 3: Implement
 
 Needs a verified planning note. Mode is companion by default, one proposal at a time (AGENTS.md "Smallest steps"). `/autopilot <phase>` runs one approved phase without per-file approval and stops at its Demo. Both modes Verify and log every task.
 
+- Implement, review and acceptance run in the feature's worktree (`/worktree-start feature {slug}`, then `/worktree-finish {slug}`). The main session drives it by path and no session opens inside it. Edits to rule files (`.claude/`, `CLAUDE.md`, `AGENTS.md`) stay on `main`.
 - Follow the task breakdown strictly, one task at a time.
 - `[TDD]` tasks run the `tdd` skill, with the failing test proposed and run first. `[Live]` tasks run the real thing (CLAUDE.md "Simulator testing" for `src/`) and read the output back. A `[Live]` task that adds logic still gets unit tests.
 - A per-file proposal ends with a short "Design choices" list of decisions the plan doesn't record. Skip it when there are none.
