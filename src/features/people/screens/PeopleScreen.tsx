@@ -1,6 +1,7 @@
 import AddPerson from "@/components/addPerson/AddPerson";
 import { canRemovePerson } from "@/features/people/helpers/peopleHelpers";
 import PersonRow from "@/features/people/components/PersonRow";
+import RemovedToast from "@/features/people/components/RemovedToast";
 import usePeopleScreen from "@/features/people/hooks/usePeopleScreen";
 import { colors } from "@/themes/color";
 import { cn } from "@/utils/cn";
@@ -19,6 +20,9 @@ export default function PeopleScreen() {
     closeOpenRow,
     showSwipeHint,
     handleRemove,
+    removed,
+    handleUndo,
+    handleAddPersonPress,
   } = usePeopleScreen();
 
   return (
@@ -72,7 +76,7 @@ export default function PeopleScreen() {
           {/* //NOTE - no token for the 52pt row height, falling back to min-h-[52px] */}
           <AddPerson
             rowClassName="min-h-[52px] rounded-lg px-space-4"
-            onPress={closeOpenRow}
+            onPress={handleAddPersonPress}
           />
 
           {/* Swipe hint */}
@@ -90,6 +94,15 @@ export default function PeopleScreen() {
           )}
         </View>
       </ScrollView>
+
+      {/* Undo toast */}
+      {removed && (
+        <RemovedToast
+          key={removed.id}
+          name={removed.name}
+          onUndo={handleUndo}
+        />
+      )}
     </SafeAreaView>
   );
 }
