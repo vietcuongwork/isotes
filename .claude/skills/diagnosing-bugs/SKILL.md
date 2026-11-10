@@ -90,3 +90,4 @@ Required before declaring done:
 - [ ] All `[DEBUG-...]` instrumentation removed (`grep` the prefix)
 - [ ] Throwaway prototypes deleted (or moved to a clearly-marked debug location)
 - [ ] The hypothesis that turned out correct is recorded in the `Debug_{slug}.md` note (Small bug) or the `Investigate_`/`Fix_` notes (Big bug), so the next debugger learns
+- [ ] The bug's line in `Tasks_backlog.md` moves under `## Done` with `· done {today}` and a link to its note. A Critical or Bug line left open comes back as the top pick in `/whats-next`.

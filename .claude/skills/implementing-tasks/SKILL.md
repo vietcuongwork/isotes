@@ -12,6 +12,10 @@ Moved out of the `feature-workflow` skill's Step 3 so it loads only when a task 
   note's Open checks, with the task or Demo that will close it. A phase's
   Demo isn't done while a check due by it is still open. A check may be
   postponed once; postponing it again needs the user's OK.
+- **Two-state Verify** — when a Verify has halves that need opposite states
+  (a note present and absent, a worktree running and not), run the half that
+  needs the thing missing before the step that creates it. Afterwards, that
+  state takes extra setup, and a skipped half ends up descoped.
 - **Caught late** — when a Demo or a later task fails on something a check
   moved off its task (Step 2's tag and Verify rules) would have caught, the
   task that fixes it writes `caught late, check deferred from T{n}` on its
