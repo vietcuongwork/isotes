@@ -73,7 +73,7 @@ export default function ExpensesScreen() {
           ListHeaderComponent={
             <View className="gap-space-5 pb-space-5">
               <TripHeader trip={trip} now={now} />
-              <TripPeopleRow members={transformedMembers} />
+              <TripPeopleRow members={transformedMembers} tripId={trip.id} />
               <TripSummaryTiles
                 summary={getTripSummary(
                   transformedExpenses,

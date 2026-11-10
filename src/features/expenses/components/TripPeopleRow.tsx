@@ -1,15 +1,19 @@
 import { formatPeopleLabel } from "@/features/expenses/helpers/expensesHelpers";
 import TripAvatarStack from "@/components/TripAvatarStack";
+import { EXPO_ROUTER } from "@/navigation/route";
+import { colors } from "@/themes/color";
 import { Member } from "@/types/TExpense";
-import { Text, View } from "react-native";
+import { router } from "expo-router";
+import { ChevronRight } from "lucide-react-native";
+import { Pressable, Text } from "react-native";
 
 interface TripPeopleRowProps {
   members: Member[];
+  tripId: string;
 }
 
-// Inert until the People screen exists, so no button role and no chevron
 export default function TripPeopleRow(props: TripPeopleRowProps) {
-  const { members } = props;
+  const { members, tripId } = props;
   // The owner and a member added in the same second can tie on createdAt,
   // so You is sorted first here; the stable sort keeps the rest in order
   const sorted = [...members].sort(
@@ -18,9 +22,14 @@ export default function TripPeopleRow(props: TripPeopleRowProps) {
   const label = formatPeopleLabel(members.length);
 
   return (
-    <View
-      accessible
-      accessibilityLabel={`People: ${label}`}
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={
+        members.length === 1
+          ? `People: ${label}. Add people`
+          : `People: ${label}`
+      }
+      onPress={() => router.push(EXPO_ROUTER.PEOPLE(tripId))}
       className="h-space-12 flex-row items-center gap-space-3 rounded-md bg-ink-100 px-space-3"
     >
       {/* The "+N" disc is one step darker than the row, as on the Trips card */}
@@ -30,6 +39,10 @@ export default function TripPeopleRow(props: TripPeopleRowProps) {
         overflowClassName="bg-ink-200"
       />
       <Text className="flex-1 text-ink-900 text-body">{label}</Text>
-    </View>
+      {members.length === 1 && (
+        <Text className="text-ink-700 text-label">Add people</Text>
+      )}
+      <ChevronRight size={20} strokeWidth={1.75} color={colors.ink[500]} />
+    </Pressable>
   );
 }

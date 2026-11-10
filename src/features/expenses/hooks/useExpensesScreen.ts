@@ -22,6 +22,8 @@ export default function useExpensesScreen() {
   const { data: expenseRows } = useLiveQuery(getExpensesByTripId(tripId));
   const setCurrency = useExpenseSheetStore((s) => s.setCurrency);
   const setMembers = useExpenseSheetStore((s) => s.setMembers);
+  const setTripName = useExpenseSheetStore((s) => s.setTripName);
+  const setExpenses = useExpenseSheetStore((s) => s.setExpenses);
   const paidByMemberId = useExpenseSheetStore((s) => s.paidByMemberId);
   const setPaidByMemberId = useExpenseSheetStore((s) => s.setPaidByMemberId);
   const setSelectedMemberIds = useExpenseSheetStore(
@@ -58,8 +60,13 @@ export default function useExpensesScreen() {
         CURRENCY_OPTIONS.find((c) => c.code === trip.currencyCode) ??
           CURRENCY_OPTIONS[0],
       );
+      setTripName(trip.name);
     }
-  }, [trip, setCurrency]);
+  }, [trip, setCurrency, setTripName]);
+
+  useEffect(() => {
+    setExpenses(transformedExpenses); // an empty list is written too
+  }, [transformedExpenses, setExpenses]);
 
   useEffect(() => {
     if (transformedMembers.length === 0) return;

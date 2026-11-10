@@ -1,7 +1,7 @@
 import { CURRENCY_OPTIONS } from "@/domain/currencies";
 import { ACTIVITIES } from "@/domain/activities";
 import { Currency } from "@/types/TCreateTrip";
-import { Activity, Member, SplitMethod } from "@/types/TExpense";
+import { Activity, Expense, Member, SplitMethod } from "@/types/TExpense";
 import { toDateId } from "@marceloterreiro/flash-calendar";
 import { create } from "zustand";
 
@@ -19,6 +19,8 @@ interface ExpenseSheetState {
   splitAmounts: Record<string, string>;
   splitShares: Record<string, number>;
   currency: Currency;
+  tripName: string;
+  expenses: Expense[];
   setActivity: (activity: Activity) => void;
   setAmount: (amount: string) => void;
   setDescription: (description: string) => void;
@@ -31,11 +33,13 @@ interface ExpenseSheetState {
   setSplitAmounts: (splitAmounts: Record<string, string>) => void;
   setSplitShares: (splitShares: Record<string, number>) => void;
   setCurrency: (currency: Currency) => void;
+  setTripName: (tripName: string) => void;
+  setExpenses: (expenses: Expense[]) => void;
   reset: () => void;
   resetDraft: () => void;
 }
 
-// "members"/"currency" are session-scoped — live-synced from the trip by
+// "members", "currency", "tripName" and "expenses" are session-scoped — live-synced from the trip by
 // useExpensesScreen's effects, not part of the expense being composed. Kept
 // separate from the draft fields so resetDraft() (submit, "Start over") can
 // clear the draft without wiping data that only a screen unmount/remount
@@ -67,12 +71,16 @@ const initialState: Omit<
   | "setSplitAmounts"
   | "setSplitShares"
   | "setCurrency"
+  | "setTripName"
+  | "setExpenses"
   | "reset"
   | "resetDraft"
 > = {
   ...draftInitialState,
   members: [],
   currency: CURRENCY_OPTIONS[0],
+  tripName: "",
+  expenses: [],
 };
 
 export const useExpenseSheetStore = create<ExpenseSheetState>((set, get) => ({
@@ -109,6 +117,8 @@ export const useExpenseSheetStore = create<ExpenseSheetState>((set, get) => ({
   setSplitAmounts: (splitAmounts) => set({ splitAmounts }),
   setSplitShares: (splitShares) => set({ splitShares }),
   setCurrency: (currency) => set({ currency }),
+  setTripName: (tripName) => set({ tripName }),
+  setExpenses: (expenses) => set({ expenses }),
   reset: () => set(initialState),
   resetDraft: () => set(draftInitialState),
 }));

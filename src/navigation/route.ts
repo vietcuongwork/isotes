@@ -6,4 +6,8 @@ export const EXPO_ROUTER = {
     pathname: "/(screens)/[tripId]/(tabs)/expense" as const,
     params: { tripId },
   }),
+  PEOPLE: (tripId: string) => ({
+    pathname: "/(screens)/[tripId]/people" as const,
+    params: { tripId },
+  }),
 } as const;
