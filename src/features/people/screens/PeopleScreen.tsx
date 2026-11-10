@@ -1,3 +1,4 @@
+import AddPerson from "@/components/addPerson/AddPerson";
 import PersonRow from "@/features/people/components/PersonRow";
 import usePeopleScreen from "@/features/people/hooks/usePeopleScreen";
 import { colors } from "@/themes/color";
@@ -48,6 +49,10 @@ export default function PeopleScreen() {
               ))}
             </View>
           </View>
+
+          {/* Add person */}
+          {/* //NOTE - no token for the 52pt row height, falling back to min-h-[52px] */}
+          <AddPerson rowClassName="min-h-[52px] rounded-lg px-space-4" />
         </View>
       </ScrollView>
     </SafeAreaView>
