@@ -2,7 +2,7 @@ import { insertExpenseWithSplits } from "@/db/expenses";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { parseAmountInput } from "@/utils/currency";
 import { toDateId } from "@marceloterreiro/flash-calendar";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { resolveSplitAmounts } from "@/features/addExpense/split/helpers/splitHelpers";
 import {
   getIsDraftRestored,
@@ -70,38 +70,47 @@ export default function useAddExpenseBottomSheet(
     decimalDigits: currency.decimalDigits,
   });
 
+  // A second tap while the insert is pending would save the expense twice
+  const isSavingRef = useRef(false);
+
   const handleSubmit = async () => {
+    if (isSavingRef.current) return;
     setHasAttemptedSubmit(true);
     if (Object.values(errors).some(Boolean)) return;
 
     const tripId = members[0]?.tripId;
     if (!tripId) return;
 
-    const totalAmount = parseAmountInput(amount);
-    const splits = resolveSplitAmounts(
-      members,
-      splitMethod,
-      totalAmount,
-      currency.decimalDigits,
-      { selectedMemberIds, splitAmounts, splitShares },
-      paidByMemberId,
-    );
-
-    await insertExpenseWithSplits(
-      {
-        tripId,
-        paidByMemberId,
-        amount: totalAmount,
-        description: description || null,
-        activityId: activity.id,
-        date,
+    isSavingRef.current = true;
+    try {
+      const totalAmount = parseAmountInput(amount);
+      const splits = resolveSplitAmounts(
+        members,
         splitMethod,
-      },
-      splits,
-    );
-    onClose();
-    resetDraft();
-    setHasAttemptedSubmit(false);
+        totalAmount,
+        currency.decimalDigits,
+        { selectedMemberIds, splitAmounts, splitShares },
+        paidByMemberId,
+      );
+
+      await insertExpenseWithSplits(
+        {
+          tripId,
+          paidByMemberId,
+          amount: totalAmount,
+          description: description || null,
+          activityId: activity.id,
+          date,
+          splitMethod,
+        },
+        splits,
+      );
+      onClose();
+      resetDraft();
+      setHasAttemptedSubmit(false);
+    } finally {
+      isSavingRef.current = false;
+    }
   };
 
   const handleStartOver = () => setStartOverDialogOpen(true);
