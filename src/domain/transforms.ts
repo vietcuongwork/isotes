@@ -49,7 +49,7 @@ export function transformExpenseRow(
   };
 }
 
-// One row of getAllTripsWithMembersAndExpenses(), with its members and expenses
+// One row of getTripsWithRelations(), with its members and expenses
 export function transformTripWithRelationsRow(
   row: TripRow & {
     members: MemberRow[];

@@ -6,7 +6,7 @@ import type {
 } from "expo-router/js-tabs";
 import { Pressable, Text, View } from "react-native";
 
-// TripHomeScreen draws the docked FAB in the space this route leaves free
+// ExpensesScreen draws the docked FAB in the space this route leaves free
 const FAB_ROUTE = "expense";
 
 interface TabButtonProps {

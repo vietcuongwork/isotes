@@ -1,5 +1,5 @@
 import {
-  computeTripBalance,
+  getMemberNetForTrip,
   getTripCardState,
   TripCardState,
 } from "@/domain/tripBalance";
@@ -76,7 +76,7 @@ export function getTripSummary(
   );
   // Rounded here too, so the amount the tile shows agrees with its state
   const balance = roundToDecimals(
-    computeTripBalance(expenses, viewerMemberId),
+    getMemberNetForTrip(expenses, viewerMemberId),
     decimalDigits,
   );
   const state = getTripCardState({

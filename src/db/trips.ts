@@ -24,8 +24,8 @@ export async function insertTrip(data: Omit<NewTrip, "id">) {
 
 // One-shot fetch (not a live query), so there's no subscription-granularity
 // reason to split this into separate trip/members/expenses queries the way
-// useTripHomeScreen.ts does — see design_decisions.md.
-export function getAllTripsWithMembersAndExpenses() {
+// useExpensesScreen.ts does — see design_decisions.md.
+export function getTripsWithRelations() {
   return db.query.trips.findMany({
     orderBy: desc(trips.createdAt),
     with: {

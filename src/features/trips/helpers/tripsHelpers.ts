@@ -1,4 +1,4 @@
-import { computeTripBalance } from "@/domain/tripBalance";
+import { getMemberNetForTrip } from "@/domain/tripBalance";
 import { transformTripWithRelationsRow } from "@/domain/transforms";
 import { formatExpenseCount } from "@/domain/tripFormat";
 import { TripCardData } from "@/types/TTrips";
@@ -15,7 +15,7 @@ export function getTripCardData(
     members,
     expenseCount: expenses.length,
     totalAmount: expenses.reduce((sum, expense) => sum + expense.amount, 0),
-    balance: owner ? computeTripBalance(expenses, owner.id) : 0,
+    balance: owner ? getMemberNetForTrip(expenses, owner.id) : 0,
   };
 }
 

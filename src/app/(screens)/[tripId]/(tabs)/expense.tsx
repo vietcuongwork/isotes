@@ -1,3 +1,3 @@
-import TripHomeScreen from "@/features/tripHome/screens/TripHomeScreen";
+import ExpensesScreen from "@/features/expenses/screens/ExpensesScreen";
 
-export default TripHomeScreen;
+export default ExpensesScreen;

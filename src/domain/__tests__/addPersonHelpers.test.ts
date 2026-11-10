@@ -4,7 +4,7 @@ import {
   findMemberByName,
   firstUnusedColor,
   normalizeName,
-} from "@/features/addExpense/addPerson/helpers/addPersonHelpers";
+} from "@/domain/addPersonHelpers";
 import { Member, MemberColor } from "@/types/TExpense";
 
 const member = (id: string, memberColor: MemberColor): Member => ({

@@ -23,7 +23,7 @@ export async function insertExpenseWithSplits(
   return expenseId;
 }
 
-export function getExpensesWithSplitsByTripId(tripId: string) {
+export function getExpensesByTripId(tripId: string) {
   return db.query.expenses.findMany({
     where: eq(expenses.tripId, tripId),
     with: { splits: true },

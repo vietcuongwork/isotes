@@ -1,4 +1,4 @@
-import { MEMBER_COLORS } from "@/features/addExpense/addPerson/helpers/addPersonHelpers";
+import { MEMBER_COLORS } from "@/domain/addPersonHelpers";
 import { MemberColor } from "@/types/TExpense";
 import { capitalize } from "@/utils/utils";
 import { Text, View } from "react-native";

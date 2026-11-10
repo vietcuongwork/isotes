@@ -1,4 +1,4 @@
-import { findMemberByName } from "@/features/addExpense/addPerson/helpers/addPersonHelpers";
+import { findMemberByName } from "@/domain/addPersonHelpers";
 import { useAddPersonStore } from "@/stores/useAddPersonStore";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { colors } from "@/themes/color";

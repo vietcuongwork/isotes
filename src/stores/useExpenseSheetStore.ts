@@ -36,11 +36,11 @@ interface ExpenseSheetState {
 }
 
 // "members"/"currency" are session-scoped — live-synced from the trip by
-// useTripHomeScreen's effects, not part of the expense being composed. Kept
+// useExpensesScreen's effects, not part of the expense being composed. Kept
 // separate from the draft fields so resetDraft() (submit, "Start over") can
 // clear the draft without wiping data that only a screen unmount/remount
 // re-populates. See design_decisions.md "useExpenseSheetStore is reset on
-// TripHomeScreen unmount..." (2026-09-23).
+// ExpensesScreen unmount..." (2026-09-23).
 export const draftInitialState = {
   activity: ACTIVITIES[0],
   amount: "",
