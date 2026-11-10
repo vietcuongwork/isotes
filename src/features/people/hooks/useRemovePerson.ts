@@ -26,12 +26,12 @@ export default function useRemovePerson() {
         console.warn("[useRemovePerson] member already gone", memberId);
       }
       removeMemberFromDraft(memberId, ownerId);
-      return result; // Phase 4 shows the toast on "removed"
+      return result; // the caller offers Undo only on "removed": a "not-found" row has nothing to restore
     } catch (error) {
       unhide(memberId);
       throw error; // logs in dev as an unhandled rejection, like insertMember's callers
     }
   };
 
-  return { hiddenIds, removePerson, unhide }; // Undo unhides after a restore (Phase 4)
+  return { hiddenIds, removePerson, unhide }; // Undo calls unhide after its restore succeeds, so a failed restore leaves the row hidden
 }

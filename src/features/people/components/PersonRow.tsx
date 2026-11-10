@@ -18,16 +18,6 @@ import Animated, {
 import { scheduleOnRN } from "react-native-worklets";
 import { colors } from "@/themes/color";
 
-// get, owe and square use the same text tokens as TripSummaryTiles
-const TONE_TEXT: Record<Exclude<TripCardState, "empty">, string> = {
-  get: "text-get-600",
-  owe: "text-owe-600",
-  square: "text-ink-500",
-};
-
-const PANEL_WIDTH = 88; // the People board's Remove panel
-const FLICK = 500; // points per second, a chosen value: a flick opens or closes past the halfway rule
-
 interface PersonRowProps {
   person: PersonSummary;
   currency: Currency;
@@ -39,6 +29,16 @@ interface PersonRowProps {
   onRemove: () => void;
 }
 
+// get, owe and square use the same text tokens as TripSummaryTiles
+const TONE_TEXT: Record<Exclude<TripCardState, "empty">, string> = {
+  get: "text-get-600",
+  owe: "text-owe-600",
+  square: "text-ink-500",
+};
+
+const PANEL_WIDTH = 88; // the People board's Remove panel
+const FLICK = 500; // points per second, a chosen value: a flick opens or closes past the halfway rule
+
 export default function PersonRow(props: PersonRowProps) {
   const {
     person,
@@ -49,6 +49,14 @@ export default function PersonRow(props: PersonRowProps) {
     onPress,
     onRemove,
   } = props;
+
+  const offset = useSharedValue(PANEL_WIDTH); // 88 hidden, 0 fully in
+  const start = useSharedValue(PANEL_WIDTH);
+
+  const panelStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: offset.get() }],
+  }));
+
   const { tone, amount, word } = formatPersonNet({
     net: person.net,
     expenseCount: person.expenseCount,
@@ -68,11 +76,6 @@ export default function PersonRow(props: PersonRowProps) {
     .filter(Boolean)
     .join(", ");
 
-  const offset = useSharedValue(PANEL_WIDTH); // 88 hidden, 0 fully in
-  useEffect(() => {
-    offset.set(withTiming(isOpen ? 0 : PANEL_WIDTH));
-  }, [isOpen, offset]);
-  const start = useSharedValue(PANEL_WIDTH);
   const pan = Gesture.Pan()
     .enabled(canRemove)
     .activeOffsetX([-10, 10])
@@ -93,9 +96,10 @@ export default function PersonRow(props: PersonRowProps) {
       offset.set(withTiming(open ? 0 : PANEL_WIDTH));
       scheduleOnRN(onOpenChange, open);
     });
-  const panelStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: offset.get() }],
-  }));
+
+  useEffect(() => {
+    offset.set(withTiming(isOpen ? 0 : PANEL_WIDTH));
+  }, [isOpen, offset]);
 
   return (
     <View className="overflow-hidden">

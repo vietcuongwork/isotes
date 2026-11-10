@@ -13,11 +13,10 @@ export default function usePeopleScreen() {
   const members = useExpenseSheetStore((s) => s.members);
   const expenses = useExpenseSheetStore((s) => s.expenses);
   const currency = useExpenseSheetStore((s) => s.currency);
+  const [openRowId, setOpenRowId] = useState<string | null>(null);
 
   const { hiddenIds, removePerson, unhide } = useRemovePerson();
-  const { removed, showToast, dismissToast, takeForUndo } = useUndoToast();
-  const ownerId = members.find((member) => member.isOwner)?.id ?? "";
-
+  const { removed, reserveToast, dismissToast, takeForUndo } = useUndoToast();
   const summaries = useMemo(
     () =>
       getPersonSummaries(members, expenses).filter(
@@ -26,7 +25,8 @@ export default function usePeopleScreen() {
     [members, expenses, hiddenIds],
   );
 
-  const [openRowId, setOpenRowId] = useState<string | null>(null);
+  const ownerId = members.find((member) => member.isOwner)?.id ?? "";
+  const showSwipeHint = summaries.some(canRemovePerson);
 
   const handleOpenChange = (memberId: string, open: boolean) => {
     if (open) setOpenRowId(memberId);
@@ -39,8 +39,9 @@ export default function usePeopleScreen() {
     setOpenRowId(null);
     const member = members.find((m) => m.id === memberId); // copied now: trip home's query drops it after the delete
     if (!member) return;
+    const showToastIfStillHere = reserveToast(); // Add person or Back during the delete cancels it
     const result = await removePerson(memberId, ownerId); // a throw logs in dev, like insertMember's callers
-    if (result.kind === "removed") showToast(member);
+    if (result.kind === "removed") showToastIfStillHere(member);
   };
 
   const handleUndo = async () => {
@@ -54,8 +55,6 @@ export default function usePeopleScreen() {
     setOpenRowId(null);
     dismissToast(); // opening Add person ends the toast
   };
-
-  const showSwipeHint = summaries.some(canRemovePerson);
 
   return {
     tripName,

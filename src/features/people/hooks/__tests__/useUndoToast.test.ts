@@ -67,4 +67,30 @@ describe("useUndoToast", () => {
     await unmount();
     expect(clearSpy).toHaveBeenCalledWith(handle);
   });
+
+  it("drops a reserved toast when dismissToast ran before it showed", async () => {
+    const { result } = await renderHook(() => useUndoToast());
+    const show = result.current.reserveToast();
+    await act(async () => result.current.dismissToast()); // Add person opened during the delete
+    await act(async () => show(person("hoa")));
+    expect(result.current.removed).toBeNull();
+  });
+
+  it("drops a reserved toast after unmount", async () => {
+    const setSpy = jest.spyOn(globalThis, "setTimeout");
+    const { result, unmount } = await renderHook(() => useUndoToast());
+    const show = result.current.reserveToast();
+    await unmount(); // Back during the delete
+    show(person("hoa"));
+    expect(setSpy.mock.calls.some(([, ms]) => ms === 5000)).toBe(false);
+  });
+
+  it("still shows a reserved toast when an earlier toast ended on its own", async () => {
+    const { result } = await renderHook(() => useUndoToast());
+    await act(async () => result.current.showToast(person("hoa")));
+    const show = result.current.reserveToast(); // Tom's delete starts just before Hoa's 5 s end
+    await act(async () => jest.advanceTimersByTime(5000));
+    await act(async () => show(person("tom")));
+    expect(result.current.removed?.id).toBe("tom");
+  });
 });
