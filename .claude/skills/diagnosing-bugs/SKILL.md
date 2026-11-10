@@ -15,6 +15,10 @@ This skill has you show commands, outputs and captured artifacts. **Redact every
 
 If the redacted output is not enough to diagnose the bug, say so and ask the user.
 
+## Before Phase 0: main or worktree?
+
+Before the first look at the symptom, apply the CLAUDE.md "Simulator testing" rule. Run `git status --porcelain` and `git worktree list`, and read the newest diary's State line. Ask "main or worktree?" when `main` has uncommitted work, a feature is in progress, or a linked worktree is running, and always for a bug batch. Skip the question otherwise. The answer decides where the repro and the fixes run.
+
 ## Phase 0: Quick fixes
 
 Most bugs here are obvious once the symptom is seen. Try up to two fixes before building a loop.

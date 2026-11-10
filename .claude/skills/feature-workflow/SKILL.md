@@ -15,6 +15,8 @@ Notes go to the vault (`/Users/admin/repository/vault/isotes/`) with wiki-links.
 | 4 Review | `Feat_{slug}_review` | fresh session, `/recall {slug}`, opus | none; findings wait for the user's call |
 | 5 Acceptance | the planning note's last phase | `/autopilot` or companion | none |
 
+On a new feature request, before Step 1, apply the CLAUDE.md "Simulator testing" rule: run `git status --porcelain` and `git worktree list`, read the newest diary's State line, and ask "main or worktree?" when `main` has uncommitted work, a feature is in progress, or a linked worktree is running. Otherwise don't ask. The answer decides where Step 3 runs, since Steps 1 and 2 stay on `main`.
+
 Status follows the feature: `in-progress` from spec approval until acceptance closes every criterion, then `done` on all four notes.
 
 ## Step 1: Spec
