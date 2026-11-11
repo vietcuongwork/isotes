@@ -169,7 +169,11 @@ export function BottomSheet({
           toValue: 0,
           ...SHEET_OPEN,
           useNativeDriver: true,
-        }).start(focusTitle);
+        }).start((result) => {
+          // The native view sometimes keeps its start transform (sheet stays below the screen); send the end value again.
+          if (result.finished) slide.setValue(0);
+          focusTitle(result);
+        });
       }
       return;
     }
