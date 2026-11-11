@@ -6,7 +6,8 @@ import {
 import { Expense } from "@/types/TExpense";
 import { roundToDecimals } from "@/utils/currency";
 
-export interface TripSummary {
+// Not the Trips list's TripSummary in src/types/TTrips.ts: these are the trip home tiles
+export interface TripHomeSummary {
   total: number;
   count: number;
   share: number;
@@ -65,7 +66,7 @@ export function getTripSummary(
   expenses: Expense[],
   viewerMemberId: string,
   decimalDigits: number,
-): TripSummary {
+): TripHomeSummary {
   const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
   const share = expenses.reduce(
     (sum, expense) =>
