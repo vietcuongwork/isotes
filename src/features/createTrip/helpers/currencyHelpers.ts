@@ -1,3 +1,4 @@
+import { US_DOLLAR } from "@/domain/currencies";
 import { Currency } from "@/types/TCreateTrip";
 import { foldForSearch } from "@/utils/text";
 
@@ -5,15 +6,6 @@ export interface CurrencyLetterGroup {
   letter: string;
   currencies: Currency[];
 }
-
-// The default when no trip has a known currency. A literal rather than a find
-// in CURRENCY_OPTIONS, so the return type stays Currency with no undefined
-const US_DOLLAR: Currency = {
-  name: "US Dollar",
-  code: "USD",
-  symbol: "$",
-  decimalDigits: 2,
-};
 
 // NFD splits "É" into "E" plus a combining accent (U+0300 to U+036F), which is dropped.
 // "ł" has no NFD split (a stroke, not an accent), so it's mapped by hand

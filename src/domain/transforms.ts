@@ -1,6 +1,6 @@
 import { ExpenseRow, ExpenseSplitRow, MemberRow, TripRow } from "@/db/schema";
 import { ACTIVITIES } from "@/domain/activities";
-import { CURRENCY_OPTIONS } from "@/domain/currencies";
+import { CURRENCY_OPTIONS, US_DOLLAR } from "@/domain/currencies";
 import { Trip } from "@/types/TCreateTrip";
 import { Expense, Member } from "@/types/TExpense";
 
@@ -10,8 +10,7 @@ export const transformTripRow = (row: TripRow): Trip => {
     name: row.name,
     description: row.description ?? "",
     currency:
-      CURRENCY_OPTIONS.find((c) => c.code === row.currencyCode) ??
-      CURRENCY_OPTIONS[0],
+      CURRENCY_OPTIONS.find((c) => c.code === row.currencyCode) ?? US_DOLLAR,
     createdAt: row.createdAt,
   };
 };
