@@ -1,4 +1,4 @@
-import { useShakeOnTrigger } from "@/components/formfield/useShakeOnTrigger";
+import { useShakeOnTrigger } from "@/features/createTrip/hooks/useShakeOnTrigger";
 import { colors } from "@/themes/color";
 import { textStyle } from "@/themes/typography";
 import { cn } from "@/utils/cn";
