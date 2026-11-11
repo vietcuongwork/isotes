@@ -34,6 +34,12 @@ describe("matchesTripSearch", () => {
     expect(matchesTripSearch("Đà Nẵng", "da lat")).toBe(false);
   });
 
+  // "Ł" is a stroke, not an accent, so NFD leaves it whole like "Đ"
+  it("ignores Polish accents and Ł on either side", () => {
+    expect(matchesTripSearch("Łódź", "lodz")).toBe(true);
+    expect(matchesTripSearch("Lodz", "łódź")).toBe(true);
+  });
+
   it("matches every trip when the query is empty or only spaces", () => {
     expect(matchesTripSearch("Lisbon", "")).toBe(true);
     expect(matchesTripSearch("Lisbon", "  ")).toBe(true);

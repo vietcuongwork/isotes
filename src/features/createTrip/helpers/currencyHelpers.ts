@@ -7,16 +7,6 @@ export interface CurrencyLetterGroup {
   currencies: Currency[];
 }
 
-// NFD splits "É" into "E" plus a combining accent (U+0300 to U+036F), which is dropped.
-// "ł" has no NFD split (a stroke, not an accent), so it's mapped by hand
-function stripAccents(text: string): string {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/ł/g, "l")
-    .replace(/Ł/g, "L");
-}
-
 export function getDefaultCurrency(
   codes: string[],
   options: Currency[],
@@ -34,7 +24,7 @@ export function groupCurrenciesByLetter(
   const sorted = [...options].sort((a, b) => a.name.localeCompare(b.name));
   const groups: CurrencyLetterGroup[] = [];
   for (const currency of sorted) {
-    const letter = stripAccents(currency.name[0]).toUpperCase();
+    const letter = foldForSearch(currency.name[0]).toUpperCase();
     const last = groups.at(-1);
     if (last?.letter === letter) last.currencies.push(currency);
     else groups.push({ letter, currencies: [currency] });
