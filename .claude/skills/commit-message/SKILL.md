@@ -8,8 +8,8 @@ description: Suggest a commit message for isotes in its house format, plus the r
 1. Read the change: `git diff` (and `git diff --staged`, `git status --porcelain` for new files). Describe only what the diff shows.
 2. Write the message:
    - Header: `<category>: <short summary>`, lowercase first word after the colon.
-   - Only these three categories: `feature`, `refactor`, `bugfix`.
-   - Body: one bullet per change, each prefixed with its own category (`feature:`, `refactor:`, or `bugfix:`), lowercase first word, grouped feature bullets first, then refactor, then bugfix.
+   - Only these four categories: `feature`, `refactor`, `bugfix`, `garden`. Use `garden` when the change touches only the coding environment: skills, rules, agent files, hooks, and config such as `pnpm-workspace.yaml`. A commit that changes app code and the environment takes the app-code category in the header, and the environment part gets its own `garden:` bullet.
+   - Body: one bullet per change, each prefixed with its own category (`feature:`, `refactor:`, `bugfix:`, or `garden:`), lowercase first word, grouped feature bullets first, then refactor, then bugfix, then garden.
    - No `Co-Authored-By:` / `Claude-Session:` attribution lines (AGENTS.md "Hard constraints").
 3. Give the runnable command, not just the text, so it can be pasted straight into the terminal:
 
