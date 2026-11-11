@@ -93,9 +93,17 @@ export const useExpenseSheetStore = create<ExpenseSheetState>((set, get) => ({
   setDate: (date) => set({ date }),
   setMembers: (members) => set({ members }),
   setPaidByMemberId: (paidByMemberId) => set({ paidByMemberId }),
-  setSelectedMemberIds: (selectedMemberIds) => {
-    set({ selectedMemberIds });
-  },
+  // Someone leaving the split drops their typed amount, so their field shows
+  // the placeholder and coming back (Everyone included) starts on auto.
+  setSelectedMemberIds: (selectedMemberIds) =>
+    set((state) => ({
+      selectedMemberIds,
+      splitAmounts: Object.fromEntries(
+        Object.entries(state.splitAmounts).filter(([memberId]) =>
+          selectedMemberIds.includes(memberId),
+        ),
+      ),
+    })),
   // Newly selected members reset to defaults (amount back to auto, 1 share)
   // so re-selecting never pins someone to a stale amount/share count.
   selectMembers: (memberIds) =>

@@ -36,6 +36,27 @@ describe("selectMembers", () => {
   });
 });
 
+describe("setSelectedMemberIds", () => {
+  it("drops the typed amount of someone leaving the split", () => {
+    useExpenseSheetStore.getState().setSelectedMemberIds(["ana", "ben"]);
+    useExpenseSheetStore.getState().setSplitAmounts({ ana: "15", ben: "20" });
+
+    useExpenseSheetStore.getState().setSelectedMemberIds(["ana"]);
+
+    expect(useExpenseSheetStore.getState().splitAmounts).toEqual({ ana: "15" });
+  });
+
+  it("brings no old amounts back when None is followed by Everyone", () => {
+    useExpenseSheetStore.getState().setSelectedMemberIds(["ana", "ben"]);
+    useExpenseSheetStore.getState().setSplitAmounts({ ana: "15" });
+
+    useExpenseSheetStore.getState().setSelectedMemberIds([]);
+    useExpenseSheetStore.getState().setSelectedMemberIds(["ana", "ben"]);
+
+    expect(useExpenseSheetStore.getState().splitAmounts).toEqual({});
+  });
+});
+
 describe("expenses", () => {
   it("survives resetDraft", () => {
     useExpenseSheetStore.getState().setExpenses([lunch]);
