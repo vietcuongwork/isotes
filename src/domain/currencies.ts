@@ -1,5 +1,13 @@
 import { Currency } from "@/types/TCreateTrip";
 
+// Its own constant so a fallback can use it without a find that might miss
+export const US_DOLLAR: Currency = {
+  name: "US Dollar",
+  code: "USD",
+  symbol: "$",
+  decimalDigits: 2,
+};
+
 export const CURRENCY_OPTIONS: Currency[] = [
   { name: "Australian Dollar", code: "AUD", symbol: "$", decimalDigits: 2 },
   { name: "Brazilian Real", code: "BRL", symbol: "R$", decimalDigits: 2 },
@@ -38,6 +46,6 @@ export const CURRENCY_OPTIONS: Currency[] = [
     symbol: "د.إ",
     decimalDigits: 2,
   },
-  { name: "US Dollar", code: "USD", symbol: "$", decimalDigits: 2 },
+  US_DOLLAR,
   { name: "Vietnamese Dong", code: "VND", symbol: "₫", decimalDigits: 0 },
 ];

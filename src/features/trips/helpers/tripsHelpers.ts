@@ -2,6 +2,7 @@ import { getMemberNetForTrip } from "@/domain/tripBalance";
 import { transformTripWithRelationsRow } from "@/domain/transforms";
 import { formatExpenseCount } from "@/domain/tripFormat";
 import { TripCardData } from "@/types/TTrips";
+import { foldForSearch } from "@/utils/text";
 
 // A trip with no owner member has nobody to be the viewer, so its balance is 0
 export function getTripCardData(
@@ -28,17 +29,6 @@ export function formatSwitcherMeta(
   return `${currencyCode} · ${people} · ${formatExpenseCount(expenseCount)}`;
 }
 
-// NFD splits "à" into "a" plus a combining mark (U+0300 to U+036F),
-// but has no decomposition for "Đ"/"đ", so those map to "d" by hand
-function normalizeForSearch(text: string): string {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[đĐ]/g, "d")
-    .toLowerCase()
-    .trim();
-}
-
 export function matchesTripSearch(name: string, query: string): boolean {
-  return normalizeForSearch(name).includes(normalizeForSearch(query));
+  return foldForSearch(name).includes(foldForSearch(query));
 }

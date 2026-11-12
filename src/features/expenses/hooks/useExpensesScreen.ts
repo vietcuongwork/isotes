@@ -1,7 +1,6 @@
 import { getExpensesByTripId } from "@/db/expenses";
 import { getMembersByTripId } from "@/db/members";
 import { getTripById } from "@/db/trips";
-import { CURRENCY_OPTIONS } from "@/domain/currencies";
 import { getDefaultExpenseSplit } from "@/domain/defaultSplit";
 import {
   transformExpenseRow,
@@ -55,14 +54,11 @@ export default function useExpensesScreen() {
   }
 
   useEffect(() => {
-    if (trip) {
-      setCurrency(
-        CURRENCY_OPTIONS.find((c) => c.code === trip.currencyCode) ??
-          CURRENCY_OPTIONS[0],
-      );
-      setTripName(trip.name);
+    if (transformedTrip) {
+      setCurrency(transformedTrip.currency);
+      setTripName(transformedTrip.name);
     }
-  }, [trip, setCurrency, setTripName]);
+  }, [transformedTrip, setCurrency, setTripName]);
 
   useEffect(() => {
     setExpenses(transformedExpenses); // an empty list is written too
