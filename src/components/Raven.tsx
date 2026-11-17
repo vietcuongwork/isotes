@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 
 export type RavenPose =
-  "relaxed" | "happy" | "peeking" | "sleeping" | "confused" | "lantern";
+  "relaxed" | "happy" | "peeking" | "sleeping" | "confused" | "sad" | "lantern";
 
 // aspectRatio = pixel width / height of each WebP (DESIGN.md "The raven")
 const POSES = {
@@ -24,6 +24,10 @@ const POSES = {
   confused: {
     source: require("@/assets/images/raven/raven-confused.webp"),
     aspectRatio: 320 / 419,
+  },
+  sad: {
+    source: require("@/assets/images/raven/raven-sad.webp"),
+    aspectRatio: 320 / 365,
   },
   lantern: {
     source: require("@/assets/images/raven/raven-lantern.webp"),
