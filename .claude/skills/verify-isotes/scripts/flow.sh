@@ -7,6 +7,10 @@ set -uo pipefail
 . "$(dirname "$0")/sim-env.sh"
 cd "$(git rev-parse --show-toplevel)" || exit 2
 
+# Run folders are scratch (evidence is quoted in the vault), so a week is kept.
+# home/ is Maestro's Java home for tree reads and stays
+find .sim/maestro -mindepth 1 -maxdepth 1 -type d -mtime +7 ! -name home -exec rm -rf {} + 2>/dev/null
+
 BUNDLE=com.anonymous.isotes
 
 [ $# -ge 1 ] || { echo 'usage: flow.sh <flow.yaml> [maestro test options]' >&2; exit 2; }
@@ -23,7 +27,10 @@ done
 
 run() {
   out=.sim/maestro/$(basename "$flow" .yaml)-$(date +%m%d-%H%M%S)
-  maestro test --device "$SIM" --debug-output "$out" --test-output-dir "$out/shots" "$@" "$flow"
+  maestro test --device "$SIM" --debug-output "$out" --test-output-dir "$out/shots" "$@" "$flow" || return
+  # A pass needs no simulator system log, and it's ~10.7 MB of a run's ~11 MB;
+  # a failed run keeps it. why: .sim/maestro reached 6.1 GB in 566 runs (2026-11-11)
+  find "$out" -name device-simulator.log -delete
 }
 
 run "$@" && exit 0

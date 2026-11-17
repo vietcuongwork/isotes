@@ -79,7 +79,7 @@ Prove the real user path: the action and the state it leaves, not just the last 
 - **Screen:** one filtered tree value (Drive), or the flow's own `assertVisible` lines in its run output. Assert a value only the item under test has, such as its trip name; a total that two trips share doesn't prove which one opened.
 - **Roles and traits** (button, header, selected): Maestro's iOS tree has labels and bounds only, so read them with `scripts/traits.sh "<label regex>"` (idb), after a flow has reached the screen. Quote its line, e.g. `Expenses, tab, 1 of 3 | - | Selected`. An empty trait list prints `(none)`. Two elements with one label (the drawer's X and scrim) differ by testID. Accessibility Inspector is only for a trait idb doesn't report.
 - **Focus:** Maestro's `focused` attribute is always `false` on iOS, even mid-typing. Read focus from `traits.sh`: a focused field lists `IsEditing` (`Search trips | - | TextEntry, IsEditing, TextOperationsAvailable`).
-- **Logs:** `.sim/cu.sh mark` before, `.sim/cu.sh show` after → list new WARN/ERROR lines, or "cu.sh → none".
+- **Logs:** `.sim/cu.sh mark` before, `.sim/cu.sh show` after → list new WARN/ERROR lines, or "cu.sh → none". Mark after the last `src/` edit, not before it: Metro rebuilds on each save, so a file changed in several edits can log errors from a half-written version (a name declared twice) and fail the next flow once. If `tsc` is clean, mark and re-run that flow before treating it as a failure.
 - **Timing and pixels** (a flash while loading, glyph widths, a fade, a flow's own `takeScreenshot`): `HEADLESS.md` "Visual evidence".
 - **Screenshots** only for a visual check (layout, color, spacing) or a failed check. A failed flow leaves exactly one in its run folder (`find .sim/maestro/<run> -name '*.png'`); read that one, nothing else.
 
@@ -87,7 +87,7 @@ Quote the values (rows, tree lines, log result) in the task's log in the vault's
 
 ## Cleanup
 
-- Once findings are quoted in the vault, delete that run's folder: `rm -rf .sim/maestro/<flow>-<time>`. Keep `.sim/maestro/home/`.
+- `flow.sh` deletes a passing run's `device-simulator.log` (about 10 MB of each run's 11) and run folders older than 7 days, keeping `.sim/maestro/home/`. Once findings are quoted in the vault, delete that run's folder sooner: `rm -rf .sim/maestro/<flow>-<time>`.
 - Flow runs and tree reads write nothing to `~/.maestro/tests/`, but each MCP driver start (an `xctest_runner_*.log`) and each `maestro list-devices` does: delete the `~/.maestro/tests/<time>/` folders this session created (`ls -lt ~/.maestro/tests | head`).
 - Stop only what this session started, by its background task or PID, such as `caffeinate`. Stim's Metro and simulator stay up between sessions; run `stim stop` only when the user asks, because it shuts the simulator down and frees the Metro port. Never kill by process name; never stop another project's Metro.
 - At the end of a test session, once the evidence is quoted in the vault, run `scripts/cleanup.sh`: it deletes flow trips, keeping the newest per flow and the baseline trip. The user's own trips never match the flow-name pattern. `/autopilot` runs it at every Demo that ran flows; a companion-mode session runs it in the feature's acceptance task.

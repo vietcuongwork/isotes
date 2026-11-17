@@ -4,7 +4,7 @@ Every script's arguments and output. "Above" and section names (Doctor, Drive, C
 
 - `scripts/doctor.sh` — Doctor, above.
 - `scripts/sim-env.sh` — this checkout's `SIM`, `SIM_STATE`, `METRO_PORT`, `METRO_RUNNING`, `SUPERVISOR_STARTED` and `SIM_LOG_DIR`, from `stim status --json`. Stops with a message when Stim doesn't know the folder or the simulator isn't booted. Scripts source it. The Bash tool runs zsh, whose read-only `status` breaks sourcing, so read a value there with `sim-env.sh | sed -n 's/^SIM=//p'`.
-- `scripts/flow.sh <flow.yaml> [options]` — Whole flow, above. Retries once, after `simctl launch`, when a failed run started with another app in front (the runner log's first `Detected running apps`).
+- `scripts/flow.sh <flow.yaml> [options]` — Whole flow, above. Retries once, after `simctl launch`, when a failed run started with another app in front (the runner log's first `Detected running apps`). Deletes a passing run's `device-simulator.log` and run folders older than 7 days (not `home/`).
 - `scripts/db.sh "<sql>"` — one read-only `sqlite3` query on `isotes.db`; looks the container up on every call (its folder changes per install). Newest golden-path trip's splits:
 
   ```bash
