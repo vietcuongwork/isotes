@@ -63,6 +63,9 @@ export default function TripsScreen() {
               accessibilityLabel="Search trips"
               clearButtonMode="while-editing"
               returnKeyType="search"
+              // A recycled view can carry the trip name's line height; this sends a paragraph
+              // style without one (react-native#59132, [[Investigate_textinput-recycled-placeholder-others]])
+              lineBreakModeIOS="tail"
               autoCorrect={false}
               className="h-full flex-1 text-ink-900"
               style={styles.searchTextStyle}

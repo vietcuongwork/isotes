@@ -56,6 +56,9 @@ export function NumberPadInput({
   ref,
   // Light, to match the light number pad
   keyboardAppearance = "light",
+  // A recycled view can carry the trip name's line height; this sends a paragraph
+  // style without one (react-native#59132, [[Investigate_textinput-recycled-placeholder-others]])
+  lineBreakModeIOS = "tail",
   ...rest
 }: NumberPadInputProps) {
   const options = { maxDecimals, maxLength, maxIntegerDigits, grouping };
@@ -130,6 +133,7 @@ export function NumberPadInput({
     <TextInput
       {...rest}
       keyboardAppearance={keyboardAppearance}
+      lineBreakModeIOS={lineBreakModeIOS}
       ref={setRefs}
       value={value}
       selection={clampSelection(selection, value.length)}

@@ -26,6 +26,9 @@ export function BottomSheetTextInput({
   showSoftInputOnFocus = true,
   // isotes is light-only, but app.json's userInterfaceStyle is "automatic"
   keyboardAppearance = "light",
+  // A recycled view can carry the trip name's line height; this sends a paragraph
+  // style without one (react-native#59132, [[Investigate_textinput-recycled-placeholder-others]])
+  lineBreakModeIOS = "tail",
   ...rest
 }: BottomSheetTextInputProps) {
   const host = useOptionalKeyboardHost();
@@ -34,6 +37,7 @@ export function BottomSheetTextInput({
     <TextInput
       {...rest}
       keyboardAppearance={keyboardAppearance}
+      lineBreakModeIOS={lineBreakModeIOS}
       showSoftInputOnFocus={showSoftInputOnFocus && !deferKeyboard}
       onFocus={(e) => {
         host?.notifyFocus({ deferredKeyboard: deferKeyboard });
