@@ -4,7 +4,6 @@ import PersonRow from "@/features/people/components/PersonRow";
 import RemovedToast from "@/features/people/components/RemovedToast";
 import usePeopleScreen from "@/features/people/hooks/usePeopleScreen";
 import { colors } from "@/themes/color";
-import { cn } from "@/utils/cn";
 import { router } from "expo-router";
 import { ChevronLeft, ChevronsLeft } from "lucide-react-native";
 import { Pressable, ScrollView, Text, View } from "react-native";
@@ -18,6 +17,7 @@ export default function PeopleScreen() {
     openRowId,
     handleOpenChange,
     closeOpenRow,
+    handleRowPress,
     showSwipeHint,
     handleRemove,
     removed,
@@ -54,20 +54,17 @@ export default function PeopleScreen() {
           <View className="rounded-lg bg-card shadow-card">
             <View className="overflow-hidden rounded-lg">
               {summaries.map((person, index) => (
-                <View
+                <PersonRow
                   key={person.id}
-                  className={cn(index > 0 && "border-t border-ink-100")}
-                >
-                  <PersonRow
-                    person={person}
-                    currency={currency}
-                    isOpen={openRowId === person.id}
-                    canRemove={canRemovePerson(person)}
-                    onOpenChange={(open) => handleOpenChange(person.id, open)}
-                    onPress={closeOpenRow}
-                    onRemove={() => handleRemove(person.id)}
-                  />
-                </View>
+                  person={person}
+                  currency={currency}
+                  isOpen={openRowId === person.id}
+                  canRemove={canRemovePerson(person)}
+                  showDivider={index > 0}
+                  onOpenChange={(open) => handleOpenChange(person.id, open)}
+                  onPress={() => handleRowPress(person.id)}
+                  onRemove={() => handleRemove(person.id)}
+                />
               ))}
             </View>
           </View>

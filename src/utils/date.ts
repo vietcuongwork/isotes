@@ -5,6 +5,16 @@ function parseDateId(dateId: string) {
   return new Date(year, month - 1, day);
 }
 
+// "Oct 12"; the year shows only when it isn't now's year
+export function formatShortDate(dateId: string, now: Date): string {
+  const date = parseDateId(dateId);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: date.getFullYear() === now.getFullYear() ? undefined : "numeric",
+  });
+}
+
 export function formatDateLabel(dateId: string) {
   return parseDateId(dateId).toLocaleDateString("en-GB", {
     day: "2-digit",

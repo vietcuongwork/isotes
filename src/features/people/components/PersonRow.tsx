@@ -6,7 +6,7 @@ import { tabularNums } from "@/themes/typography";
 import { Currency } from "@/types/TCreateTrip";
 import { cn } from "@/utils/cn";
 import { getInitial } from "@/utils/utils";
-import { UserMinus } from "lucide-react-native";
+import { ChevronRight, UserMinus } from "lucide-react-native";
 import { useEffect } from "react";
 import { Pressable, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -23,8 +23,10 @@ interface PersonRowProps {
   currency: Currency;
   isOpen: boolean;
   canRemove: boolean;
+  /** The inset line above the row; off for the first row */
+  showDivider: boolean;
   onOpenChange: (open: boolean) => void;
-  /** A tap on the row; the screen uses it to close an open row */
+  /** A tap on the row; the screen opens the person, or closes an open row */
   onPress: () => void;
   onRemove: () => void;
 }
@@ -45,6 +47,7 @@ export default function PersonRow(props: PersonRowProps) {
     currency,
     isOpen,
     canRemove,
+    showDivider,
     onOpenChange,
     onPress,
     onRemove,
@@ -142,8 +145,22 @@ export default function PersonRow(props: PersonRowProps) {
               <Text className="text-ink-500 text-caption">{word}</Text>
             </View>
           )}
+          <ChevronRight size={20} strokeWidth={1.75} color={colors.ink[500]} />
         </Pressable>
       </GestureDetector>
+
+      {/* Divider: inset by the row padding, stops at the Remove panel while open */}
+      {showDivider && (
+        <View
+          pointerEvents="none"
+          style={{ zIndex: 1 }}
+          // NOTE - no token for the 88pt Remove panel, falling back to right-[88px]
+          className={cn(
+            "absolute left-space-4 right-space-4 top-0 h-px bg-ink-100",
+            isOpen && "right-[88px]",
+          )}
+        />
+      )}
 
       {/* Remove: slides in over the row's right end; the row doesn't move */}
       <Animated.View

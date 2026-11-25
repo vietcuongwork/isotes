@@ -5,10 +5,13 @@ import {
 import useRemovePerson from "@/features/people/hooks/useRemovePerson";
 import useUndoToast from "@/features/people/hooks/useUndoToast";
 import { restoreMember } from "@/db/members";
+import { EXPO_ROUTER } from "@/navigation/route";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
+import { router, useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 
 export default function usePeopleScreen() {
+  const { tripId } = useLocalSearchParams<{ tripId: string }>();
   const tripName = useExpenseSheetStore((s) => s.tripName);
   const members = useExpenseSheetStore((s) => s.members);
   const expenses = useExpenseSheetStore((s) => s.expenses);
@@ -34,6 +37,14 @@ export default function usePeopleScreen() {
   };
 
   const closeOpenRow = () => setOpenRowId(null);
+
+  const handleRowPress = (memberId: string) => {
+    if (openRowId !== null) {
+      setOpenRowId(null); // a tap with a row open only closes it
+      return;
+    }
+    router.push(EXPO_ROUTER.PERSON(tripId, memberId));
+  };
 
   const handleRemove = async (memberId: string) => {
     setOpenRowId(null);
@@ -63,6 +74,7 @@ export default function usePeopleScreen() {
     openRowId,
     handleOpenChange,
     closeOpenRow,
+    handleRowPress,
     showSwipeHint,
     handleRemove,
     removed,
