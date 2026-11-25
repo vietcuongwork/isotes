@@ -3,6 +3,7 @@ import { randomUUID } from "expo-crypto";
 import { db } from "./client";
 import { MEMBERS_TRIP_NAME_INDEX, members, NewMember } from "./schema";
 import { uniqueViolationTarget } from "./sqliteErrors";
+import { transformMemberRow } from "@/domain/transforms";
 import { Member } from "@/types/TExpense";
 
 export type InsertMemberResult =
@@ -23,11 +24,14 @@ export async function insertMember(
   return { kind: "added", id };
 }
 
-export type DeleteMemberResult = { kind: "removed" } | { kind: "not-found" };
+export type DeleteMemberResult =
+  { kind: "removed"; member: Member } | { kind: "not-found" };
 
 export async function deleteMember(id: string): Promise<DeleteMemberResult> {
-  const { changes } = await db.delete(members).where(eq(members.id, id));
-  return changes === 0 ? { kind: "not-found" } : { kind: "removed" };
+  const [row] = await db.delete(members).where(eq(members.id, id)).returning(); // the deleted row; none when the id is already gone
+  return row
+    ? { kind: "removed", member: transformMemberRow(row) }
+    : { kind: "not-found" };
 }
 
 // Undo: the same id, color, owner flag and created_at, which insertMember can't give

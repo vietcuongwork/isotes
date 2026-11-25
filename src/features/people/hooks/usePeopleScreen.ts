@@ -2,7 +2,7 @@ import {
   canRemovePerson,
   getPersonSummaries,
 } from "@/features/people/helpers/peopleHelpers";
-import useRemovePerson from "@/features/people/hooks/useRemovePerson";
+import useDeletePerson from "@/features/people/hooks/useDeletePerson";
 import useUndoToast from "@/features/people/hooks/useUndoToast";
 import { restoreMember } from "@/db/members";
 import { EXPO_ROUTER } from "@/navigation/route";
@@ -18,8 +18,9 @@ export default function usePeopleScreen() {
   const currency = useExpenseSheetStore((s) => s.currency);
   const [openRowId, setOpenRowId] = useState<string | null>(null);
 
-  const { hiddenIds, removePerson, unhide } = useRemovePerson();
-  const { removed, reserveToast, dismissToast, takeForUndo } = useUndoToast();
+  const deletePerson = useDeletePerson();
+  const [hiddenIds, setHiddenIds] = useState<ReadonlySet<string>>(new Set());
+  const { removed, dismissToast, takeForUndo } = useUndoToast();
   const summaries = useMemo(
     () =>
       getPersonSummaries(members, expenses).filter(
@@ -30,6 +31,13 @@ export default function usePeopleScreen() {
 
   const ownerId = members.find((member) => member.isOwner)?.id ?? "";
   const showSwipeHint = summaries.some(canRemovePerson);
+
+  const unhide = (memberId: string) =>
+    setHiddenIds((ids) => {
+      const next = new Set(ids);
+      next.delete(memberId);
+      return next;
+    });
 
   const handleOpenChange = (memberId: string, open: boolean) => {
     if (open) setOpenRowId(memberId);
@@ -48,11 +56,13 @@ export default function usePeopleScreen() {
 
   const handleRemove = async (memberId: string) => {
     setOpenRowId(null);
-    const member = members.find((m) => m.id === memberId); // copied now: trip home's query drops it after the delete
-    if (!member) return;
-    const showToastIfStillHere = reserveToast(); // Add person or Back during the delete cancels it
-    const result = await removePerson(memberId, ownerId); // a throw logs in dev, like insertMember's callers
-    if (result.kind === "removed") showToastIfStillHere(member);
+    setHiddenIds((ids) => new Set(ids).add(memberId)); // the swipe hides at once; stays hidden on success
+    try {
+      await deletePerson(memberId, ownerId); // sets the toast's person on success
+    } catch (error) {
+      unhide(memberId); // the row comes back in its old place
+      throw error; // logs in dev as an unhandled rejection, like insertMember's callers
+    }
   };
 
   const handleUndo = async () => {

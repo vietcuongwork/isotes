@@ -7,7 +7,7 @@ import { colors } from "@/themes/color";
 import { cn } from "@/utils/cn";
 import { getInitial } from "@/utils/utils";
 import { router } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
+import { ChevronLeft, UserMinus } from "lucide-react-native";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -19,13 +19,15 @@ const BADGE_CLASS: Record<Exclude<TripCardState, "empty">, string> = {
 };
 
 export default function PersonScreen() {
-  const { person, rows, badge, tone } = usePersonScreen();
+  const { person, rows, badge, tone, handleRemove, canRemove, hasFooter } =
+    usePersonScreen();
 
   if (!person) return null; // the hook's effect goes back to People
 
   const { name, isOwner, expenseCount } = person;
   const count =
     expenseCount === 0 ? "No expenses yet" : formatExpenseCount(expenseCount);
+  const stayReason = `${name} is in ${formatExpenseCount(expenseCount)}, so they stay in the trip`;
 
   return (
     <SafeAreaView className="flex-1 bg-ink-50" edges={["top"]}>
@@ -132,6 +134,44 @@ export default function PersonScreen() {
           </>
         )}
       </ScrollView>
+
+      {/* Footer */}
+      {hasFooter && (
+        <View className="border-t border-ink-200 bg-ink-50 px-space-5 pb-space-8 pt-space-3">
+          {/* NOTE - no token for the 52pt pill height, falling back to h-[52px] (as the People board's Add person row) */}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Remove from trip"
+            accessibilityHint={canRemove ? undefined : stayReason}
+            accessibilityState={{ disabled: !canRemove }}
+            disabled={!canRemove}
+            onPress={handleRemove}
+            className={cn(
+              "h-[52px] flex-row items-center justify-center gap-space-2 rounded-pill",
+              canRemove ? "bg-owe-100" : "bg-ink-100",
+            )}
+          >
+            <UserMinus
+              size={20}
+              strokeWidth={1.75}
+              color={canRemove ? colors.owe[600] : colors.ink[300]}
+            />
+            <Text
+              className={cn(
+                "text-label",
+                canRemove ? "text-owe-600" : "text-ink-300",
+              )}
+            >
+              Remove from trip
+            </Text>
+          </Pressable>
+          {!canRemove && (
+            <Text className="pt-space-2 text-center text-ink-500 text-caption">
+              {stayReason}
+            </Text>
+          )}
+        </View>
+      )}
     </SafeAreaView>
   );
 }

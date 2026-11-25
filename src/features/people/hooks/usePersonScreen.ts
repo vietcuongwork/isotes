@@ -1,9 +1,12 @@
 import { formatPersonNet } from "@/domain/tripFormat";
 import {
+  canRemovePerson,
   formatNetBadge,
   getPersonExpenses,
   getPersonSummaries,
 } from "@/features/people/helpers/peopleHelpers";
+import useDeletePerson from "@/features/people/hooks/useDeletePerson";
+import { EXPO_ROUTER } from "@/navigation/route";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { formatDisplayAmount } from "@/utils/currency";
 import { formatShortDate } from "@/utils/date";
@@ -11,11 +14,15 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useRef } from "react";
 
 export default function usePersonScreen() {
-  const { memberId } = useLocalSearchParams<{ memberId: string }>();
+  const { tripId, memberId } = useLocalSearchParams<{
+    tripId: string;
+    memberId: string;
+  }>();
   const members = useExpenseSheetStore((s) => s.members);
   const expenses = useExpenseSheetStore((s) => s.expenses);
   const currency = useExpenseSheetStore((s) => s.currency);
-  const leavingRef = useRef(false); // Phase 2's footer sets it before its delete
+  const deletePerson = useDeletePerson();
+  const leavingRef = useRef(false); // the footer sets it before its delete
 
   const person = useMemo(
     () => getPersonSummaries(members, expenses).find((p) => p.id === memberId),
@@ -56,11 +63,26 @@ export default function usePersonScreen() {
       })
     : null;
 
+  const ownerId = members.find((m) => m.isOwner)?.id ?? "";
+
+  const handleRemove = async () => {
+    leavingRef.current = true; // the live query will drop them; the missing-person effect must not go back too
+    try {
+      await deletePerson(memberId, ownerId); // sets the toast's person on success; "not-found" sets nothing
+      router.dismissTo(EXPO_ROUTER.PEOPLE(tripId));
+    } catch (error) {
+      leavingRef.current = false; // spec: the screen stays, the error logs in dev
+      throw error;
+    }
+  };
+
   return {
     person,
     rows,
     badge: net ? formatNetBadge(net) : null,
     tone: net?.tone ?? "empty",
-    leavingRef,
+    handleRemove,
+    canRemove: person !== undefined && canRemovePerson(person),
+    hasFooter: person !== undefined && !person.isOwner,
   };
 }
