@@ -1,6 +1,7 @@
 import Raven from "@/components/Raven";
 import TripsEmpty from "@/features/trips/components/TripsEmpty";
 import TripsNoMatches from "@/features/trips/components/TripsNoMatches";
+import TripsOngoingRow from "@/features/trips/components/TripsOngoingRow";
 import { useTrips } from "@/features/trips/hooks/useTrips";
 import { EXPO_ROUTER } from "@/navigation/route";
 import { colors } from "@/themes/color";
@@ -76,7 +77,10 @@ export default function TripsScreen() {
           {listedTrips.length === 0 ? (
             <TripsNoMatches query={query} />
           ) : (
-            <TripsList trips={listedTrips} />
+            <>
+              <TripsOngoingRow count={listedTrips.length} />
+              <TripsList trips={listedTrips} />
+            </>
           )}
         </>
       )}
