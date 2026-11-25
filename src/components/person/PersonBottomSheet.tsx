@@ -4,8 +4,9 @@ import {
   BottomSheetScrollView,
   BottomSheetTextInput,
 } from "@/components/sheet-keyboard";
-import { insertMember } from "@/db/members";
+import { insertMember, updateMember } from "@/db/members";
 import {
+  canSavePersonEdit,
   cleanName,
   findMemberByName,
   firstUnusedColor,
@@ -23,10 +24,9 @@ import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ColorField from "./ColorField";
 
-interface PersonBottomSheetProps {
-  visible: boolean;
-  onClose: () => void;
-}
+type PersonBottomSheetProps = { visible: boolean; onClose: () => void } & (
+  { mode?: "add" } | { mode: "edit"; member: Member }
+);
 
 interface PersonPreviewProps {
   name: string;
@@ -134,10 +134,9 @@ function NameField(props: NameFieldProps): ReactElement {
   );
 }
 
-export default function PersonBottomSheet(
-  props: PersonBottomSheetProps,
-): ReactElement {
-  const { visible, onClose } = props;
+// The add form keeps its draft in useAddPersonStore, so a half-typed name carries over
+function AddPersonForm(props: { onClose: () => void }): ReactElement {
+  const { onClose } = props;
 
   const name = useAddPersonStore((s) => s.name);
   const setName = useAddPersonStore((s) => s.setName);
@@ -153,8 +152,6 @@ export default function PersonBottomSheet(
 
   const members = useExpenseSheetStore((s) => s.members);
   const tripId = members[0]?.tripId;
-
-  const safeAreaInsets = useSafeAreaInsets();
 
   // A ref, not state: a second tap before the next render must see it
   const isAddingRef = useRef(false);
@@ -192,44 +189,123 @@ export default function PersonBottomSheet(
   };
 
   return (
+    <View className="gap-space-4 px-space-5">
+      <PersonPreview name={name} color={color} />
+
+      <NameField
+        value={name}
+        onChangeText={(text) => setName(sanitizeNameInput(text))}
+        isDuplicate={duplicateMember !== undefined}
+      />
+
+      <ColorField selectedColor={color} onSelectColor={setSelectedColor} />
+
+      {/* Helper line */}
+      {duplicateMember ? (
+        <DuplicateHelper member={duplicateMember} />
+      ) : (
+        <Text className="text-ink-500 text-caption">
+          {trimmedName
+            ? `${trimmedName} joins the trip and this expense’s split.`
+            : "They join the trip and this expense’s split."}
+        </Text>
+      )}
+
+      <PrimaryButton
+        label="Add to trip"
+        onPress={handleAddPerson}
+        disabled={!trimmedName || duplicateMember !== undefined}
+      />
+    </View>
+  );
+}
+
+// Edit keeps its name and color in local state: the sheet's content mounts on each open,
+// so every opening starts from the saved values and closing drops the edits
+function EditPersonForm(props: {
+  member: Member;
+  onClose: () => void;
+}): ReactElement {
+  const { member, onClose } = props;
+
+  const members = useExpenseSheetStore((s) => s.members);
+  const [name, setName] = useState(member.name);
+  const [color, setColor] = useState(member.memberColor);
+  // A ref, not state: a second tap before the next render must see it
+  const isSavingRef = useRef(false);
+
+  const duplicateMember = findMemberByName(members, name, member.id);
+  const canSave = canSavePersonEdit({ member, name, color, members });
+
+  const handleSave = async () => {
+    if (isSavingRef.current || !canSave) return;
+    isSavingRef.current = true;
+    try {
+      const result = await updateMember(member.id, {
+        name: cleanName(name),
+        color,
+      });
+      // Someone else has the name in the db: the live query brings them in and the duplicate line shows
+      if (result.kind === "duplicate-name") return;
+      if (__DEV__ && result.kind === "not-found") {
+        console.warn("[EditPersonForm] member already gone", member.id);
+      }
+      onClose();
+    } finally {
+      isSavingRef.current = false;
+    }
+  };
+
+  return (
+    <View className="gap-space-4 px-space-5">
+      <PersonPreview name={name} color={color} />
+
+      {/* You keeps its name in v1 (spec, Out of scope) */}
+      {!member.isOwner && (
+        <NameField
+          value={name}
+          onChangeText={(text) => setName(sanitizeNameInput(text))}
+          isDuplicate={duplicateMember !== undefined}
+        />
+      )}
+
+      <ColorField selectedColor={color} onSelectColor={setColor} />
+
+      {duplicateMember && <DuplicateHelper member={duplicateMember} />}
+
+      <PrimaryButton
+        label="Save changes"
+        onPress={handleSave}
+        disabled={!canSave}
+      />
+    </View>
+  );
+}
+
+export default function PersonBottomSheet(
+  props: PersonBottomSheetProps,
+): ReactElement {
+  const { visible, onClose } = props;
+
+  const safeAreaInsets = useSafeAreaInsets();
+  const isEdit = props.mode === "edit";
+
+  return (
     <BottomSheet
       visible={visible}
       onClose={onClose}
-      title="Add person"
+      title={isEdit ? "Edit person" : "Add person"}
       titleSize="title"
       showCloseButton
       safeAreaInsets={safeAreaInsets}
     >
       {/* revealMargin 50 = keyboard-controller's old bottomOffset */}
       <BottomSheetScrollView revealMargin={50}>
-        <View className="gap-space-4 px-space-5">
-          <PersonPreview name={name} color={color} />
-
-          <NameField
-            value={name}
-            onChangeText={(text) => setName(sanitizeNameInput(text))}
-            isDuplicate={duplicateMember !== undefined}
-          />
-
-          <ColorField selectedColor={color} onSelectColor={setSelectedColor} />
-
-          {/* Helper line */}
-          {duplicateMember ? (
-            <DuplicateHelper member={duplicateMember} />
-          ) : (
-            <Text className="text-ink-500 text-caption">
-              {trimmedName
-                ? `${trimmedName} joins the trip and this expense’s split.`
-                : "They join the trip and this expense’s split."}
-            </Text>
-          )}
-
-          <PrimaryButton
-            label="Add to trip"
-            onPress={handleAddPerson}
-            disabled={!trimmedName || duplicateMember !== undefined}
-          />
-        </View>
+        {props.mode === "edit" ? (
+          <EditPersonForm member={props.member} onClose={onClose} />
+        ) : (
+          <AddPersonForm onClose={onClose} />
+        )}
       </BottomSheetScrollView>
     </BottomSheet>
   );

@@ -13,14 +13,31 @@ export function normalizeName(name: string): string {
   return cleanName(name).toLowerCase();
 }
 
-// The member whose name matches under normalizeName, if any
+// The member whose name matches under normalizeName, if any; skipId leaves out the person being edited
 export function findMemberByName(
   members: Member[],
   name: string,
+  skipId?: string,
 ): Member | undefined {
   const target = normalizeName(name);
   if (target === "") return undefined;
-  return members.find((m) => normalizeName(m.name) === target);
+  return members.find(
+    (m) => m.id !== skipId && normalizeName(m.name) === target,
+  );
+}
+
+// Edit person's Save: something changed, the name is usable, and nobody else has it
+export function canSavePersonEdit(input: {
+  member: Member;
+  name: string;
+  color: MemberColor;
+  members: Member[];
+}): boolean {
+  const { member, name, color, members } = input;
+  const cleaned = cleanName(name);
+  if (cleaned === "") return false;
+  if (findMemberByName(members, cleaned, member.id)) return false;
+  return cleaned !== member.name || color !== member.memberColor;
 }
 
 // The first palette color no member has; sand when all 12 are taken

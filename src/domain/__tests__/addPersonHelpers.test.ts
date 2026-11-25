@@ -1,5 +1,6 @@
 import {
   MEMBER_COLORS,
+  canSavePersonEdit,
   cleanName,
   findMemberByName,
   firstUnusedColor,
@@ -110,5 +111,63 @@ describe("findMemberByName", () => {
 
   it("returns undefined when no one matches", () => {
     expect(findMemberByName([mai], "Zoe")).toBeUndefined();
+  });
+
+  it.each(["MAI", " mai  "])(
+    "skips the member's own id, so %j isn't a duplicate of themself",
+    (typed) => {
+      expect(findMemberByName([mai], typed, mai.id)).toBeUndefined();
+    },
+  );
+
+  it("still matches another member when an id is skipped", () => {
+    expect(findMemberByName([mai, tuan], "tuấn", mai.id)).toBe(tuan);
+  });
+});
+
+describe("canSavePersonEdit", () => {
+  const mai = member("Mai", "sand");
+  const linh = member("Linh", "olive");
+  const you: Member = { ...member("You", "citron"), isOwner: true };
+  const members = [mai, linh, you];
+  const check = (
+    target: Member,
+    name: string,
+    color: MemberColor = target.memberColor,
+  ) => canSavePersonEdit({ member: target, name, color, members });
+
+  it("is off when the name and color are unchanged", () => {
+    expect(check(mai, "Mai")).toBe(false);
+  });
+
+  it("is on for a new color alone", () => {
+    expect(check(mai, "Mai", "sky")).toBe(true);
+  });
+
+  it("is on for a new name", () => {
+    expect(check(mai, "Mai Lan")).toBe(true);
+  });
+
+  it("is on when only the capitals change, saving the cleaned name as typed", () => {
+    expect(check(mai, "mai")).toBe(true);
+  });
+
+  it("is off when the name only gains spaces around it", () => {
+    expect(check(mai, "  Mai  ")).toBe(false);
+  });
+
+  it.each(["", "   "])("is off for the blank name %j", (typed) => {
+    expect(check(mai, typed)).toBe(false);
+  });
+
+  it.each(["Linh", "LINH", " linh "])(
+    "is off for another member's name, typed %j",
+    (typed) => {
+      expect(check(mai, typed)).toBe(false);
+    },
+  );
+
+  it("is on for You with only a color change", () => {
+    expect(check(you, "You", "sky")).toBe(true);
   });
 });

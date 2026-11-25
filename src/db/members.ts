@@ -4,7 +4,7 @@ import { db } from "./client";
 import { MEMBERS_TRIP_NAME_INDEX, members, NewMember } from "./schema";
 import { uniqueViolationTarget } from "./sqliteErrors";
 import { transformMemberRow } from "@/domain/transforms";
-import { Member } from "@/types/TExpense";
+import { Member, MemberColor } from "@/types/TExpense";
 
 export type InsertMemberResult =
   { kind: "added"; id: string } | { kind: "duplicate-name" };
@@ -22,6 +22,27 @@ export async function insertMember(
     throw error; // only the name index is an expected failure
   }
   return { kind: "added", id };
+}
+
+export type UpdateMemberResult =
+  { kind: "updated" } | { kind: "duplicate-name" } | { kind: "not-found" };
+
+export async function updateMember(
+  id: string,
+  data: { name: string; color: MemberColor },
+): Promise<UpdateMemberResult> {
+  try {
+    const { changes } = await db
+      .update(members)
+      .set({ name: data.name, memberColor: data.color })
+      .where(eq(members.id, id));
+    return changes === 0 ? { kind: "not-found" } : { kind: "updated" };
+  } catch (error) {
+    if (uniqueViolationTarget(error) === `index '${MEMBERS_TRIP_NAME_INDEX}'`) {
+      return { kind: "duplicate-name" }; // the index backs up the sheet's own check (ADR 0019)
+    }
+    throw error; // only the name index is an expected failure
+  }
 }
 
 export type DeleteMemberResult =
