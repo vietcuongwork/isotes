@@ -7,7 +7,7 @@ import { sanitizeNameInput } from "@/utils/utils";
 import { UserPlus } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import AddPersonBottomSheet from "./AddPersonBottomSheet";
+import PersonBottomSheet from "./PersonBottomSheet";
 
 interface AddPersonProps {
   /** The roster search; a non-blank query turns the label into Add “{query}” */
@@ -62,7 +62,7 @@ export default function AddPerson(props: AddPersonProps) {
       </View>
       {/* A sibling, not a child: touches inside a Modal still bubble through its
           React parents, so inside the Pressable they would re-press the button */}
-      <AddPersonBottomSheet visible={isOpen} onClose={() => setOpen(false)} />
+      <PersonBottomSheet visible={isOpen} onClose={() => setOpen(false)} />
     </>
   );
 }

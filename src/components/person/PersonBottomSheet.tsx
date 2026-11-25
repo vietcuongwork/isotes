@@ -23,7 +23,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ColorField from "./ColorField";
 
-interface AddPersonBottomSheetProps {
+interface PersonBottomSheetProps {
   visible: boolean;
   onClose: () => void;
 }
@@ -134,8 +134,8 @@ function NameField(props: NameFieldProps): ReactElement {
   );
 }
 
-export default function AddPersonBottomSheet(
-  props: AddPersonBottomSheetProps,
+export default function PersonBottomSheet(
+  props: PersonBottomSheetProps,
 ): ReactElement {
   const { visible, onClose } = props;
 

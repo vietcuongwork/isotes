@@ -1,4 +1,4 @@
-import AddPerson from "@/components/addPerson/AddPerson";
+import AddPerson from "@/components/person/AddPerson";
 import { canRemovePerson } from "@/features/people/helpers/peopleHelpers";
 import PersonRow from "@/features/people/components/PersonRow";
 import RemovedToast from "@/features/people/components/RemovedToast";

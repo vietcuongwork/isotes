@@ -9,7 +9,7 @@ import { ReactElement } from "react";
 import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import usePaidByBottomSheet from "@/features/addExpense/paidBy/hooks/usePaidByBottomSheet";
-import AddPerson from "@/components/addPerson/AddPerson";
+import AddPerson from "@/components/person/AddPerson";
 import MemberListRow from "@/features/addExpense/components/members/MemberListRow";
 import MemberNoMatches from "@/features/addExpense/components/members/MemberNoMatches";
 import MemberSearchField from "@/features/addExpense/components/members/MemberSearchField";

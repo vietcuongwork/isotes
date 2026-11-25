@@ -106,10 +106,10 @@ const LEGACY_SPACING_FILES = [
   "src/features/addExpense/components/StartOverDialog.tsx",
   "src/features/addExpense/components/activity/ActivityField.tsx",
   "src/features/addExpense/components/activity/ActivityPicker.tsx",
-  "src/components/addPerson/AddPerson.tsx",
-  "src/components/addPerson/AddPersonBottomSheet.tsx",
-  "src/components/addPerson/ColorField.tsx",
-  "src/components/addPerson/ColorItem.tsx",
+  "src/components/person/AddPerson.tsx",
+  "src/components/person/PersonBottomSheet.tsx",
+  "src/components/person/ColorField.tsx",
+  "src/components/person/ColorItem.tsx",
   "src/features/addExpense/components/amount/AmountField.tsx",
   "src/features/addExpense/date/components/AddDateBottomSheet.tsx",
   "src/features/addExpense/date/components/DateCalendar.tsx",
@@ -169,7 +169,7 @@ module.exports = defineConfig([
       "src/features/**/*Sheet*.{ts,tsx}",
       "src/features/addExpense/**/*.tsx",
       "src/features/expenses/components/**/*.tsx",
-      "src/components/addPerson/**/*.tsx",
+      "src/components/person/**/*.tsx",
     ],
     rules: {
       "no-restricted-imports": [
