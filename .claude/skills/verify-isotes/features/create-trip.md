@@ -39,4 +39,5 @@ Preconditions:
 - Close the sheet with `Close currency sheet`, not `Close sheet`: the scrim fills the screen, so a tap on its centre lands on the sheet's list and picks a row.
 - The pinned letter at the list's top is an overlay hidden from the tree; the in-list letters (`A`, `B`, …) are the headers.
 - The trip header shows `$0.00` in USD whatever the currency; don't assert it.
+- On the new trip's home, the people row is one element whose label includes `Add people`; match it as `.*Add people.*`. It opens the People screen, not a sheet: tap `Add person` there, then wait for `Their name`.
 - Each run adds a `Flow create-trip …` trip; nothing is deleted.

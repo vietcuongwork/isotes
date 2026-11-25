@@ -71,7 +71,7 @@
     "yaml": "2.9.0"
   },
   "scripts": {
-    "start": "expo start",
+    "start": "TERM_PROGRAM= npx expo start --dev-client",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",

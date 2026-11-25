@@ -25,6 +25,9 @@ for name in $(grep -oE '\$\{[A-Za-z_][A-Za-z0-9_]*\}' "$flow" | tr -d '${}' | so
   esac
 done
 
+# One last line a `tail -1` can trust: a run's output once ended in a banner box that hid its result (2026-11-23).
+trap 'rc=$?; echo "flow.sh: $([ "$rc" = 0 ] && echo PASS || echo "FAIL ($rc)") $(basename "$flow" .yaml)${out:+ → $out}"' EXIT
+
 run() {
   out=.sim/maestro/$(basename "$flow" .yaml)-$(date +%m%d-%H%M%S)
   maestro test --device "$SIM" --debug-output "$out" --test-output-dir "$out/shots" "$@" "$flow" || return

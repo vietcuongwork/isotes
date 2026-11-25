@@ -25,7 +25,7 @@ Maestro **2.11.0** (`maestro --version`); an upgrade is its own task. `MAESTRO_C
 
 **One driver per session.** A session drives with the MCP server *or* the CLI, never both. The CLI and the MCP server each install their own XCTest driver and only one survives: a CLI run kills the MCP server's driver until a new session (the desktop app can't reconnect MCP). Need both → MCP steps first, then CLI.
 
-**Whole flow (CLI):** output goes to a fresh `.sim/maestro/<flow>-<time>/` (git-ignored), nothing to `~/.maestro/tests/`; a flow's screenshots land in its `shots/` folder. Maestro options such as `-e` go after the flow file. `flow.sh` exits 2 and names the variable when the flow uses `${NAME}` without `-e NAME=<value>`.
+**Whole flow (CLI):** output goes to a fresh `.sim/maestro/<flow>-<time>/` (git-ignored), nothing to `~/.maestro/tests/`; a flow's screenshots land in its `shots/` folder. Maestro options such as `-e` go after the flow file. `flow.sh` exits 2 and names the variable when the flow uses `${NAME}` without `-e NAME=<value>`. Its last line is always `flow.sh: PASS <flow> → <run folder>` or `flow.sh: FAIL (<code>) <flow> → <run folder>`, so read that line rather than Maestro's own tail.
 
 ```bash
 .claude/skills/verify-isotes/scripts/flow.sh .claude/skills/verify-isotes/flows/golden-path.yaml
@@ -81,6 +81,7 @@ Prove the real user path: the action and the state it leaves, not just the last 
 - **Focus:** Maestro's `focused` attribute is always `false` on iOS, even mid-typing. Read focus from `traits.sh`: a focused field lists `IsEditing` (`Search trips | - | TextEntry, IsEditing, TextOperationsAvailable`).
 - **Logs:** `.sim/cu.sh mark` before, `.sim/cu.sh show` after → list new WARN/ERROR lines, or "cu.sh → none". Mark after the last `src/` edit, not before it: Metro rebuilds on each save, so a file changed in several edits can log errors from a half-written version (a name declared twice) and fail the next flow once. If `tsc` is clean, mark and re-run that flow before treating it as a failure.
 - **Timing and pixels** (a flash while loading, glyph widths, a fade, a flow's own `takeScreenshot`): `HEADLESS.md` "Visual evidence".
+- **Text attributes** (a placeholder drawn low, clipped or narrow): `scripts/label-read.sh "<placeholder regex>"` (Helpers).
 - **Screenshots** only for a visual check (layout, color, spacing) or a failed check. A failed flow leaves exactly one in its run folder (`find .sim/maestro/<run> -name '*.png'`); read that one, nothing else.
 
 Quote the values (rows, tree lines, log result) in the task's log in the vault's implementation note. That note is where evidence lives; run folders are scratch.
