@@ -49,7 +49,7 @@ Once the user answers, log it on that task's Q&A line as `Q (hand-back) … → 
 - Run the full Jest suite once (`pnpm test`).
 - Run the phase's **Demo**.
 - Confirm no debug logs are left.
-- Phase ran flows on the simulator: once the Demo's evidence is quoted in the log, run `verify-isotes/scripts/cleanup.sh --dry-run`, then `cleanup.sh`, and put its before and after counts in the report. It keeps the newest trip per flow and the baseline trip. Skip it when the phase ran no flows.
+- Cleanup: a phase Demo never runs `cleanup.sh`, because later phases re-use the trips its flows made. Write "cleanup deferred to acceptance" in the report. The acceptance phase runs it itself as the task's last step, after every check has re-run and the evidence is quoted: `cleanup.sh --dry-run`, then `cleanup.sh`, with the before and after counts in the log and no question to the user.
 - Every Open check due by this phase is closed or, on its first postponement, re-targeted to a later task or Demo. A check already postponed once keeps the Demo from being green: log the Demo as `not green`, name the check in the report, and wait for the user to accept it or say how to close it (`implementing-tasks`, Open checks).
 - Demo green and the phase changed `src/`: run `verify-isotes/scripts/green.sh mark`, so the next phase's Preflight can skip its smoke flow.
 - Report: the Demo result, tasks done, Deviations, review judgement calls, open checks, and the files changed since the baseline. Add a suggested commit (the `commit-message` skill, as a runnable `git commit` command). The user commits.
