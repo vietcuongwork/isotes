@@ -153,10 +153,9 @@ export default function PersonRow(props: PersonRowProps) {
       {showDivider && (
         <View
           pointerEvents="none"
-          style={{ zIndex: 1 }}
           // NOTE - no token for the 88pt Remove panel, falling back to right-[88px]
           className={cn(
-            "absolute left-space-4 right-space-4 top-0 h-px bg-ink-100",
+            "absolute left-space-4 right-space-4 top-0 z-10 h-px bg-ink-100",
             isOpen && "right-[88px]",
           )}
         />

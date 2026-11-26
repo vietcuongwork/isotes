@@ -14,11 +14,100 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // get, owe and square badge tones; square is the board's shine pair
-const BADGE_CLASS: Record<Exclude<TripCardState, "empty">, string> = {
-  get: "bg-get-100 text-get-600",
-  owe: "bg-owe-100 text-owe-600",
-  square: "bg-shine-100 text-shine-700",
+const BADGE_CLASS: Record<
+  Exclude<TripCardState, "empty">,
+  { pill: string; text: string }
+> = {
+  get: { pill: "bg-get-100", text: "text-get-600" },
+  owe: { pill: "bg-owe-100", text: "text-owe-600" },
+  square: { pill: "bg-shine-100", text: "text-shine-700" },
 };
+
+type PersonExpenseRow = ReturnType<typeof usePersonScreen>["rows"][number];
+
+function PersonExpenseList(props: {
+  rows: PersonExpenseRow[];
+  isOwner: boolean;
+}) {
+  const { rows, isOwner } = props;
+  return (
+    <>
+      {/* List header */}
+      <View className="flex-row justify-between px-space-1 pb-space-2">
+        <Text className="text-ink-500 text-micro">Expenses</Text>
+        <Text className="text-ink-500 text-micro">
+          {isOwner ? "Your share" : "Their share"}
+        </Text>
+      </View>
+
+      <View className="rounded-lg bg-card px-space-4 shadow-card">
+        {rows.map((row, index) => (
+          <View
+            key={row.id}
+            accessible
+            accessibilityLabel={`${row.title}, ${row.meta}, ${row.share}`}
+            className={cn(
+              "flex-row items-center gap-space-3 py-space-3",
+              index > 0 && "border-t border-ink-100",
+            )}
+          >
+            <View className="min-w-0 flex-1">
+              <Text className="text-ink-900 text-body" numberOfLines={1}>
+                {row.title}
+              </Text>
+              <Text className="text-ink-500 text-caption">{row.meta}</Text>
+            </View>
+            <Text className="text-ink-900 text-amount">{row.share}</Text>
+          </View>
+        ))}
+      </View>
+    </>
+  );
+}
+
+function RemoveFooter(props: {
+  canRemove: boolean;
+  stayReason: string;
+  onRemove: () => void;
+}) {
+  const { canRemove, stayReason, onRemove } = props;
+  return (
+    <View className="border-t border-ink-200 bg-ink-50 px-space-5 pb-space-8 pt-space-3">
+      {/* NOTE - no token for the 52pt pill height, falling back to h-[52px] (as the People board's Add person row) */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Remove from trip"
+        accessibilityHint={canRemove ? undefined : stayReason}
+        accessibilityState={{ disabled: !canRemove }}
+        disabled={!canRemove}
+        onPress={onRemove}
+        className={cn(
+          "h-[52px] flex-row items-center justify-center gap-space-2 rounded-pill",
+          canRemove ? "bg-owe-100" : "bg-ink-100",
+        )}
+      >
+        <UserMinus
+          size={20}
+          strokeWidth={1.75}
+          color={canRemove ? colors.owe[600] : colors.ink[300]}
+        />
+        <Text
+          className={cn(
+            "text-label",
+            canRemove ? "text-owe-600" : "text-ink-300",
+          )}
+        >
+          Remove from trip
+        </Text>
+      </Pressable>
+      {!canRemove && (
+        <Text className="pt-space-2 text-center text-ink-500 text-caption">
+          {stayReason}
+        </Text>
+      )}
+    </View>
+  );
+}
 
 export default function PersonScreen() {
   const { person, rows, badge, tone, handleRemove, canRemove, hasFooter } =
@@ -81,10 +170,10 @@ export default function PersonScreen() {
               <View
                 className={cn(
                   "rounded-pill px-space-3 py-[2px]",
-                  BADGE_CLASS[tone],
+                  BADGE_CLASS[tone].pill,
                 )}
               >
-                <Text className={cn("text-label", BADGE_CLASS[tone])}>
+                <Text className={cn("text-label", BADGE_CLASS[tone].text)}>
                   {badge}
                 </Text>
               </View>
@@ -113,84 +202,16 @@ export default function PersonScreen() {
               </View>
             </View>
           ) : (
-            <>
-              {/* List header */}
-              <View className="flex-row justify-between px-space-1 pb-space-2">
-                <Text className="text-ink-500 text-micro">Expenses</Text>
-                <Text className="text-ink-500 text-micro">
-                  {isOwner ? "Your share" : "Their share"}
-                </Text>
-              </View>
-
-              {/* Expenses */}
-              <View className="rounded-lg bg-card px-space-4 shadow-card">
-                {rows.map((row, index) => (
-                  <View
-                    key={row.id}
-                    accessible
-                    accessibilityLabel={`${row.title}, ${row.meta}, ${row.share}`}
-                    className={cn(
-                      "flex-row items-center gap-space-3 py-space-3",
-                      index > 0 && "border-t border-ink-100",
-                    )}
-                  >
-                    <View className="min-w-0 flex-1">
-                      <Text
-                        className="text-ink-900 text-body"
-                        numberOfLines={1}
-                      >
-                        {row.title}
-                      </Text>
-                      <Text className="text-ink-500 text-caption">
-                        {row.meta}
-                      </Text>
-                    </View>
-                    <Text className="text-ink-900 text-amount">
-                      {row.share}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </>
+            <PersonExpenseList rows={rows} isOwner={isOwner} />
           )}
         </ScrollView>
 
-        {/* Footer */}
         {hasFooter && (
-          <View className="border-t border-ink-200 bg-ink-50 px-space-5 pb-space-8 pt-space-3">
-            {/* NOTE - no token for the 52pt pill height, falling back to h-[52px] (as the People board's Add person row) */}
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Remove from trip"
-              accessibilityHint={canRemove ? undefined : stayReason}
-              accessibilityState={{ disabled: !canRemove }}
-              disabled={!canRemove}
-              onPress={handleRemove}
-              className={cn(
-                "h-[52px] flex-row items-center justify-center gap-space-2 rounded-pill",
-                canRemove ? "bg-owe-100" : "bg-ink-100",
-              )}
-            >
-              <UserMinus
-                size={20}
-                strokeWidth={1.75}
-                color={canRemove ? colors.owe[600] : colors.ink[300]}
-              />
-              <Text
-                className={cn(
-                  "text-label",
-                  canRemove ? "text-owe-600" : "text-ink-300",
-                )}
-              >
-                Remove from trip
-              </Text>
-            </Pressable>
-            {!canRemove && (
-              <Text className="pt-space-2 text-center text-ink-500 text-caption">
-                {stayReason}
-              </Text>
-            )}
-          </View>
+          <RemoveFooter
+            canRemove={canRemove}
+            stayReason={stayReason}
+            onRemove={handleRemove}
+          />
         )}
       </SafeAreaView>
       {/* A sibling of the avatar button, not a child: touches in a Modal bubble through React parents */}

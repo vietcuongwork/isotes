@@ -48,11 +48,6 @@ export default function usePersonScreen() {
     });
   }, [memberId, expenses, members, currency]);
 
-  // No path reaches a missing person today; a removal sets leavingRef and navigates itself
-  useEffect(() => {
-    if (!person && !leavingRef.current) router.back();
-  }, [person]);
-
   const net = person
     ? formatPersonNet({
         net: person.net,
@@ -75,6 +70,11 @@ export default function usePersonScreen() {
       throw error;
     }
   };
+
+  // No path reaches a missing person today; a removal sets leavingRef and navigates itself
+  useEffect(() => {
+    if (!person && !leavingRef.current) router.back();
+  }, [person]);
 
   return {
     person,
