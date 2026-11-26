@@ -1,6 +1,8 @@
 import Raven from "@/components/Raven";
+import SkeletonProvider from "@/components/skeleton/SkeletonProvider";
 import TripsEmpty from "@/features/trips/components/TripsEmpty";
 import TripsNoMatches from "@/features/trips/components/TripsNoMatches";
+import TripCardSkeleton from "@/features/trips/components/TripCardSkeleton";
 import TripsOngoingRow from "@/features/trips/components/TripsOngoingRow";
 import { useTrips } from "@/features/trips/hooks/useTrips";
 import { EXPO_ROUTER } from "@/navigation/route";
@@ -16,6 +18,27 @@ import TripsList from "../components/TripList";
 // font and size: iOS draws single-line TextInput text low when lineHeight is
 // set ([[Learn_react-native_textinput-lineheight-ios]])
 const body = textStyle("body");
+
+// NOTE - no token for these name-bar widths (board C), falling back to percent strings
+const SKELETON_NAME_WIDTHS = ["64%", "52%", "72%", "58%"] as const;
+
+// The row sits outside the labelled view, so VoiceOver still reads "Ongoing"
+function TripsLoading() {
+  return (
+    <SkeletonProvider>
+      <TripsOngoingRow count={null} />
+      <View
+        accessible
+        accessibilityLabel="Loading trips"
+        className="gap-space-3 px-space-5"
+      >
+        {SKELETON_NAME_WIDTHS.map((nameWidth) => (
+          <TripCardSkeleton key={nameWidth} nameWidth={nameWidth} />
+        ))}
+      </View>
+    </SkeletonProvider>
+  );
+}
 
 export default function TripsScreen() {
   const {
@@ -50,7 +73,7 @@ export default function TripsScreen() {
 
       {hasNoTrips && <TripsEmpty />}
 
-      {listedTrips && !hasNoTrips && (
+      {!hasNoTrips && (
         <>
           {/* Search */}
           <View className="mx-space-5 mt-space-6 h-space-12 flex-row items-center gap-space-2 rounded-md bg-ink-100 px-space-4">
@@ -73,8 +96,10 @@ export default function TripsScreen() {
             />
           </View>
 
-          {/* Trips exist here, so an empty list means the query matched none */}
-          {listedTrips.length === 0 ? (
+          {/* While the first read is pending, placeholders; after it, trips exist, so an empty list means the query matched none */}
+          {listedTrips === undefined ? (
+            <TripsLoading />
+          ) : listedTrips.length === 0 ? (
             <TripsNoMatches query={query} />
           ) : (
             <>
