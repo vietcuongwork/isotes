@@ -29,13 +29,12 @@ export default function ExpensesScreen() {
     transformedTrip: trip,
     transformedExpenses,
     transformedMembers,
+    viewerMemberId,
   } = useExpensesScreen();
   // StatusBar props merge in mount order and Trips stays mounted under this
   // screen, so dark text is rendered only while the tab is on top
   const isFocused = useIsFocused();
   const days = groupExpensesByDay(transformedExpenses);
-  const viewerMemberId =
-    transformedMembers.find((member) => member.isOwner)?.id ?? "";
   const now = new Date();
 
   return (

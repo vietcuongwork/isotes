@@ -5,6 +5,7 @@ import {
   getPersonExpenses,
   getPersonSummaries,
 } from "@/features/people/helpers/peopleHelpers";
+import { getOwnerId } from "@/domain/memberHelpers";
 import useDeletePerson from "@/features/people/hooks/useDeletePerson";
 import { EXPO_ROUTER } from "@/navigation/route";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
@@ -50,7 +51,7 @@ export default function usePersonScreen() {
 
   const summary = person ? formatPersonSummary(person, currency) : null;
 
-  const ownerId = members.find((m) => m.isOwner)?.id ?? "";
+  const ownerId = getOwnerId(members);
 
   const handleRemove = async () => {
     leavingRef.current = true; // the live query will drop them; the missing-person effect must not go back too
