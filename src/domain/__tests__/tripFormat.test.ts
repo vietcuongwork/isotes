@@ -56,16 +56,17 @@ describe("formatPersonNet", () => {
   const base = { expenseCount: 3, decimalDigits: 0, symbol: "¥" };
 
   it.each([
-    [12300, true, "get", "+¥12,300", "you get back"],
-    [12300, false, "get", "+¥12,300", "gets back"],
-    [-6200, true, "owe", "−¥6,200", "you owe"],
-    [-6200, false, "owe", "−¥6,200", "owes"],
-    [0, false, "square", "¥0", "all square"],
-    [0.0000001, false, "square", "¥0", "all square"],
-  ])("net %p, isOwner %p", (net, isOwner, tone, amount, word) => {
+    [12300, true, "get", "+¥12,300", "¥12,300", "you get back"],
+    [12300, false, "get", "+¥12,300", "¥12,300", "gets back"],
+    [-6200, true, "owe", "−¥6,200", "¥6,200", "you owe"],
+    [-6200, false, "owe", "−¥6,200", "¥6,200", "owes"],
+    [0, false, "square", "¥0", "¥0", "all square"],
+    [0.0000001, false, "square", "¥0", "¥0", "all square"],
+  ])("net %p, isOwner %p", (net, isOwner, tone, amount, money, word) => {
     expect(formatPersonNet({ ...base, net, isOwner })).toEqual({
       tone,
       amount,
+      money,
       word,
     });
   });
@@ -73,6 +74,6 @@ describe("formatPersonNet", () => {
   it("shows nothing for a person with no expenses", () => {
     expect(
       formatPersonNet({ ...base, expenseCount: 0, net: 0, isOwner: false }),
-    ).toEqual({ tone: "empty", amount: "", word: "" });
+    ).toEqual({ tone: "empty", amount: "", money: "", word: "" });
   });
 });

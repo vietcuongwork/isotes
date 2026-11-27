@@ -30,23 +30,31 @@ export function formatPersonNet(input: {
   decimalDigits: number;
   symbol: string;
   isOwner: boolean;
-}): { tone: TripCardState; amount: string; word: string } {
+}): { tone: TripCardState; amount: string; money: string; word: string } {
   const { net, expenseCount, decimalDigits, symbol, isOwner } = input;
   const tone = getTripCardState({ expenseCount, balance: net, decimalDigits });
-  if (tone === "empty") return { tone, amount: "", word: "" };
+  if (tone === "empty") return { tone, amount: "", money: "", word: "" };
 
   const money = formatDisplayAmount(
     tone === "square" ? 0 : Math.abs(net),
     symbol,
     decimalDigits,
   );
-  if (tone === "square") return { tone, amount: money, word: "all square" };
+  if (tone === "square") {
+    return { tone, amount: money, money, word: "all square" };
+  }
   if (tone === "get") {
     return {
       tone,
       amount: "+" + money,
+      money,
       word: isOwner ? "you get back" : "gets back",
     };
   }
-  return { tone, amount: "−" + money, word: isOwner ? "you owe" : "owes" };
+  return {
+    tone,
+    amount: "−" + money,
+    money,
+    word: isOwner ? "you owe" : "owes",
+  };
 }

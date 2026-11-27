@@ -110,15 +110,13 @@ function RemoveFooter(props: {
 }
 
 export default function PersonScreen() {
-  const { person, rows, badge, tone, handleRemove, canRemove, hasFooter } =
+  const { person, rows, count, badge, handleRemove, canRemove, hasFooter } =
     usePersonScreen();
   const [isEditOpen, setEditOpen] = useState(false);
 
   if (!person) return null; // the hook's effect goes back to People
 
   const { name, isOwner, expenseCount } = person;
-  const count =
-    expenseCount === 0 ? "No expenses yet" : formatExpenseCount(expenseCount);
   const stayReason = `${name} is in ${formatExpenseCount(expenseCount)}, so they stay in the trip`;
 
   return (
@@ -165,16 +163,18 @@ export default function PersonScreen() {
           </Text>
           <View className="flex-row items-center gap-space-2">
             <Text className="text-ink-500 text-caption">{count}</Text>
-            {badge !== null && tone !== "empty" && (
+            {badge && (
               // NOTE - no token for the badge's 2pt vertical padding, falling back to py-[2px]
               <View
                 className={cn(
                   "rounded-pill px-space-3 py-[2px]",
-                  BADGE_CLASS[tone].pill,
+                  BADGE_CLASS[badge.tone].pill,
                 )}
               >
-                <Text className={cn("text-label", BADGE_CLASS[tone].text)}>
-                  {badge}
+                <Text
+                  className={cn("text-label", BADGE_CLASS[badge.tone].text)}
+                >
+                  {badge.text}
                 </Text>
               </View>
             )}

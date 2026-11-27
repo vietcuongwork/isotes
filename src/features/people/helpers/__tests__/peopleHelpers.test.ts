@@ -1,7 +1,9 @@
 import { ACTIVITIES } from "@/domain/activities";
+import { formatPersonNet } from "@/domain/tripFormat";
 import {
   canRemovePerson,
   formatNetBadge,
+  formatPersonSummary,
   getPersonExpenses,
   getPersonSummaries,
 } from "@/features/people/helpers/peopleHelpers";
@@ -156,18 +158,56 @@ describe("getPersonExpenses", () => {
 
 describe("formatNetBadge", () => {
   it.each([
-    ["owe", "−¥6,200", "owes", "Owes ¥6,200"],
-    ["get", "+¥12,300", "gets back", "Gets back ¥12,300"],
-    ["owe", "−¥6,200", "you owe", "You owe ¥6,200"],
-    ["get", "+¥12,300", "you get back", "You get back ¥12,300"],
-    ["square", "¥0", "all square", "All square"],
-  ] as const)("%s, %s, %s reads %s", (tone, amount, word, expected) => {
-    expect(formatNetBadge({ tone, amount, word })).toBe(expected);
+    ["owe", "−¥6,200", "¥6,200", "owes", "Owes ¥6,200"],
+    ["get", "+¥12,300", "¥12,300", "gets back", "Gets back ¥12,300"],
+    ["owe", "−¥6,200", "¥6,200", "you owe", "You owe ¥6,200"],
+    ["get", "+¥12,300", "¥12,300", "you get back", "You get back ¥12,300"],
+    ["square", "¥0", "¥0", "all square", "All square"],
+  ] as const)("%s, %s, %s reads %s", (tone, amount, money, word, expected) => {
+    expect(formatNetBadge({ tone, amount, money, word })).toEqual({
+      tone,
+      text: expected,
+    });
   });
 
   it("gives no badge to a person with no expenses", () => {
-    expect(formatNetBadge({ tone: "empty", amount: "", word: "" })).toBeNull();
+    expect(
+      formatNetBadge({ tone: "empty", amount: "", money: "", word: "" }),
+    ).toBeNull();
   });
+});
+
+describe("formatPersonSummary", () => {
+  const currency = { symbol: "¥", decimalDigits: 0 };
+
+  it("says no expenses yet, with an empty net, for a person with none", () => {
+    const summary = formatPersonSummary(
+      { net: 0, expenseCount: 0, isOwner: false },
+      currency,
+    );
+    expect(summary.count).toBe("No expenses yet");
+    expect(summary.net.tone).toBe("empty");
+  });
+
+  it.each([
+    [1, "1 expense"],
+    [2, "2 expenses"],
+  ])("counts %p expense(s) as %s", (expenseCount, count) => {
+    expect(
+      formatPersonSummary({ net: 100, expenseCount, isOwner: false }, currency)
+        .count,
+    ).toBe(count);
+  });
+
+  it.each([true, false])(
+    "returns formatPersonNet's net, isOwner %p",
+    (isOwner) => {
+      const person = { net: -6200, expenseCount: 2, isOwner };
+      expect(formatPersonSummary(person, currency).net).toEqual(
+        formatPersonNet({ ...person, decimalDigits: 0, symbol: "¥" }),
+      );
+    },
+  );
 });
 
 describe("canRemovePerson", () => {

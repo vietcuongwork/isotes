@@ -1,7 +1,7 @@
-import { formatPersonNet } from "@/domain/tripFormat";
 import {
   canRemovePerson,
   formatNetBadge,
+  formatPersonSummary,
   getPersonExpenses,
   getPersonSummaries,
 } from "@/features/people/helpers/peopleHelpers";
@@ -48,15 +48,7 @@ export default function usePersonScreen() {
     });
   }, [memberId, expenses, members, currency]);
 
-  const net = person
-    ? formatPersonNet({
-        net: person.net,
-        expenseCount: person.expenseCount,
-        decimalDigits: currency.decimalDigits,
-        symbol: currency.symbol,
-        isOwner: person.isOwner,
-      })
-    : null;
+  const summary = person ? formatPersonSummary(person, currency) : null;
 
   const ownerId = members.find((m) => m.isOwner)?.id ?? "";
 
@@ -79,8 +71,8 @@ export default function usePersonScreen() {
   return {
     person,
     rows,
-    badge: net ? formatNetBadge(net) : null,
-    tone: net?.tone ?? "empty",
+    count: summary?.count ?? "",
+    badge: summary ? formatNetBadge(summary.net) : null,
     handleRemove,
     canRemove: person !== undefined && canRemovePerson(person),
     hasFooter: person !== undefined && !person.isOwner,
