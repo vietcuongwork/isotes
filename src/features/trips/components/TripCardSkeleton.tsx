@@ -8,17 +8,17 @@ interface TripCardSkeletonProps {
 }
 
 // NOTE - no token for the bar sizes below (board C, C-Pulse): 16 and 12 tall
-// text bars with the margins that stand in for their line heights, falling
-// back to arbitrary values
+// text bars with the margins that stand in for their line heights (16 + 6 + 6
+// = 28, 12 + 4 + 4 = 20, both on the 4 pt grid), falling back to arbitrary values
 const NAME_BAR = "h-[16px] my-[6px]";
 const CAPTION_BAR = "h-[12px] my-space-1 w-2/5";
-// NOTE - no token for the foot bars (40 x 10, 88 x 14, 136 x 28), falling back to arbitrary values
+// NOTE - no token for the foot bars (40 x 10, 88 x 14, 136 x 28); the margins fill the label and amount to their line heights (10 + 3 + 3 = 16, 14 + 5 + 5 = 24), falling back to arbitrary values
 const LABEL_BAR = "h-[10px] w-[40px] my-[3px]";
 const AMOUNT_BAR = "h-[14px] w-[88px] my-[5px]";
 const BADGE_BAR = "h-[28px] w-[136px] rounded-pill";
 const DISC_BAR = "h-space-8 w-space-8 rounded-pill";
 // NOTE - no token for the 2pt ring, falling back to p-[2px] (as in TripAvatarStack)
-const DISC_RING = "rounded-full bg-card p-[2px]";
+const DISC_RING = "rounded-pill bg-card p-[2px]";
 
 // Three discs overlapping by 8, as TripAvatarStack draws them
 function AvatarStackSkeleton() {

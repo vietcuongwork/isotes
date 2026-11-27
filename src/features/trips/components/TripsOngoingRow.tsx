@@ -14,7 +14,7 @@ export default function TripsOngoingRow(props: TripsOngoingRowProps) {
     <View className="flex-row justify-between px-space-5 pb-space-3 pt-space-6">
       <Text className="text-ink-500 text-micro">Ongoing</Text>
       {count === null ? (
-        // NOTE - no token for the 48 x 10 count bar with a 3 margin (16 line), falling back to arbitrary values
+        // NOTE - no token for the 48 x 10 count bar; its 3 margins fill the micro text's 16 line (10 + 3 + 3), falling back to arbitrary values
         <SkeletonBone className="my-[3px] h-[10px] w-[48px]" />
       ) : (
         <Text className="text-ink-500 text-micro">

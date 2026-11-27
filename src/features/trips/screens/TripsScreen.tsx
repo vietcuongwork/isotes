@@ -100,7 +100,7 @@ export default function TripsScreen() {
             />
           </View>
 
-          {/* While the first read is pending, placeholders; after it, trips exist, so an empty list means the query matched none */}
+          {/* Placeholders show until the first read lands. After it, trips exist, so an empty list means the query matched none */}
           {listedTrips === undefined ? (
             <TripsLoading />
           ) : listedTrips.length === 0 ? (
