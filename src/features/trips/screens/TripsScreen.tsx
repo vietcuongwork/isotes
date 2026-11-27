@@ -11,6 +11,7 @@ import { textStyle } from "@/themes/typography";
 import { StatusBar } from "expo-status-bar";
 import { Plus, Search } from "lucide-react-native";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TripsList from "../components/TripList";
 
@@ -18,6 +19,9 @@ import TripsList from "../components/TripList";
 // font and size: iOS draws single-line TextInput text low when lineHeight is
 // set ([[Learn_react-native_textinput-lineheight-ios]])
 const body = textStyle("body");
+
+// Fade-in of the list when the first read lands: DESIGN.md components.skeleton
+const LIST_FADE_MS = 200;
 
 // NOTE - no token for these name-bar widths (board C), falling back to percent strings
 const SKELETON_NAME_WIDTHS = ["64%", "52%", "72%", "58%"] as const;
@@ -104,7 +108,12 @@ export default function TripsScreen() {
           ) : (
             <>
               <TripsOngoingRow count={listedTrips.length} />
-              <TripsList trips={listedTrips} />
+              <Animated.View
+                className="flex-1"
+                entering={FadeIn.duration(LIST_FADE_MS)}
+              >
+                <TripsList trips={listedTrips} />
+              </Animated.View>
             </>
           )}
         </>

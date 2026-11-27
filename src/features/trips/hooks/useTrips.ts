@@ -9,15 +9,10 @@ import { useFocusEffect, useIsFocused, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TextInput } from "react-native";
 
-// [DEBUG-loading] temporary, removed in T11: above 0 holds the loading state
-const DEBUG_LOADING_DELAY_MS = 0;
-
 // null until the first fetch resolves, so the screen can tell "loading" from
 // "no trips" and never flashes the empty state
 export function useTrips() {
   const [trips, setTrips] = useState<TripCardData[] | null>(null);
-  // [DEBUG-loading] temporary, removed in T11
-  const [mountedAt] = useState(() => Date.now());
 
   const router = useRouter();
 
@@ -43,29 +38,14 @@ export function useTrips() {
   // totals (ADR 0009 allows one combined query here)
   useFocusEffect(
     useCallback(() => {
-      // [DEBUG-loading] temporary, removed in T11
-      const focusedAt = Date.now();
       getTripsWithRelations().then((rows) => {
-        // [DEBUG-loading] temporary, removed in T11
-        const now = Date.now();
-        console.log(
-          "[DEBUG-loading] read",
-          now - focusedAt,
-          now - mountedAt,
-          rows.length,
+        setTrips(
+          rows.map((row) =>
+            getTripCardData(transformTripWithRelationsRow(row)),
+          ),
         );
-        const apply = () =>
-          setTrips(
-            rows.map((row) =>
-              getTripCardData(transformTripWithRelationsRow(row)),
-            ),
-          );
-        // [DEBUG-loading] temporary, removed in T11
-        if (DEBUG_LOADING_DELAY_MS > 0)
-          setTimeout(apply, DEBUG_LOADING_DELAY_MS);
-        else apply();
       });
-    }, [mountedAt]),
+    }, []),
   );
 
   return {
