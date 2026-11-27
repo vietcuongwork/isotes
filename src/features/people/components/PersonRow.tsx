@@ -1,7 +1,9 @@
 import Avatar from "@/components/Avatar";
 import { TripCardState } from "@/domain/tripBalance";
-import { formatExpenseCount, formatPersonNet } from "@/domain/tripFormat";
-import { PersonSummary } from "@/features/people/helpers/peopleHelpers";
+import {
+  formatPersonSummary,
+  PersonSummary,
+} from "@/features/people/helpers/peopleHelpers";
 import { tabularNums } from "@/themes/typography";
 import { Currency } from "@/types/TCreateTrip";
 import { cn } from "@/utils/cn";
@@ -60,17 +62,8 @@ export default function PersonRow(props: PersonRowProps) {
     transform: [{ translateX: offset.get() }],
   }));
 
-  const { tone, amount, word } = formatPersonNet({
-    net: person.net,
-    expenseCount: person.expenseCount,
-    decimalDigits: currency.decimalDigits,
-    symbol: currency.symbol,
-    isOwner: person.isOwner,
-  });
-  const count =
-    person.expenseCount === 0
-      ? "No expenses yet"
-      : formatExpenseCount(person.expenseCount);
+  const { count, net } = formatPersonSummary(person, currency);
+  const { tone, amount, word } = net;
   const label = [
     person.name,
     count,
@@ -153,10 +146,9 @@ export default function PersonRow(props: PersonRowProps) {
       {showDivider && (
         <View
           pointerEvents="none"
-          style={{ zIndex: 1 }}
           // NOTE - no token for the 88pt Remove panel, falling back to right-[88px]
           className={cn(
-            "absolute left-space-4 right-space-4 top-0 h-px bg-ink-100",
+            "absolute left-space-4 right-space-4 top-0 z-10 h-px bg-ink-100",
             isOpen && "right-[88px]",
           )}
         />

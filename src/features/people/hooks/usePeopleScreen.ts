@@ -5,6 +5,7 @@ import {
 import useDeletePerson from "@/features/people/hooks/useDeletePerson";
 import useUndoToast from "@/features/people/hooks/useUndoToast";
 import { restoreMember } from "@/db/members";
+import { getOwnerId } from "@/domain/memberHelpers";
 import { EXPO_ROUTER } from "@/navigation/route";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
 import { router, useLocalSearchParams } from "expo-router";
@@ -29,7 +30,7 @@ export default function usePeopleScreen() {
     [members, expenses, hiddenIds],
   );
 
-  const ownerId = members.find((member) => member.isOwner)?.id ?? "";
+  const ownerId = getOwnerId(members);
   const showSwipeHint = summaries.some(canRemovePerson);
 
   const unhide = (memberId: string) =>

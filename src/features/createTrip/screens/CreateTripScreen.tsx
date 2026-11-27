@@ -1,9 +1,8 @@
+import BackButton from "@/components/BackButton";
 import PrimaryButton from "@/components/PrimaryButton";
-import { colors } from "@/themes/color";
 import { useIsFocused } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ChevronLeft } from "lucide-react-native";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -44,15 +43,7 @@ function CreateTripContent(props: { codes: string[]; onBack: () => void }) {
         {/* //NOTE - no token for 108 (52 button + 40 bottom offset + 16 space-4), falling back to pb-[108px] */}
         <View className="px-space-5 pb-[108px] pt-space-2">
           {/* Back */}
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Back"
-            onPress={onBack}
-            // NOTE - no token for the 44pt touch target, falling back to h-[44px] w-[44px]
-            className="h-[44px] w-[44px] items-center justify-center rounded-pill bg-ink-100"
-          >
-            <ChevronLeft size={24} strokeWidth={1.75} color={colors.ink[900]} />
-          </Pressable>
+          <BackButton onPress={onBack} />
 
           {/* Title */}
           <Text

@@ -1,3 +1,4 @@
+import BackButton from "@/components/BackButton";
 import AddPerson from "@/components/person/AddPerson";
 import { canRemovePerson } from "@/features/people/helpers/peopleHelpers";
 import PersonRow from "@/features/people/components/PersonRow";
@@ -5,8 +6,8 @@ import RemovedToast from "@/features/people/components/RemovedToast";
 import usePeopleScreen from "@/features/people/hooks/usePeopleScreen";
 import { colors } from "@/themes/color";
 import { router } from "expo-router";
-import { ChevronLeft, ChevronsLeft } from "lucide-react-native";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ChevronsLeft } from "lucide-react-native";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PeopleScreen() {
@@ -29,15 +30,7 @@ export default function PeopleScreen() {
     <SafeAreaView className="flex-1 bg-ink-50" edges={["top"]}>
       {/* Back */}
       <View className="px-space-5 pt-space-2">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          onPress={() => router.back()}
-          // NOTE - no token for the 44pt touch target, falling back to h-[44px] w-[44px]
-          className="h-[44px] w-[44px] items-center justify-center rounded-pill bg-ink-100"
-        >
-          <ChevronLeft size={24} strokeWidth={1.75} color={colors.ink[900]} />
-        </Pressable>
+        <BackButton onPress={() => router.back()} />
       </View>
 
       <ScrollView onScrollBeginDrag={closeOpenRow}>

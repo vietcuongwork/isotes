@@ -1,10 +1,11 @@
-import { formatPersonNet } from "@/domain/tripFormat";
 import {
   canRemovePerson,
   formatNetBadge,
+  formatPersonSummary,
   getPersonExpenses,
   getPersonSummaries,
 } from "@/features/people/helpers/peopleHelpers";
+import { getOwnerId } from "@/domain/memberHelpers";
 import useDeletePerson from "@/features/people/hooks/useDeletePerson";
 import { EXPO_ROUTER } from "@/navigation/route";
 import { useExpenseSheetStore } from "@/stores/useExpenseSheetStore";
@@ -48,22 +49,9 @@ export default function usePersonScreen() {
     });
   }, [memberId, expenses, members, currency]);
 
-  // No path reaches a missing person today; a removal sets leavingRef and navigates itself
-  useEffect(() => {
-    if (!person && !leavingRef.current) router.back();
-  }, [person]);
+  const summary = person ? formatPersonSummary(person, currency) : null;
 
-  const net = person
-    ? formatPersonNet({
-        net: person.net,
-        expenseCount: person.expenseCount,
-        decimalDigits: currency.decimalDigits,
-        symbol: currency.symbol,
-        isOwner: person.isOwner,
-      })
-    : null;
-
-  const ownerId = members.find((m) => m.isOwner)?.id ?? "";
+  const ownerId = getOwnerId(members);
 
   const handleRemove = async () => {
     leavingRef.current = true; // the live query will drop them; the missing-person effect must not go back too
@@ -76,11 +64,16 @@ export default function usePersonScreen() {
     }
   };
 
+  // No path reaches a missing person today; a removal sets leavingRef and navigates itself
+  useEffect(() => {
+    if (!person && !leavingRef.current) router.back();
+  }, [person]);
+
   return {
     person,
     rows,
-    badge: net ? formatNetBadge(net) : null,
-    tone: net?.tone ?? "empty",
+    count: summary?.count ?? "",
+    badge: summary ? formatNetBadge(summary.net) : null,
     handleRemove,
     canRemove: person !== undefined && canRemovePerson(person),
     hasFooter: person !== undefined && !person.isOwner,

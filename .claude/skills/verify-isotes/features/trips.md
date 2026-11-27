@@ -9,6 +9,7 @@ A returning user opens the light Trips list from Welcome: every trip as a card, 
 - `tr-no-matches` shows "No trips match “{query}”" and its hint, hides the "ONGOING" row, and keeps New trip.
 - `tr-clear` empties the query with the field's clear button and lists every trip again.
 - `tr-no-trips` shows the sleeping raven, "No trips yet", its body line and New trip, with no search and no header raven.
+- `tr-loading` shows the header with the peeking raven, the search field, "Ongoing" with a bar for its count and four placeholder cards while the first read is pending; search takes typing meanwhile.
 
 ## How to get to it (user POV)
 
@@ -37,4 +38,6 @@ Preconditions:
 - With the no-matches message showing there is nothing to swipe, so `hideKeyboard` fails; close the keyboard with `pressKey: Enter` (the Search key).
 - Cards are one accessibility element each, labelled `<name>, created <date>, <code>, <N people>, spent <total>, <position>`: match by regex on the name.
 - The no-trips state needs an empty database. Check it on the spare simulator, never by deleting trips on the working one: `T=$(.claude/skills/verify-isotes/scripts/fresh.sh)`, then `maestro test --device "$T" …`, then `fresh.sh --shutdown`.
+- The first read takes about 25 ms, so the placeholders last a few frames. To hold them, add a temporary `setTimeout` around `setTrips` in `useTrips.ts` (the loading-states branch had a `DEBUG_LOADING_DELAY_MS` knob and removed it at acceptance) and remove it before the `trips` flow. Maestro needs about 1.7 s per step, and the pulse slows the steps further, so a flow that asserts "Loading trips" after typing needs 20000 ms (c05), a flow that only opens Trips 9000 ms, and a flow that records the hand-over 3000 ms. Saved flows are in `.sim/ctr/loading-states/` of the worktree.
+- While loading, the element tree has one "Loading trips" element and no bone elements. The Ongoing count bar is hidden from VoiceOver too.
 - With 30+ trips, `scrollUntilVisible` to the oldest card needs `speed: 90` and a longer `timeout` than the 20 s default.

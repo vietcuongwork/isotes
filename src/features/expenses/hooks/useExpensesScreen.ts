@@ -2,6 +2,7 @@ import { getExpensesByTripId } from "@/db/expenses";
 import { getMembersByTripId } from "@/db/members";
 import { getTripById } from "@/db/trips";
 import { getDefaultExpenseSplit } from "@/domain/defaultSplit";
+import { getOwnerId } from "@/domain/memberHelpers";
 import {
   transformExpenseRow,
   transformMemberRow,
@@ -47,7 +48,7 @@ export default function useExpensesScreen() {
     [memberRows],
   );
 
-  const viewerMemberId = transformedMembers.find((m) => m.isOwner)?.id;
+  const viewerMemberId = getOwnerId(transformedMembers);
 
   if (__DEV__ && error) {
     console.error("[useExpensesScreen] Trip query failed", error);
